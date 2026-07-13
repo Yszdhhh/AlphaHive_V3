@@ -198,8 +198,17 @@ def append_rows(path: Path, rows: list[dict]) -> None:
             writer.writerow({key: row.get(key, "") for key in header})
 
 
-def build_symbol_meta(snapshot: pd.DataFrame, universe_meta: dict, min_valid_bars: int) -> pd.DataFrame:
-    turnover_map = turnover_map_from_snapshot(snapshot, min_valid_bars=min_valid_bars)
+def build_symbol_meta(
+    snapshot: pd.DataFrame,
+    universe_meta: dict,
+    min_valid_bars: int,
+    min_effective_turnover_usd: float,
+) -> pd.DataFrame:
+    turnover_map = turnover_map_from_snapshot(
+        snapshot,
+        min_valid_bars=min_valid_bars,
+        min_effective_turnover_usd=min_effective_turnover_usd,
+    )
     rows = []
     for symbol, result in turnover_map.items():
         meta = universe_meta.get(symbol, {})
@@ -210,7 +219,10 @@ def build_symbol_meta(snapshot: pd.DataFrame, universe_meta: dict, min_valid_bar
             "eligible_for_paper": meta.get("eligible_for_paper", "No" if symbol == "BTCUSDT" else ""),
             "turnover_24h_usd_effective": result.turnover_24h_usd_effective,
             "n_valid_bars": result.n_valid_bars,
+            "threshold_pass": result.threshold_pass,
+            "valid_bar_pass": result.valid_bar_pass,
             "confidence": result.confidence,
+            "turnover_reason": result.reason,
         })
     return pd.DataFrame(rows)
 
@@ -238,6 +250,7 @@ def main() -> None:
 
     lookback_hours = int(scan_rules["quantile"]["lookback_days"]) * 24
     min_valid_bars = int(scan_rules.get("baseline_pool", {}).get("min_valid_turnover_bars_24h", 18))
+    min_turnover = float(scan_rules.get("baseline_pool", {}).get("min_effective_turnover_usd"))
     frames = []
     input_inventory: list[dict] = []
     cutoff_audit = {
@@ -301,9 +314,15 @@ def main() -> None:
         snapshot["is_benchmark"] = False
     snapshot["is_benchmark"] = snapshot["is_benchmark"].fillna(False)
 
-    symbol_meta = build_symbol_meta(snapshot, meta_by_symbol, min_valid_bars) if not snapshot.empty else pd.DataFrame()
+    symbol_meta = (
+        build_symbol_meta(snapshot, meta_by_symbol, min_valid_bars, min_turnover)
+        if not snapshot.empty else pd.DataFrame()
+    )
     if not symbol_meta.empty:
-        meta_cols = symbol_meta[["symbol", "turnover_24h_usd_effective", "n_valid_bars", "confidence"]]
+        meta_cols = symbol_meta[[
+            "symbol", "turnover_24h_usd_effective", "n_valid_bars",
+            "threshold_pass", "valid_bar_pass", "confidence", "turnover_reason",
+        ]]
         snapshot = snapshot.merge(meta_cols, on="symbol", how="left")
 
     snapshot_path = run_dir / "input_snapshot.csv"
@@ -317,7 +336,6 @@ def main() -> None:
         btc_ret = 0.0
         if len(btc) >= 25:
             btc_ret = (float(btc["close"].iloc[-1]) / float(btc["close"].iloc[-25]) - 1.0) * 100
-        min_turnover = float(scan_rules.get("baseline_pool", {}).get("min_effective_turnover_usd", 10_000_000))
         meta_lookup = symbol_meta.set_index("symbol").to_dict("index") if not symbol_meta.empty else {}
 
         for symbol, df in snapshot.groupby("symbol"):
@@ -325,7 +343,12 @@ def main() -> None:
                 continue
             smeta = meta_lookup.get(symbol, {})
             effective_turnover = smeta.get("turnover_24h_usd_effective")
-            if pd.isna(effective_turnover) or effective_turnover is None or float(effective_turnover) < min_turnover:
+            if (
+                pd.isna(effective_turnover)
+                or effective_turnover is None
+                or smeta.get("threshold_pass") is not True
+                or smeta.get("valid_bar_pass") is not True
+            ):
                 continue
             df = df.sort_values("timestamp")
             if len(df) < 25:
