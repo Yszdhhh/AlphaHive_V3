@@ -1,0 +1,178 @@
+"""G1-G6 regression fixtures for the scanner and bounded gates."""
+from __future__ import annotations
+
+import hashlib
+import importlib.util
+import tempfile
+import unittest
+from pathlib import Path
+
+import pandas as pd
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _load_scanner_module():
+    path = PROJECT_ROOT / "scripts" / "02_scan_anomalies.py"
+    spec = importlib.util.spec_from_file_location("alpha_hive_scan_anomalies", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+scanner = _load_scanner_module()
+
+from harness.lib.cutoff import filter_completed_bars  # noqa: E402
+from harness.lib.deep_research_package import (  # noqa: E402
+    _evaluate_identity_gate,
+    _evaluate_liquidity_gate,
+    _resolve_paper_eligibility,
+)
+from harness.lib.derivative_metrics import compute_metric_summary  # noqa: E402
+from harness.lib.funding_normalize import normalize_funding  # noqa: E402
+from harness.lib.turnover import turnover_24h_effective  # noqa: E402
+
+
+class TestScannerCutoffAndInventory(unittest.TestCase):
+    def test_completed_bar_excludes_forming_bar(self):
+        hour = 60 * 60 * 1000
+        frame = pd.DataFrame({"timestamp": [0, hour, 2 * hour], "close": [1.0, 2.0, 3.0]})
+        kept, audit = filter_completed_bars(frame, effective_cutoff_ms=2 * hour)
+        self.assertEqual(kept["timestamp"].tolist(), [0, hour])
+        self.assertEqual(audit["filtered_incomplete_or_future_rows"], 1)
+        self.assertEqual(audit["completed_bar_violations"], 0)
+        self.assertEqual(audit["max_kept_bar_end_ms"], 2 * hour)
+
+    def test_inventory_contains_hash_rows_range_and_step(self):
+        frame = pd.DataFrame({"time": [0, 60 * 60 * 1000, 2 * 60 * 60 * 1000]})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "fixture.parquet"
+            path.write_bytes(b"inventory-fixture")
+            entry = scanner._input_inventory_entry(path, frame, "fixture", "ETHUSDT", "time")
+        self.assertEqual(entry["row_count"], 3)
+        self.assertEqual(entry["earliest_time_ms"], 0)
+        self.assertEqual(entry["latest_time_ms"], 2 * 60 * 60 * 1000)
+        self.assertEqual(entry["median_time_step_ms"], 60 * 60 * 1000)
+        self.assertEqual(entry["content_sha256"], hashlib.sha256(b"inventory-fixture").hexdigest())
+
+
+class TestFundingGuard(unittest.TestCase):
+    def test_normal_and_unit_error_fixtures(self):
+        normal = pd.Series([0.005, -0.006, 0.004, -0.005, 0.003])
+        normalized = normalize_funding(normal)
+        self.assertAlmostEqual(float(normalized.abs().median()), float(normal.abs().median()) / 100.0)
+        for bad in (
+            pd.Series([0.00001] * 5),  # low 100x
+            pd.Series([4.0] * 5),      # high 100x / contract overflow
+            pd.Series([], dtype=float),
+            pd.Series([0.0] * 5),
+        ):
+            with self.assertRaises(AssertionError):
+                normalize_funding(bad)
+
+
+class TestTurnoverAndDerivativeStatus(unittest.TestCase):
+    def test_partial_turnover_never_passes_valid_bar_gate(self):
+        frame = pd.DataFrame({
+            "timestamp": range(10),
+            "close": [1.0] * 10,
+            "volume": [1.0] * 10,
+            "quote_volume": [500000.0] * 10,
+        })
+        result = turnover_24h_effective(frame, min_valid_bars=18, min_effective_turnover_usd=10_000_000)
+        self.assertTrue(result.threshold_pass)
+        self.assertFalse(result.valid_bar_pass)
+        self.assertEqual(result.confidence, "partial")
+        self.assertIn("VALID_BARS_BELOW_MINIMUM", result.reason)
+
+    def test_derivative_status_is_partial_until_policy_unlock(self):
+        hour = 60 * 60 * 1000
+        frame = pd.DataFrame({
+            "time": [i * hour for i in range(49)],
+            "value": [1000.0 + i for i in range(49)],
+        })
+        summary, series = compute_metric_summary(
+            frame, "oi_change_24h", "time", "value", effective_cutoff_ms=50 * hour,
+            lookback_hours=2160, derive_24h_change=True,
+        )
+        self.assertEqual(summary["status"], "PARTIAL")
+        self.assertGreater(summary["n_valid"], 0)
+        self.assertIsNotNone(summary["quantile"])
+        self.assertTrue((series["timestamp"] <= 50 * hour).all())
+
+    def test_derivative_degenerate_and_nonmonotonic_are_not_computed(self):
+        hour = 60 * 60 * 1000
+        constant = pd.DataFrame({"time": [i * hour for i in range(4)], "value": [1.0] * 4})
+        summary, _ = compute_metric_summary(constant, "funding", "time", "value", 4 * hour, 2160)
+        self.assertEqual(summary["status"], "NOT_COMPUTED")
+        self.assertEqual(summary["reason"], "DEGENERATE_CONSTANT_SERIES")
+        nonmonotonic = pd.DataFrame({"time": [0, 2 * hour, hour], "value": [1.0, 2.0, 3.0]})
+        summary, _ = compute_metric_summary(nonmonotonic, "funding", "time", "value", 3 * hour, 2160)
+        self.assertEqual(summary["status"], "NOT_COMPUTED")
+        self.assertIn("TIMESTAMP_NOT_MONOTONIC", summary["reason"])
+
+
+class TestBoundedGates(unittest.TestCase):
+    RULES = {"baseline_pool": {
+        "min_effective_turnover_usd": 10_000_000,
+        "min_valid_turnover_bars_24h": 18,
+    }}
+    MANIFEST = {
+        "bar_resolution": "1h",
+        "resolved_effective_cutoff_ms": 123,
+        "integrity": {"no_lookahead_attested": True},
+    }
+
+    def _candidate(self, **overrides):
+        value = {
+            "symbol": "ETHUSDT",
+            "eligible_for_paper": "yes",
+            "history_tier": "Full",
+            "turnover_24h_usd": 12_000_000,
+        }
+        value.update(overrides)
+        return value
+
+    def _meta(self, **overrides):
+        value = {
+            "symbol": "ETHUSDT",
+            "contract_identity": "ETHUSDT_PERP",
+            "turnover_24h_usd_effective": 12_000_000,
+            "n_valid_bars": 22,
+        }
+        value.update(overrides)
+        return value
+
+    def test_bounded_pass_still_review_and_marks_missing_microstructure(self):
+        candidate = self._candidate()
+        meta = self._meta()
+        identity = _evaluate_identity_gate(candidate, meta, known_symbols=["ETHUSDT"])
+        liquidity = _evaluate_liquidity_gate(candidate, meta, self.RULES, self.MANIFEST)
+        paper = _resolve_paper_eligibility(candidate, identity, liquidity, [], [], [])
+        self.assertEqual(identity["status"], "WARN")
+        self.assertEqual(liquidity["status"], "WARN")
+        self.assertEqual(liquidity["spread_status"], "NOT_AVAILABLE")
+        self.assertEqual(liquidity["depth_status"], "NOT_AVAILABLE")
+        self.assertEqual(paper["status"], "REVIEW_REQUIRED")
+        self.assertFalse(paper["owner_override_allowed"])
+
+    def test_low_turnover_and_unknown_symbol_block(self):
+        low = self._candidate(turnover_24h_usd=9_000_000)
+        low_meta = self._meta(turnover_24h_usd_effective=9_000_000)
+        liquidity = _evaluate_liquidity_gate(low, low_meta, self.RULES, self.MANIFEST)
+        self.assertEqual(liquidity["status"], "BLOCK")
+        self.assertIn("turnover_below_minimum", liquidity["blockers"])
+        unknown = self._candidate(symbol="UNKNOWNUSDT")
+        identity = _evaluate_identity_gate(unknown, self._meta(), known_symbols=["ETHUSDT"])
+        self.assertEqual(identity["status"], "BLOCK")
+        self.assertIn("symbol_not_in_known_list", identity["blockers"])
+
+    def test_missing_identity_field_blocks(self):
+        identity = _evaluate_identity_gate(self._candidate(), self._meta(contract_identity=None), known_symbols=["ETHUSDT"])
+        self.assertEqual(identity["status"], "BLOCK")
+        self.assertIn("missing_contract_identity", identity["blockers"])
+
+
+if __name__ == "__main__":
+    unittest.main()

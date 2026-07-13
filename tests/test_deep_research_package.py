@@ -1341,7 +1341,13 @@ class TestEndToEndCutoffIntegrity(unittest.TestCase):
         ]
         pkg = _build_default(snapshot_rows=rows_with_special)
         prompt = render_research_prompt(pkg)
-        pkg_str = json.dumps(pkg, ensure_ascii=False)
+        # Hash digests are opaque and may coincidentally contain a decimal
+        # substring; inspect semantic package fields for leaked prices.
+        semantic_pkg = {
+            key: value for key, value in pkg.items()
+            if key not in {"checkpoint_hash", "input_fingerprint", "content_hash", "artifact_hash", "package_hash"}
+        }
+        pkg_str = json.dumps(semantic_pkg, ensure_ascii=False)
         for special in ["777", "888", "999"]:
             self.assertNotIn(special, pkg_str, f"Special price {special} leaked into package")
             self.assertNotIn(special, prompt, f"Special price {special} leaked into prompt")
@@ -1417,26 +1423,30 @@ class TestAntiP0Regression(unittest.TestCase):
         self.assertEqual(dg["status"], "WARN")
         self.assertIn("missing_funding_rate", dg["warnings"])
 
-    def test_paper_eligibility_allow_for_full(self):
-        """P0-3: eligible_for_paper=yes 时 paper_eligibility 状态为 ALLOW。"""
+    def test_paper_eligibility_allow_policy_is_parked(self):
+        """G6: bounded gates never ALLOW while the Owner policy is parked."""
         candidate = {**CANDIDATE_ALL_TRIGGERS, "eligible_for_paper": "yes"}
         pkg = _build_default(candidate=candidate)
         pe = pkg["quality_gate"]["paper_eligibility"]
         self.assertEqual(pe["status"], "REVIEW_REQUIRED")
-        self.assertIn("IDENTITY_GATE_NOT_IMPLEMENTED", pe["reason_codes"])
-        self.assertIn("LIQUIDITY_GATE_NOT_IMPLEMENTED", pe["reason_codes"])
+        self.assertIn("PAPER_ALLOW_POLICY_PARKED", pe["reason_codes"])
+        self.assertNotEqual(pe["status"], "ALLOW")
 
-    def test_identity_and_liquidity_gates_are_explicitly_unimplemented(self):
+    def test_identity_and_liquidity_gates_are_bounded_partial_checks(self):
         pkg = _build_default()
         qg = pkg["quality_gate"]
-        for gate_name in ("identity_gate", "liquidity_gate"):
-            gate = next(g for g in qg["sub_gates"] if g["gate"] == gate_name)
-            self.assertEqual(gate["status"], "WARN")
-            self.assertIn("GATE_NOT_IMPLEMENTED: 未执行真实流动性/身份检查", gate["warnings"])
+        identity_gate = next(g for g in qg["sub_gates"] if g["gate"] == "identity_gate")
+        liquidity_gate = next(g for g in qg["sub_gates"] if g["gate"] == "liquidity_gate")
+        self.assertEqual(identity_gate["status"], "WARN")
+        self.assertIn("migration_history_status=NOT_AVAILABLE", identity_gate["warnings"])
+        self.assertEqual(liquidity_gate["status"], "WARN")
+        self.assertIn("spread_status=NOT_AVAILABLE", liquidity_gate["warnings"])
+        self.assertIn("depth_status=NOT_AVAILABLE", liquidity_gate["warnings"])
 
         checks = {check["code"]: check for check in qg["required_human_checks"]}
-        self.assertFalse(checks["IDENTITY_GATE_NOT_IMPLEMENTED"]["blocking"])
-        self.assertFalse(checks["LIQUIDITY_GATE_NOT_IMPLEMENTED"]["blocking"])
+        self.assertFalse(checks["IDENTITY_MIGRATION_HISTORY_NOT_AVAILABLE"]["blocking"])
+        self.assertFalse(checks["LIQUIDITY_SPREAD_NOT_AVAILABLE"]["blocking"])
+        self.assertFalse(checks["LIQUIDITY_DEPTH_NOT_AVAILABLE"]["blocking"])
 
     def test_graveyard_prohibition_is_rendered(self):
         prompt = render_research_prompt(_build_default())

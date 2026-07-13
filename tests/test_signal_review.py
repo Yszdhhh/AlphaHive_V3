@@ -721,14 +721,14 @@ class TestExporterP0(unittest.TestCase):
         self.assertEqual(dg["status"], "WARN")
         self.assertIn("missing_open_interest", dg["warnings"])
         
-    def test_missing_turnover_warns(self):
+    def test_missing_turnover_blocks_bounded_liquidity(self):
         self.candidates[0]["turnover_24h_usd"] = ""
         self._write_files()
         res = build_signal_review(self.run_dir, output_dir=self.run_dir)
         pkg = res["candidates"][0]["package"]
         lg = next(g for g in pkg["quality_gate"]["sub_gates"] if g["gate"] == "liquidity_gate")
-        self.assertEqual(lg["status"], "WARN")
-        self.assertIn("missing_turnover", lg["warnings"])
+        self.assertEqual(lg["status"], "BLOCK")
+        self.assertIn("missing_turnover", lg["blockers"])
         
     def test_artifact_hash_structure(self):
         self._write_files()
