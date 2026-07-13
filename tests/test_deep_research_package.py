@@ -101,7 +101,7 @@ DEEP_RESEARCH_CONTRACT = {
         "不得复活 GRAVEYARD.md 所列已证伪方向（carry/庄家-费率/跟随聪明钱/机械方向择时）作为交易机制建议",
     ],
     "expected_output": {
-        "overall_evidence": {"allowed": ["LONG_THESIS_STRONGER", "SHORT_THESIS_STRONGER", "MIXED", "NO_TRADE_BLOCKER", "INSUFFICIENT_EVIDENCE"]},
+        "overall_evidence": {"allowed": ["CONTINUATION_EVIDENCE_STRONGER", "REVERSAL_EVIDENCE_STRONGER", "MEAN_REVERSION_EVIDENCE_STRONGER", "DATA_ARTIFACT_LIKELY", "MIXED", "NO_TRADE_BLOCKER", "INSUFFICIENT_EVIDENCE"]},
         "required_fields": {},
     },
 }
