@@ -136,8 +136,9 @@ def normalize_kline(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
 
 
 def merge_derivatives(base: pd.DataFrame, symbol: str, input_inventory: list[dict] | None = None) -> pd.DataFrame:
+    funding_path = RAW_1H / "funding_ohlc" / f"{symbol}.parquet"
     funding = read_parquet_if_exists(
-        RAW_1H / "funding_ohlc" / f"{symbol}.parquet",
+        funding_path,
         input_inventory=input_inventory,
         input_type="funding_ohlc",
         symbol=symbol,
@@ -145,8 +146,16 @@ def merge_derivatives(base: pd.DataFrame, symbol: str, input_inventory: list[dic
     )
     if not funding.empty:
         funding = funding[["time", "close"]].rename(columns={"time": "timestamp", "close": "funding_rate_8h_raw"})
-        funding["funding_rate_8h"] = normalize_funding(funding["funding_rate_8h_raw"])
+        try:
+            funding["funding_rate_8h"] = normalize_funding(funding["funding_rate_8h_raw"])
+        except AssertionError as exc:
+            raise SystemExit(f"STOP_AND_REPORT_OWNER funding guard failed symbol={symbol}: {exc}") from exc
         base = base.merge(funding, on="timestamp", how="left")
+    elif funding_path.exists():
+        try:
+            normalize_funding(pd.Series(dtype="float64"))
+        except AssertionError as exc:
+            raise SystemExit(f"STOP_AND_REPORT_OWNER funding guard failed symbol={symbol}: {exc}") from exc
     else:
         base["funding_rate_8h_raw"] = pd.NA
         base["funding_rate_8h"] = pd.NA

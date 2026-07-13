@@ -30,11 +30,11 @@ def assert_raw_funding(series: pd.Series) -> None:
     values = _numeric(series)
     values = values[values != 0]
     if values.empty:
-        return
+        raise AssertionError("RAW funding has no non-null, non-zero samples")
     rules = _contract()["raw_assertion"]
     med = float(values.abs().median())
     max_abs = float(values.abs().max())
-    if len(values) >= 5 and med < float(rules["median_abs_min"]):
+    if med < float(rules["median_abs_min"]):
         raise AssertionError(
             f"RAW funding median_abs={med:.3e} below "
             f"{rules['median_abs_min']}; source unit may be wrong"
@@ -49,11 +49,11 @@ def assert_normalized_funding(series: pd.Series) -> None:
     values = _numeric(series)
     values = values[values != 0]
     if values.empty:
-        return
+        raise AssertionError("NORMALIZED funding has no non-null, non-zero samples")
     rules = _contract()["normalized_assertion"]
     med = float(values.abs().median())
     max_abs = float(values.abs().max())
-    if len(values) >= 5 and med < float(rules["median_abs_min"]):
+    if med < float(rules["median_abs_min"]):
         raise AssertionError(
             f"NORMALIZED funding median_abs={med:.3e} below "
             f"{rules['median_abs_min']}; conversion may have divided twice"
