@@ -98,6 +98,7 @@ DEEP_RESEARCH_CONTRACT = {
         "use_post_cutoff_market_performance_as_evidence",
         "infer_direction_from_funding_sign_alone",
         "override_local_risk_limits",
+        "不得复活 GRAVEYARD.md 所列已证伪方向（carry/庄家-费率/跟随聪明钱/机械方向择时）作为交易机制建议",
     ],
     "expected_output": {
         "overall_evidence": {"allowed": ["LONG_THESIS_STRONGER", "SHORT_THESIS_STRONGER", "MIXED", "NO_TRADE_BLOCKER", "INSUFFICIENT_EVIDENCE"]},
@@ -274,7 +275,7 @@ class TestEffectiveCutoff(unittest.TestCase):
         pkg = _build_default(manifest=CLEAN_MANIFEST)
         self.assertEqual(pkg["market_data_cutoff"], REAL_CUTOFF_MS)
         self.assertEqual(pkg["effective_market_data_cutoff"], REAL_CUTOFF_MS)
-        self.assertEqual(pkg["quality_gate"]["status"], "PASS")
+        self.assertEqual(pkg["quality_gate"]["status"], "WARN")
 
     def test_cutoff_equals_scan(self):
         """cutoff == scan → 合法，不产生 cutoff-after-scan blocker。"""
@@ -718,7 +719,7 @@ class TestDeepResearchPackage(unittest.TestCase):
 
     def test_quality_gate_clean_pass(self):
         pkg = _build_default()
-        self.assertEqual(pkg["quality_gate"]["status"], "PASS")
+        self.assertEqual(pkg["quality_gate"]["status"], "WARN")
 
     def test_quality_gate_dirty_block(self):
         pkg = _build_default(run_info=DIRTY_RUN)
@@ -1383,7 +1384,7 @@ class TestAntiP0Regression(unittest.TestCase):
     def test_run_info_missing_hashes_does_not_crash(self):
         """P0-1: run_info 缺失 hashes 不会崩溃，如果不需要比较的话。"""
         pkg = _build_default(run_info={"status": "clean", "eligible_for_judgment": True})
-        self.assertEqual(pkg["quality_gate"]["status"], "PASS")
+        self.assertEqual(pkg["quality_gate"]["status"], "WARN")
 
     def test_quality_gate_returns_all_six_gates(self):
         """P0-2: 返回 6 个确定的 sub_gates。"""
@@ -1421,7 +1422,28 @@ class TestAntiP0Regression(unittest.TestCase):
         candidate = {**CANDIDATE_ALL_TRIGGERS, "eligible_for_paper": "yes"}
         pkg = _build_default(candidate=candidate)
         pe = pkg["quality_gate"]["paper_eligibility"]
-        self.assertEqual(pe["status"], "ALLOW")
+        self.assertEqual(pe["status"], "REVIEW_REQUIRED")
+        self.assertIn("IDENTITY_GATE_NOT_IMPLEMENTED", pe["reason_codes"])
+        self.assertIn("LIQUIDITY_GATE_NOT_IMPLEMENTED", pe["reason_codes"])
+
+    def test_identity_and_liquidity_gates_are_explicitly_unimplemented(self):
+        pkg = _build_default()
+        qg = pkg["quality_gate"]
+        for gate_name in ("identity_gate", "liquidity_gate"):
+            gate = next(g for g in qg["sub_gates"] if g["gate"] == gate_name)
+            self.assertEqual(gate["status"], "WARN")
+            self.assertIn("GATE_NOT_IMPLEMENTED: 未执行真实流动性/身份检查", gate["warnings"])
+
+        checks = {check["code"]: check for check in qg["required_human_checks"]}
+        self.assertFalse(checks["IDENTITY_GATE_NOT_IMPLEMENTED"]["blocking"])
+        self.assertFalse(checks["LIQUIDITY_GATE_NOT_IMPLEMENTED"]["blocking"])
+
+    def test_graveyard_prohibition_is_rendered(self):
+        prompt = render_research_prompt(_build_default())
+        self.assertIn(
+            "不得复活 GRAVEYARD.md 所列已证伪方向（carry/庄家-费率/跟随聪明钱/机械方向择时）作为交易机制建议",
+            prompt,
+        )
 
     def test_paper_eligibility_review_for_partial(self):
         """P0-3: history_tier=partial 时 paper_eligibility 状态为 REVIEW_REQUIRED。"""

@@ -41,6 +41,8 @@ GENERATOR_VERSION = "deep_research_package.v1"
 
 VALID_MODES = {"HISTORICAL_REPLAY", "PROSPECTIVE_LIVE"}
 
+GATE_NOT_IMPLEMENTED_WARNING = "GATE_NOT_IMPLEMENTED: 未执行真实流动性/身份检查"
+
 # P0-5: 方向中立研究输出枚举（禁止 LONG_THESIS_STRONGER / SHORT_THESIS_STRONGER）
 VALID_RESEARCH_VERDICTS = {
     "CONTINUATION_EVIDENCE_STRONGER",
@@ -682,6 +684,7 @@ def evaluate_quality_gate(
     sub_gates = []
     blockers = []
     warnings = []
+    human_checks: list[dict] = []
     
     # 1. integrity_gate
     ig_blockers = []
@@ -705,6 +708,7 @@ def evaluate_quality_gate(
 
     # 2. identity_gate
     idg_blockers = []
+    idg_warnings = [GATE_NOT_IMPLEMENTED_WARNING]
     if not candidate.get("symbol"):
         idg_blockers.append("missing_symbol")
     if not symbol_meta:
@@ -712,13 +716,24 @@ def evaluate_quality_gate(
     elif not symbol_meta.get("contract_identity") and not candidate.get("contract_identity"):
         idg_blockers.append("missing_contract_identity")
 
-    idg_status = "BLOCK" if idg_blockers else "PASS"
-    sub_gates.append(SubGateResult(gate="identity_gate", status=idg_status, blockers=idg_blockers).to_dict())
+    human_checks.append(HumanCheckItem(
+        code="IDENTITY_GATE_NOT_IMPLEMENTED",
+        item="identity_gate",
+        reason="未执行真实身份/合约身份检查，需要人工核对标的与合约身份",
+        blocking=False,
+    ).to_dict())
+    idg_status = "BLOCK" if idg_blockers else "WARN"
+    sub_gates.append(SubGateResult(
+        gate="identity_gate",
+        status=idg_status,
+        blockers=idg_blockers,
+        warnings=idg_warnings,
+    ).to_dict())
     blockers.extend(idg_blockers)
+    warnings.extend(idg_warnings)
 
     # 3. history_gate
     hg_warnings = []
-    human_checks: list[dict] = []
     ht = str(candidate.get("history_tier", "")).strip().lower()
     if ht == "partial":
         hg_warnings.append("history_tier=Partial")
@@ -744,7 +759,18 @@ def evaluate_quality_gate(
     lg_warnings = []
     if candidate.get("turnover_24h_usd") in (None, ""):
         lg_warnings.append("missing_turnover")
-    sub_gates.append(SubGateResult(gate="liquidity_gate", status="WARN" if lg_warnings else "PASS", warnings=lg_warnings).to_dict())
+    lg_warnings.append(GATE_NOT_IMPLEMENTED_WARNING)
+    human_checks.append(HumanCheckItem(
+        code="LIQUIDITY_GATE_NOT_IMPLEMENTED",
+        item="liquidity_gate",
+        reason="未执行真实流动性检查，需要人工核对成交额、点差与深度",
+        blocking=False,
+    ).to_dict())
+    sub_gates.append(SubGateResult(
+        gate="liquidity_gate",
+        status="WARN",
+        warnings=lg_warnings,
+    ).to_dict())
     warnings.extend(lg_warnings)
 
     # 6. paper_eligibility_gate
@@ -754,9 +780,21 @@ def evaluate_quality_gate(
     
     derivatives_warn = len(dg_warnings) > 0
     liquidity_warn = len(lg_warnings) > 0
+    identity_not_implemented = GATE_NOT_IMPLEMENTED_WARNING in idg_warnings
+    liquidity_not_implemented = GATE_NOT_IMPLEMENTED_WARNING in lg_warnings
 
     if ep == "yes":
-        if derivatives_warn or liquidity_warn:
+        if idg_blockers:
+            peg_status = "BLOCK"
+            peg_blockers.extend(idg_blockers)
+            paper_status = "BLOCK"
+            reason_codes = ["IDENTITY_BLOCK"]
+        elif (
+            derivatives_warn
+            or liquidity_warn
+            or identity_not_implemented
+            or liquidity_not_implemented
+        ):
             peg_status = "WARN"
             peg_warnings.append("eligible_for_paper=yes but derivatives or liquidity gate has warnings")
             paper_status = "REVIEW_REQUIRED"
@@ -765,6 +803,10 @@ def evaluate_quality_gate(
                 reason_codes.append("DERIVATIVES_WARN")
             if liquidity_warn:
                 reason_codes.append("LIQUIDITY_WARN")
+            if identity_not_implemented:
+                reason_codes.append("IDENTITY_GATE_NOT_IMPLEMENTED")
+            if liquidity_not_implemented:
+                reason_codes.append("LIQUIDITY_GATE_NOT_IMPLEMENTED")
         else:
             peg_status = "PASS"
             paper_status = "ALLOW"
