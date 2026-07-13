@@ -671,6 +671,229 @@ def _build_candidate_metrics(candidate: dict, target_snap: dict, btc_snap: dict)
     }
 
 
+def _boolish(value: Any) -> Optional[bool]:
+    if isinstance(value, bool):
+        return value
+    if value is None or value == "":
+        return None
+    text = str(value).strip().lower()
+    if text in {"true", "1", "yes", "pass", "passed"}:
+        return True
+    if text in {"false", "0", "no", "fail", "failed"}:
+        return False
+    return None
+
+
+def _first_numeric(*values: Any) -> Optional[float]:
+    for value in values:
+        parsed = _safe_float(value)
+        if parsed is not None:
+            return parsed
+    return None
+
+
+def _evaluate_identity_gate(
+    candidate: dict,
+    symbol_meta: dict,
+    known_symbols: Optional[list[str]] = None,
+) -> dict:
+    """Bounded identity check; migration history remains explicitly unavailable."""
+    blockers: list[str] = []
+    warnings: list[str] = []
+    human_checks: list[dict] = []
+    raw_candidate_symbol = str(candidate.get("symbol") or "").strip()
+    symbol = raw_candidate_symbol.upper()
+    if not symbol:
+        blockers.append("missing_symbol")
+    elif not re.fullmatch(r"[A-Z0-9]+USDT", symbol):
+        blockers.append("unparseable_symbol")
+
+    if not symbol_meta:
+        blockers.append("missing_symbol_meta")
+
+    candidate_identity = str(candidate.get("contract_identity") or "").strip()
+    meta_identity = str(symbol_meta.get("contract_identity") or "").strip()
+    if not candidate_identity and not meta_identity:
+        blockers.append("missing_contract_identity")
+    if candidate_identity and meta_identity and candidate_identity != meta_identity:
+        blockers.append("contract_identity_mismatch")
+
+    if known_symbols:
+        normalized_known = {str(item).strip().upper() for item in known_symbols if str(item).strip()}
+        if symbol and symbol not in normalized_known:
+            blockers.append("symbol_not_in_known_list")
+    else:
+        warnings.append("KNOWN_LIST_NOT_AVAILABLE")
+        human_checks.append(HumanCheckItem(
+            code="IDENTITY_KNOWN_LIST_NOT_AVAILABLE",
+            item="identity_gate",
+            reason="本次 package 未携带 universe known-list，无法完成清单核对",
+            blocking=False,
+        ).to_dict())
+
+    migration_status = "NOT_AVAILABLE"
+    warnings.append("migration_history_status=NOT_AVAILABLE")
+    human_checks.append(HumanCheckItem(
+        code="IDENTITY_MIGRATION_HISTORY_NOT_AVAILABLE",
+        item="identity_gate",
+        reason="当前数据源没有合约迁移/重命名历史，需人工或外部数据核对",
+        blocking=False,
+    ).to_dict())
+    return {
+        "status": "BLOCK" if blockers else "WARN",
+        "blockers": blockers,
+        "warnings": warnings,
+        "human_checks": human_checks,
+        "migration_history_status": migration_status,
+        "known_list_status": "PASS" if known_symbols else "NOT_AVAILABLE",
+    }
+
+
+def _evaluate_liquidity_gate(
+    candidate: dict,
+    symbol_meta: dict,
+    scan_rules: dict,
+    manifest: Optional[dict] = None,
+) -> dict:
+    """Bounded turnover/bar check with explicit spread/depth gaps."""
+    blockers: list[str] = []
+    warnings: list[str] = []
+    human_checks: list[dict] = []
+    baseline = scan_rules.get("baseline_pool", {}) or {}
+    min_turnover = _safe_float(baseline.get("min_effective_turnover_usd"))
+    min_valid_bars = _safe_float(baseline.get("min_valid_turnover_bars_24h"))
+    turnover = _first_numeric(candidate.get("turnover_24h_usd"), symbol_meta.get("turnover_24h_usd_effective"))
+    valid_bars = _first_numeric(candidate.get("turnover_valid_bars_24h"), symbol_meta.get("n_valid_bars"))
+    config_available = min_turnover is not None and min_valid_bars is not None
+    if not config_available:
+        warnings.append("LIQUIDITY_CONFIG_NOT_PROVIDED_TO_PURE_GATE")
+    if turnover is None:
+        (blockers if config_available else warnings).append("missing_turnover")
+    elif config_available and turnover < min_turnover:
+        blockers.append("turnover_below_minimum")
+    if valid_bars is None:
+        (blockers if config_available else warnings).append("missing_valid_turnover_bars")
+    elif config_available and valid_bars < min_valid_bars:
+        blockers.append("valid_turnover_bars_below_minimum")
+
+    explicit_threshold_pass = _boolish(symbol_meta.get("threshold_pass"))
+    explicit_valid_pass = _boolish(symbol_meta.get("valid_bar_pass"))
+    if explicit_threshold_pass is False:
+        blockers.append("turnover_threshold_status_failed")
+    if explicit_valid_pass is False:
+        blockers.append("valid_bar_status_failed")
+
+    integrity = (manifest or {}).get("integrity", {}) or {}
+    if integrity.get("no_lookahead_attested") is False or integrity.get("completed_bar_violations", 0):
+        blockers.append("time_integrity_failed")
+    elif manifest and (manifest.get("bar_resolution") is None or manifest.get("resolved_effective_cutoff_ms") is None):
+        warnings.append("TIME_INTEGRITY_EVIDENCE_MISSING")
+
+    warnings.extend(["spread_status=NOT_AVAILABLE", "depth_status=NOT_AVAILABLE"])
+    human_checks.extend([
+        HumanCheckItem(
+            code="LIQUIDITY_SPREAD_NOT_AVAILABLE",
+            item="liquidity_gate",
+            reason="当前没有真实 bid-ask spread 数据，不使用估计 bps",
+            blocking=False,
+        ).to_dict(),
+        HumanCheckItem(
+            code="LIQUIDITY_DEPTH_NOT_AVAILABLE",
+            item="liquidity_gate",
+            reason="当前没有真实 order-book depth 数据，不使用估计深度",
+            blocking=False,
+        ).to_dict(),
+    ])
+    return {
+        "status": "BLOCK" if blockers else "WARN",
+        "blockers": blockers,
+        "warnings": warnings,
+        "human_checks": human_checks,
+        "turnover_24h_usd": turnover,
+        "valid_turnover_bars_24h": valid_bars,
+        "spread_status": "NOT_AVAILABLE",
+        "depth_status": "NOT_AVAILABLE",
+    }
+
+
+def _resolve_paper_eligibility(
+    candidate: dict,
+    identity_gate: dict,
+    liquidity_gate: dict,
+    derivatives_warnings: list[str],
+    history_warnings: list[str],
+    integrity_blockers: list[str],
+) -> dict:
+    """Resolve paper status with ALLOW deliberately parked for this release."""
+    ep = str(candidate.get("eligible_for_paper", "")).strip().lower()
+    blockers = list(integrity_blockers) + list(identity_gate.get("blockers", [])) + list(liquidity_gate.get("blockers", []))
+    reason_codes: list[str] = []
+    warnings: list[str] = []
+    if ep == "yes" and not blockers:
+        reason_codes.append("PAPER_ALLOW_POLICY_PARKED")
+        if identity_gate.get("warnings"):
+            reason_codes.append("IDENTITY_WARN")
+        if liquidity_gate.get("warnings"):
+            reason_codes.append("LIQUIDITY_WARN")
+        if derivatives_warnings:
+            reason_codes.append("DERIVATIVES_WARN")
+        if history_warnings:
+            reason_codes.append("HISTORY_WARN")
+        warnings.append("paper ALLOW policy is PARKED; status forced REVIEW_REQUIRED")
+        return {
+            "status": "REVIEW_REQUIRED",
+            "gate_status": "WARN",
+            "blockers": [],
+            "warnings": warnings,
+            "reason_codes": reason_codes,
+            "owner_override_allowed": False,
+        }
+
+    if ep == "partial" or str(candidate.get("history_tier", "")).strip().lower() == "partial":
+        if "PARTIAL_HISTORY" not in reason_codes:
+            reason_codes.append("PARTIAL_HISTORY")
+        if not blockers:
+            warnings.append("partial history requires review")
+
+    if blockers:
+        if integrity_blockers:
+            reason_codes.append("INTEGRITY_BLOCK")
+        if identity_gate.get("blockers"):
+            reason_codes.append("IDENTITY_BLOCK")
+        if liquidity_gate.get("blockers"):
+            reason_codes.append("LIQUIDITY_BLOCK")
+        return {
+            "status": "BLOCK",
+            "gate_status": "BLOCK",
+            "blockers": (
+                ["paper_blocked_by_integrity"]
+                if integrity_blockers and not identity_gate.get("blockers") and not liquidity_gate.get("blockers")
+                else list(identity_gate.get("blockers", [])) + list(liquidity_gate.get("blockers", []))
+            ),
+            "warnings": warnings,
+            "reason_codes": reason_codes,
+            "owner_override_allowed": False,
+        }
+
+    if ep == "partial" or str(candidate.get("history_tier", "")).strip().lower() == "partial":
+        return {
+            "status": "REVIEW_REQUIRED",
+            "gate_status": "WARN",
+            "blockers": [],
+            "warnings": warnings,
+            "reason_codes": reason_codes,
+            "owner_override_allowed": False,
+        }
+    return {
+        "status": "BLOCK",
+        "gate_status": "BLOCK",
+        "blockers": [f"eligible_for_paper={candidate.get('eligible_for_paper', 'NOT_PROVIDED')}"],
+        "warnings": warnings,
+        "reason_codes": ["NOT_ELIGIBLE"],
+        "owner_override_allowed": False,
+    }
+
+
 def evaluate_quality_gate(
     candidate: dict,
     run_info: dict,
@@ -707,30 +930,20 @@ def evaluate_quality_gate(
     blockers.extend(ig_blockers)
 
     # 2. identity_gate
-    idg_blockers = []
-    idg_warnings = [GATE_NOT_IMPLEMENTED_WARNING]
-    if not candidate.get("symbol"):
-        idg_blockers.append("missing_symbol")
-    if not symbol_meta:
-        idg_blockers.append("missing_symbol_meta")
-    elif not symbol_meta.get("contract_identity") and not candidate.get("contract_identity"):
-        idg_blockers.append("missing_contract_identity")
-
-    human_checks.append(HumanCheckItem(
-        code="IDENTITY_GATE_NOT_IMPLEMENTED",
-        item="identity_gate",
-        reason="未执行真实身份/合约身份检查，需要人工核对标的与合约身份",
-        blocking=False,
-    ).to_dict())
-    idg_status = "BLOCK" if idg_blockers else "WARN"
+    identity_gate = _evaluate_identity_gate(
+        candidate,
+        symbol_meta,
+        known_symbols=manifest.get("known_symbols"),
+    )
+    human_checks.extend(identity_gate["human_checks"])
     sub_gates.append(SubGateResult(
         gate="identity_gate",
-        status=idg_status,
-        blockers=idg_blockers,
-        warnings=idg_warnings,
+        status=identity_gate["status"],
+        blockers=identity_gate["blockers"],
+        warnings=identity_gate["warnings"],
     ).to_dict())
-    blockers.extend(idg_blockers)
-    warnings.extend(idg_warnings)
+    blockers.extend(identity_gate["blockers"])
+    warnings.extend(identity_gate["warnings"])
 
     # 3. history_gate
     hg_warnings = []
@@ -752,84 +965,46 @@ def evaluate_quality_gate(
         dg_warnings.append("missing_funding_rate")
     if candidate.get("open_interest") in (None, ""):
         dg_warnings.append("missing_open_interest")
+    for prefix in ("oi", "funding"):
+        metric_status = str(symbol_meta.get(f"{prefix}_status", "")).strip().upper()
+        if metric_status in {"PARTIAL", "NOT_COMPUTED"}:
+            dg_warnings.append(f"{prefix}_status={metric_status}")
     sub_gates.append(SubGateResult(gate="derivatives_gate", status="WARN" if dg_warnings else "PASS", warnings=dg_warnings).to_dict())
     warnings.extend(dg_warnings)
 
     # 5. liquidity_gate
-    lg_warnings = []
-    if candidate.get("turnover_24h_usd") in (None, ""):
-        lg_warnings.append("missing_turnover")
-    lg_warnings.append(GATE_NOT_IMPLEMENTED_WARNING)
-    human_checks.append(HumanCheckItem(
-        code="LIQUIDITY_GATE_NOT_IMPLEMENTED",
-        item="liquidity_gate",
-        reason="未执行真实流动性检查，需要人工核对成交额、点差与深度",
-        blocking=False,
-    ).to_dict())
+    liquidity_gate = _evaluate_liquidity_gate(candidate, symbol_meta, scan_rules, manifest=manifest)
+    human_checks.extend(liquidity_gate["human_checks"])
     sub_gates.append(SubGateResult(
         gate="liquidity_gate",
-        status="WARN",
-        warnings=lg_warnings,
+        status=liquidity_gate["status"],
+        blockers=liquidity_gate["blockers"],
+        warnings=liquidity_gate["warnings"],
     ).to_dict())
-    warnings.extend(lg_warnings)
+    blockers.extend(liquidity_gate["blockers"])
+    warnings.extend(liquidity_gate["warnings"])
 
     # 6. paper_eligibility_gate
-    ep = str(candidate.get("eligible_for_paper", "")).strip().lower()
-    peg_blockers = []
-    peg_warnings = []
-    
-    derivatives_warn = len(dg_warnings) > 0
-    liquidity_warn = len(lg_warnings) > 0
-    identity_not_implemented = GATE_NOT_IMPLEMENTED_WARNING in idg_warnings
-    liquidity_not_implemented = GATE_NOT_IMPLEMENTED_WARNING in lg_warnings
-
-    if ep == "yes":
-        if idg_blockers:
-            peg_status = "BLOCK"
-            peg_blockers.extend(idg_blockers)
-            paper_status = "BLOCK"
-            reason_codes = ["IDENTITY_BLOCK"]
-        elif (
-            derivatives_warn
-            or liquidity_warn
-            or identity_not_implemented
-            or liquidity_not_implemented
-        ):
-            peg_status = "WARN"
-            peg_warnings.append("eligible_for_paper=yes but derivatives or liquidity gate has warnings")
-            paper_status = "REVIEW_REQUIRED"
-            reason_codes = []
-            if derivatives_warn:
-                reason_codes.append("DERIVATIVES_WARN")
-            if liquidity_warn:
-                reason_codes.append("LIQUIDITY_WARN")
-            if identity_not_implemented:
-                reason_codes.append("IDENTITY_GATE_NOT_IMPLEMENTED")
-            if liquidity_not_implemented:
-                reason_codes.append("LIQUIDITY_GATE_NOT_IMPLEMENTED")
-        else:
-            peg_status = "PASS"
-            paper_status = "ALLOW"
-            reason_codes = []
-    elif ht == "partial":
-        peg_status = "WARN"
-        peg_warnings.append(f"eligible_for_paper={candidate.get('eligible_for_paper', 'MISSING')} but partial history")
-        paper_status = "REVIEW_REQUIRED"
-        reason_codes = ["PARTIAL_HISTORY"]
-    else:
-        peg_status = "BLOCK"
-        peg_blockers.append(f"eligible_for_paper={candidate.get('eligible_for_paper', 'NOT_PROVIDED')}")
-        paper_status = "BLOCK"
-        reason_codes = ["NOT_ELIGIBLE"]
-        
-    sub_gates.append(SubGateResult(gate="paper_eligibility_gate", status=peg_status, blockers=peg_blockers, warnings=peg_warnings).to_dict())
-    blockers.extend(peg_blockers)
-    warnings.extend(peg_warnings)
-
+    paper_eligibility = _resolve_paper_eligibility(
+        candidate,
+        identity_gate,
+        liquidity_gate,
+        dg_warnings,
+        hg_warnings,
+        ig_blockers,
+    )
+    sub_gates.append(SubGateResult(
+        gate="paper_eligibility_gate",
+        status=paper_eligibility["gate_status"],
+        blockers=paper_eligibility["blockers"],
+        warnings=paper_eligibility["warnings"],
+    ).to_dict())
+    blockers.extend(paper_eligibility["blockers"])
+    warnings.extend(paper_eligibility["warnings"])
     paper_eligibility = {
-        "status": paper_status,
-        "reason_codes": reason_codes,
-        "owner_override_allowed": False
+        "status": paper_eligibility["status"],
+        "reason_codes": paper_eligibility["reason_codes"],
+        "owner_override_allowed": paper_eligibility["owner_override_allowed"],
     }
     
     missing = _run_missing_fields(candidate)

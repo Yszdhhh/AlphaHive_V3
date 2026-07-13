@@ -524,6 +524,7 @@ def main() -> None:
         "return_tape_path": None,
         "return_tape_sha256": None,
         "benchmark_symbol": benchmark_symbol,
+        "known_symbols": sorted(set(meta_by_symbol) | {benchmark_symbol}),
         "benchmark_frozen_in_snapshot": bool((snapshot["symbol"] == benchmark_symbol).any()) if not snapshot.empty else False,
         "candidate_count": len(candidates),
         "integrity": {
