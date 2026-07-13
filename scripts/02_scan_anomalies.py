@@ -44,10 +44,73 @@ def load_yaml(path: Path) -> dict:
         return yaml.safe_load(f)
 
 
-def read_parquet_if_exists(path: Path) -> pd.DataFrame:
+def _iso_utc_from_ms(value: int | None) -> str | None:
+    if value is None:
+        return None
+    return pd.to_datetime(int(value), unit="ms", utc=True).isoformat()
+
+
+def _input_inventory_entry(
+    path: Path,
+    frame: pd.DataFrame,
+    input_type: str,
+    symbol: str,
+    time_column: str,
+) -> dict:
+    timestamps = pd.to_numeric(frame.get(time_column), errors="coerce").dropna()
+    sorted_timestamps = timestamps.sort_values().drop_duplicates()
+    steps = sorted_timestamps.diff().dropna()
+    min_ts = int(timestamps.min()) if not timestamps.empty else None
+    max_ts = int(timestamps.max()) if not timestamps.empty else None
+    median_step = float(steps.median()) if not steps.empty else None
+    return {
+        "input_type": input_type,
+        "symbol": symbol,
+        "path": str(path),
+        "exists": True,
+        "content_sha256": sha256_file(path),
+        "row_count": int(len(frame)),
+        "time_column": time_column,
+        "earliest_time_ms": min_ts,
+        "earliest_time_utc": _iso_utc_from_ms(min_ts),
+        "latest_time_ms": max_ts,
+        "latest_time_utc": _iso_utc_from_ms(max_ts),
+        "median_time_step_ms": median_step,
+        "min_time_step_ms": float(steps.min()) if not steps.empty else None,
+        "max_time_step_ms": float(steps.max()) if not steps.empty else None,
+    }
+
+
+def read_parquet_if_exists(
+    path: Path,
+    input_inventory: list[dict] | None = None,
+    input_type: str | None = None,
+    symbol: str | None = None,
+    time_column: str = "time",
+) -> pd.DataFrame:
     if not path.exists():
+        if input_inventory is not None:
+            input_inventory.append({
+                "input_type": input_type,
+                "symbol": symbol,
+                "path": str(path),
+                "exists": False,
+                "content_sha256": None,
+                "row_count": None,
+                "time_column": time_column,
+                "earliest_time_ms": None,
+                "earliest_time_utc": None,
+                "latest_time_ms": None,
+                "latest_time_utc": None,
+                "median_time_step_ms": None,
+                "min_time_step_ms": None,
+                "max_time_step_ms": None,
+            })
         return pd.DataFrame()
-    return pd.read_parquet(path)
+    frame = pd.read_parquet(path)
+    if input_inventory is not None:
+        input_inventory.append(_input_inventory_entry(path, frame, input_type or "unknown", symbol or "", time_column))
+    return frame
 
 
 def normalize_kline(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
@@ -72,8 +135,14 @@ def normalize_kline(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
     return out
 
 
-def merge_derivatives(base: pd.DataFrame, symbol: str) -> pd.DataFrame:
-    funding = read_parquet_if_exists(RAW_1H / "funding_ohlc" / f"{symbol}.parquet")
+def merge_derivatives(base: pd.DataFrame, symbol: str, input_inventory: list[dict] | None = None) -> pd.DataFrame:
+    funding = read_parquet_if_exists(
+        RAW_1H / "funding_ohlc" / f"{symbol}.parquet",
+        input_inventory=input_inventory,
+        input_type="funding_ohlc",
+        symbol=symbol,
+        time_column="time",
+    )
     if not funding.empty:
         funding = funding[["time", "close"]].rename(columns={"time": "timestamp", "close": "funding_rate_8h_raw"})
         funding["funding_rate_8h"] = normalize_funding(funding["funding_rate_8h_raw"])
@@ -82,7 +151,13 @@ def merge_derivatives(base: pd.DataFrame, symbol: str) -> pd.DataFrame:
         base["funding_rate_8h_raw"] = pd.NA
         base["funding_rate_8h"] = pd.NA
 
-    oi = read_parquet_if_exists(RAW_1H / "oi_ohlc" / f"{symbol}.parquet")
+    oi = read_parquet_if_exists(
+        RAW_1H / "oi_ohlc" / f"{symbol}.parquet",
+        input_inventory=input_inventory,
+        input_type="oi_ohlc",
+        symbol=symbol,
+        time_column="time",
+    )
     if not oi.empty:
         oi = oi[["time", "close"]].rename(columns={"time": "timestamp", "close": "open_interest"})
         base = base.merge(oi, on="timestamp", how="left")
@@ -155,6 +230,7 @@ def main() -> None:
     lookback_hours = int(scan_rules["quantile"]["lookback_days"]) * 24
     min_valid_bars = int(scan_rules.get("baseline_pool", {}).get("min_valid_turnover_bars_24h", 18))
     frames = []
+    input_inventory: list[dict] = []
     cutoff_audit = {
         "rows_read": 0,
         "rows_kept": 0,
@@ -169,7 +245,13 @@ def main() -> None:
 
     for item in universe:
         symbol = item["symbol"]
-        kline = read_parquet_if_exists(RAW_1H / "klines" / f"{symbol}.parquet")
+        kline = read_parquet_if_exists(
+            RAW_1H / "klines" / f"{symbol}.parquet",
+            input_inventory=input_inventory,
+            input_type="klines",
+            symbol=symbol,
+            time_column="open_time",
+        )
         if kline.empty:
             continue
         norm = normalize_kline(kline, symbol)
@@ -181,10 +263,16 @@ def main() -> None:
             else:
                 cutoff_audit[key] += value
         snap = norm.tail(lookback_hours)
-        snap = merge_derivatives(snap, symbol)
+        snap = merge_derivatives(snap, symbol, input_inventory=input_inventory)
         frames.append(snap)
 
-    benchmark_kline = read_parquet_if_exists(RAW_1H / "klines" / f"{benchmark_symbol}.parquet")
+    benchmark_kline = read_parquet_if_exists(
+        RAW_1H / "klines" / f"{benchmark_symbol}.parquet",
+        input_inventory=input_inventory,
+        input_type="klines",
+        symbol=benchmark_symbol,
+        time_column="open_time",
+    )
     if not benchmark_kline.empty:
         benchmark_norm = normalize_kline(benchmark_kline, benchmark_symbol)
         benchmark_norm, audit = filter_completed_bars(benchmark_norm, effective_cutoff_ms)
@@ -195,7 +283,7 @@ def main() -> None:
             else:
                 cutoff_audit[key] += value
         benchmark_snap = benchmark_norm.tail(lookback_hours)
-        benchmark_snap = merge_derivatives(benchmark_snap, benchmark_symbol)
+        benchmark_snap = merge_derivatives(benchmark_snap, benchmark_symbol, input_inventory=input_inventory)
         benchmark_snap["is_benchmark"] = True
         frames.append(benchmark_snap)
 
@@ -307,6 +395,7 @@ def main() -> None:
         ),
         "bar_resolution": KLINE_BAR_RESOLUTION,
         "data_cutoff": effective_cutoff_ms,
+        "input_inventory": input_inventory,
         "snapshot_path": str(snapshot_path),
         "snapshot_sha256": sha256_file(snapshot_path),
         "symbol_meta_path": str(symbol_meta_path),
