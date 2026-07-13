@@ -135,6 +135,7 @@ prohibited_actions:
   - use_post_cutoff_market_performance_as_evidence
   - infer_direction_from_funding_sign_alone
   - override_local_risk_limits
+  - 不得复活 GRAVEYARD.md 所列已证伪方向（carry/庄家-费率/跟随聪明钱/机械方向择时）作为交易机制建议
 
 expected_output:
   overall_evidence:
@@ -163,4 +164,3 @@ expected_output:
     - confidence_reasons
     - citations
     - owner_checklist
-

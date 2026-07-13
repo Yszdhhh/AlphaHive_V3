@@ -908,6 +908,7 @@ def build_prompt_package(
         "不得生成或修改任何 return tape 或评估结论",
         "不得将历史回放结果直接用于实盘绩效",
         "不得假设未经过事后核验的数据为真实数据",
+        "不得复活 GRAVEYARD.md 所列已证伪方向（carry/庄家-费率/跟随聪明钱/机械方向择时）作为交易机制建议",
     ])
 
     # expected output
