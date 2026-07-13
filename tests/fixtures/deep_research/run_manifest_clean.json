@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "run_id": "20260511_1200_utc_replay",
+  "scan_time_utc": "2026-05-11T12:00:00Z",
+  "data_cutoff": 1716460800000,
+  "snapshot_path": "harness/runs/20260511_1200_utc_replay/input_snapshot.csv",
+  "snapshot_sha256": "98a0b581ff813164ba10019fc8cb0858f4e3c9cae6468c4d92d37d828b3d3d6c",
+  "symbol_meta_path": "harness/runs/20260511_1200_utc_replay/symbol_meta.csv",
+  "symbol_meta_sha256": "test_sha256_meta",
+  "return_tape_path": "harness/runs/20260511_1200_utc_replay/return_tape.csv",
+  "return_tape_sha256": "1969bd4a593bb24c8680ce5e1910225a564d0e9dd166fabbfab4489c67ff8c74",
+  "benchmark_symbol": "BTCUSDT",
+  "benchmark_frozen_in_snapshot": true,
+  "candidate_count": 15,
+  "integrity": {"no_lookahead_attested": true, "snapshot_is_90d_long_table": true}
+}

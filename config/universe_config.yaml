@@ -1,0 +1,34 @@
+# AlphaHive V3.1.1 Phase 1 - Universe 配置
+# 版本锁：改任何值都要 Owner 签批 + version +1
+universe_config_version: v1
+
+# 排名区间（基于 Binance 永续市值/成交额排名）
+rank:
+  min: 10          # 剔除 BTC/ETH/SOL 等主导标的
+  max: 80          # 中市值山寨区间（Capacity Edge 假设的目标区）
+  ranking_source: binance_perp   # 排名锚定 Binance 永续
+
+# 流动性门槛
+liquidity:
+  min_24h_turnover_usd: 10000000   # ≥ $10M，保守初始值
+
+# 强制排除（永远不进 universe）
+exclude:
+  stablecoins: true       # USDC/USDT/DAI 等
+  delisted: true          # 已下架
+  majors: [BTC, ETH, SOL] # 主导标的（作为 BTC 对冲基准另算，不进候选池）
+
+# BTC 对冲基准（收益基准化用，不进候选池）
+benchmark_symbol: BTCUSDT
+
+# 新上市标的历史天数分级（对应硬约束1）
+history_tiers:
+  full_min_days: 90        # ≥90天：正常算分位+z-score
+  partial_min_days: 60     # 60-89天：算z-score但标Partial，eligible_for_paper=No
+  # <60天：Insufficient，仅绝对阈值触发，标Data_Insufficient，仅观察
+
+# 数据起始约束（洞4：衍生数据比 klines 短，记录防误解）
+data_availability_note:
+  klines_start: "2021-12"       # 价格 ~53mo
+  derivatives_start: "2024-06"  # funding/OI/ls/cvd ~23.6mo
+  # 90天窗口对两类数据都够用；但别用 funding 做长历史分位

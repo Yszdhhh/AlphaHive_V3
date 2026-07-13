@@ -1,0 +1,88 @@
+﻿# AlphaHive V3.1.1 Phase 1 - 原始输入数据契约
+# schema 定义 + 校验规则，供脚本读取前校验。是原始数据的【单一真理源】。
+schema_version: v1
+funding:
+  source_path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\{SYMBOL}.parquet"
+  raw_unit: percent
+  ohlc_field_used: close
+  normalized_unit: decimal
+  normalize_op: "raw_close / 100"
+  raw_assertion:
+    median_abs_min: 0.0008
+    abs_max: 3.0
+    on_fail: STOP_AND_REPORT_OWNER
+  normalized_assertion:
+    median_abs_min: 0.000008
+    median_abs_expected: 0.0001
+    abs_max: 0.03
+    on_fail: STOP_AND_REPORT_OWNER
+  periods_per_day: 3
+  annualize_formula: "rate_8h_decimal * 3 * 365"
+
+# ---- 数据源路径（PC端启动前务必人工核对真实路径，记忆可能过时）----
+sources:
+  klines:
+    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\{SYMBOL}.parquet"
+    resolution: 1h
+    start_expected: "2021-12"       # ~53mo
+    required_columns: [timestamp, open, high, low, close, volume]
+    timezone: UTC                   # ⚠️ 启动前确认时间戳时区
+  funding:
+    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding\\{SYMBOL}.parquet"
+    resolution: 1h                  # ⚠️ 确认真实分辨率(可能8h)
+    start_expected: "2024-06"       # ~23.6mo
+    required_columns: [time, close]
+  oi:
+    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi\\{SYMBOL}.parquet"
+    resolution: 1h
+    start_expected: "2024-06"
+    required_columns: [timestamp, open_interest]
+
+# ---- 字段校验规则 ----
+validations:
+  price:
+    open: {type: float, min: 0, allow_null: false}
+    high: {type: float, min: 0, allow_null: false}
+    low:  {type: float, min: 0, allow_null: false}
+    close: {type: float, min: 0, allow_null: false}
+    volume: {type: float, min: 0, allow_null: true}
+    ohlc_consistency: "high >= low AND high >= open AND high >= close AND low <= open AND low <= close"
+
+  # ⚠️⚠️⚠️ 关键：funding 单位断言（历史被咬三次）⚠️⚠️⚠️
+  funding_rate:
+    type: float
+    unit_assertion:
+      description: >
+        正常 crypto 8h funding 中位数绝对值 ~1e-4 (0.01% 中性基线)，极端 ±1%~2%。
+        若中位数被多除100会掉到 ~1e-6 量级。据此判单位坑。
+      abs_max: 0.02        # 单根绝对值上限 2e-2 (~±2% / 8h 极端行情)
+      median_abs_min: 0.00001   # 全样本中位数绝对值下限 1e-5：低于此 → 疑似100×单位坑
+      median_abs_expected: 0.0001  # 正常量级参考 (~0.01%/8h)
+      on_fail: "STOP_AND_REPORT_OWNER"
+
+  open_interest:
+    type: float
+    min: 0
+    allow_null: true
+
+# ---- 时间戳对齐 ----
+timestamp:
+  format: unix_ms_or_iso        # 启动前确认
+  timezone: UTC
+  align_across_symbols: true    # BTC对冲价必须与标的同时间戳（硬约束4）
+
+# ---- 缺失数据策略 ----
+missing_data:
+  spread: {available: false, action: "use_friction_config.spread_bps_fallback"}
+  depth:  {available: false, action: "disable_spread_filter"}
+  funding_sign: {required: true, action: "force_extract_from_data"}
+
+# ---- 快照契约（洞2）----
+snapshot:
+  format: long_table            # 每标的×每根K线，NOT 单行横截面
+  lookback_days: 90
+  must_include: [ohlcv, funding, oi]
+  immutable: true               # 一次冻结永不改
+
+
+

@@ -1,0 +1,5 @@
+[
+  {"timestamp_utc": 1716403200000, "open": 3200.0, "high": 3250.0, "low": 3180.0, "close": 3220.0, "volume": 150000.0, "turnover_usd": 483000000.0, "funding_rate_8h": 0.00015, "open_interest": 5000000.0, "symbol": "ETHUSDT"},
+  {"timestamp_utc": 1716406800000, "open": 3220.0, "high": 3280.0, "low": 3210.0, "close": 3260.0, "volume": 160000.0, "turnover_usd": 521600000.0, "funding_rate_8h": 0.00018, "open_interest": 5100000.0, "symbol": "ETHUSDT"},
+  {"timestamp_utc": 1716489600000, "open": 3500.0, "high": 3600.0, "low": 3450.0, "close": 3550.0, "volume": 200000.0, "turnover_usd": 710000000.0, "funding_rate_8h": 0.00025, "open_interest": 5500000.0, "symbol": "ETHUSDT"}
+]

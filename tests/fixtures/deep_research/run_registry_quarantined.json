@@ -1,0 +1,14 @@
+{
+  "schema_version": "v1",
+  "run_id": "20260707_0912_utc",
+  "status": "quarantined",
+  "reason": "post-P0 code path ran, but candidate_pool_random has insufficient_pool (1 unique symbol)",
+  "created_utc": "2026-07-07T09:12:00Z",
+  "superseded_by": null,
+  "eligible_for_dod": false,
+  "eligible_for_judgment": false,
+  "hashes": {
+    "input_snapshot_sha256": "28f5f90f196a5de5de9b28a62b929647b4bc4fc3ad1a1da8608e528503ba37c2",
+    "return_tape_sha256": null
+  }
+}

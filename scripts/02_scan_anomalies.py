@@ -1,0 +1,291 @@
+﻿"""Freeze a 90-day snapshot and append first-pass anomaly candidates."""
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import pandas as pd
+import yaml
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from harness.lib.funding_normalize import normalize_funding
+from harness.lib.turnover import turnover_map_from_snapshot
+
+DB_ROOT = Path(r"C:\Users\10639\Desktop\加密\coinglass_db")
+RAW_1H = DB_ROOT / "raw_1h"
+LEDGER_PATH = PROJECT_ROOT / "ledger" / "Anomaly_Ledger.csv"
+
+HONESTY = [
+    "1. This system does not produce alpha or validate direction; it records anomalies, net excess returns, and hypotheses.",
+    "2. Any positive excess return is assumed beta or noise until it beats random baselines and bootstrap.",
+    "3. Week 1 optimizes for a stable closed loop and reproducible samples, not selection quality.",
+]
+
+
+def print_honesty() -> None:
+    for line in HONESTY:
+        print(line)
+
+
+def load_yaml(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
+def read_parquet_if_exists(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        return pd.DataFrame()
+    return pd.read_parquet(path)
+
+
+def normalize_kline(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
+    cols = ["open_time", "timestamp", "open", "high", "low", "close", "volume", "quote_volume", "volume_usd"]
+    out = df[[c for c in cols if c in df.columns]].copy()
+    if "open_time" in out.columns:
+        out = out.rename(columns={"open_time": "timestamp"})
+    if "timestamp" not in out.columns:
+        out["timestamp"] = pd.NA
+    if "quote_volume" in out.columns and "volume_usd" in out.columns:
+        out["turnover_usd"] = pd.to_numeric(out["quote_volume"], errors="coerce").fillna(
+            pd.to_numeric(out["volume_usd"], errors="coerce")
+        )
+    elif "quote_volume" in out.columns:
+        out["turnover_usd"] = pd.to_numeric(out["quote_volume"], errors="coerce")
+    elif "volume_usd" in out.columns:
+        out["turnover_usd"] = pd.to_numeric(out["volume_usd"], errors="coerce")
+    else:
+        out["turnover_usd"] = pd.NA
+    out = out.drop(columns=[c for c in ["quote_volume", "volume_usd"] if c in out.columns])
+    out["symbol"] = symbol
+    return out
+
+
+def merge_derivatives(base: pd.DataFrame, symbol: str) -> pd.DataFrame:
+    funding = read_parquet_if_exists(RAW_1H / "funding_ohlc" / f"{symbol}.parquet")
+    if not funding.empty:
+        funding = funding[["time", "close"]].rename(columns={"time": "timestamp", "close": "funding_rate_8h_raw"})
+        funding["funding_rate_8h"] = normalize_funding(funding["funding_rate_8h_raw"])
+        base = base.merge(funding, on="timestamp", how="left")
+    else:
+        base["funding_rate_8h_raw"] = pd.NA
+        base["funding_rate_8h"] = pd.NA
+
+    oi = read_parquet_if_exists(RAW_1H / "oi_ohlc" / f"{symbol}.parquet")
+    if not oi.empty:
+        oi = oi[["time", "close"]].rename(columns={"time": "timestamp", "close": "open_interest"})
+        base = base.merge(oi, on="timestamp", how="left")
+    else:
+        base["open_interest"] = pd.NA
+    return base
+
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def ledger_header() -> list[str]:
+    with LEDGER_PATH.open("r", encoding="utf-8-sig", newline="") as f:
+        return next(csv.reader(f))
+
+
+def append_rows(path: Path, rows: list[dict]) -> None:
+    if not rows:
+        return
+    header = ledger_header()
+    with path.open("a", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=header, extrasaction="ignore")
+        for row in rows:
+            writer.writerow({key: row.get(key, "") for key in header})
+
+
+def build_symbol_meta(snapshot: pd.DataFrame, universe_meta: dict, min_valid_bars: int) -> pd.DataFrame:
+    turnover_map = turnover_map_from_snapshot(snapshot, min_valid_bars=min_valid_bars)
+    rows = []
+    for symbol, result in turnover_map.items():
+        meta = universe_meta.get(symbol, {})
+        rows.append({
+            "symbol": symbol,
+            "rank": meta.get("rank"),
+            "history_tier": meta.get("history_tier", "Benchmark" if symbol == "BTCUSDT" else ""),
+            "eligible_for_paper": meta.get("eligible_for_paper", "No" if symbol == "BTCUSDT" else ""),
+            "turnover_24h_usd_effective": result.turnover_24h_usd_effective,
+            "n_valid_bars": result.n_valid_bars,
+            "confidence": result.confidence,
+        })
+    return pd.DataFrame(rows)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--run_id", default=None)
+    parser.add_argument("--scan_time_utc", default=None, help="Historical replay scan time, e.g. 2026-06-30T00:00:00Z")
+    args = parser.parse_args()
+
+    print_honesty()
+    scan_rules = load_yaml(PROJECT_ROOT / "config" / "scan_rules.yaml")
+    with (PROJECT_ROOT / "config" / "universe.json").open("r", encoding="utf-8") as f:
+        universe = json.load(f)["symbols"]
+
+    now = datetime.now(timezone.utc)
+    scan_dt = pd.Timestamp(args.scan_time_utc).tz_convert("UTC") if args.scan_time_utc else pd.Timestamp(now)
+    run_id = args.run_id or scan_dt.strftime("%Y%m%d_%H%M_utc")
+    scan_time = scan_dt.isoformat()
+    run_dir = PROJECT_ROOT / "harness" / "runs" / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    lookback_hours = int(scan_rules["quantile"]["lookback_days"]) * 24
+    min_valid_bars = int(scan_rules.get("baseline_pool", {}).get("min_valid_turnover_bars_24h", 18))
+    frames = []
+    meta_by_symbol = {item["symbol"]: item for item in universe}
+    benchmark_symbol = "BTCUSDT"
+
+    for item in universe:
+        symbol = item["symbol"]
+        kline = read_parquet_if_exists(RAW_1H / "klines" / f"{symbol}.parquet")
+        if kline.empty:
+            continue
+        norm = normalize_kline(kline, symbol)
+        norm = norm[pd.to_numeric(norm["timestamp"], errors="coerce") < int(scan_dt.value / 1e6)]
+        snap = norm.tail(lookback_hours)
+        snap = merge_derivatives(snap, symbol)
+        frames.append(snap)
+
+    benchmark_kline = read_parquet_if_exists(RAW_1H / "klines" / f"{benchmark_symbol}.parquet")
+    if not benchmark_kline.empty:
+        benchmark_norm = normalize_kline(benchmark_kline, benchmark_symbol)
+        benchmark_norm = benchmark_norm[pd.to_numeric(benchmark_norm["timestamp"], errors="coerce") < int(scan_dt.value / 1e6)]
+        benchmark_snap = benchmark_norm.tail(lookback_hours)
+        benchmark_snap = merge_derivatives(benchmark_snap, benchmark_symbol)
+        benchmark_snap["is_benchmark"] = True
+        frames.append(benchmark_snap)
+
+    snapshot = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    if "is_benchmark" not in snapshot.columns:
+        snapshot["is_benchmark"] = False
+    snapshot["is_benchmark"] = snapshot["is_benchmark"].fillna(False)
+
+    symbol_meta = build_symbol_meta(snapshot, meta_by_symbol, min_valid_bars) if not snapshot.empty else pd.DataFrame()
+    if not symbol_meta.empty:
+        meta_cols = symbol_meta[["symbol", "turnover_24h_usd_effective", "n_valid_bars", "confidence"]]
+        snapshot = snapshot.merge(meta_cols, on="symbol", how="left")
+
+    snapshot_path = run_dir / "input_snapshot.csv"
+    snapshot.to_csv(snapshot_path, index=False)
+    symbol_meta_path = run_dir / "symbol_meta.csv"
+    symbol_meta.to_csv(symbol_meta_path, index=False)
+
+    candidates = []
+    if not snapshot.empty:
+        btc = snapshot[snapshot["symbol"] == benchmark_symbol].sort_values("timestamp")
+        btc_ret = 0.0
+        if len(btc) >= 25:
+            btc_ret = (float(btc["close"].iloc[-1]) / float(btc["close"].iloc[-25]) - 1.0) * 100
+        min_turnover = float(scan_rules.get("baseline_pool", {}).get("min_effective_turnover_usd", 10_000_000))
+        meta_lookup = symbol_meta.set_index("symbol").to_dict("index") if not symbol_meta.empty else {}
+
+        for symbol, df in snapshot.groupby("symbol"):
+            if symbol not in meta_by_symbol:
+                continue
+            smeta = meta_lookup.get(symbol, {})
+            effective_turnover = smeta.get("turnover_24h_usd_effective")
+            if pd.isna(effective_turnover) or effective_turnover is None or float(effective_turnover) < min_turnover:
+                continue
+            df = df.sort_values("timestamp")
+            if len(df) < 25:
+                continue
+            close = pd.to_numeric(df["close"], errors="coerce")
+            ret_24h = (float(close.iloc[-1]) / float(close.iloc[-25]) - 1.0) * 100
+            vol_24h = close.pct_change().rolling(24).std().dropna()
+            if vol_24h.empty:
+                continue
+            latest_vol = float(vol_24h.iloc[-1])
+            vol_quantile = float((vol_24h <= latest_vol).mean())
+            excess = ret_24h - btc_ret
+            funding = pd.to_numeric(df["funding_rate_8h"], errors="coerce").dropna()
+            latest_funding = float(funding.iloc[-1]) if not funding.empty else ""
+            triggers = []
+            if vol_quantile >= float(scan_rules["triggers"]["vol_quantile_high"]):
+                triggers.append("vol_quantile_high")
+            if abs(ret_24h) >= float(scan_rules["large_move"]["large_move_threshold_abs_pct_24h"]):
+                triggers.append("large_move_abs")
+            if abs(excess) >= float(scan_rules["large_move"]["large_move_threshold_excess_pct_24h"]):
+                triggers.append("large_move_excess")
+            if not triggers:
+                continue
+            meta = meta_by_symbol[symbol]
+            candidates.append({
+                "schema_version": "v1",
+                "run_id": run_id,
+                "record_id": f"{run_id}_{len(candidates)+1:04d}",
+                "scan_time_utc": scan_time,
+                "symbol": symbol,
+                "rank": meta["rank"],
+                "turnover_24h_usd": round(float(effective_turnover), 2),
+                "history_tier": meta["history_tier"],
+                "eligible_for_paper": meta["eligible_for_paper"],
+                "trigger_reason": "|".join(triggers),
+                "trigger_metric": "vol_24h",
+                "trigger_value": latest_vol,
+                "trigger_quantile": vol_quantile,
+                "large_move_flag_24h": str("large_move_abs" in triggers or "large_move_excess" in triggers),
+                "abs_move_pct_24h": ret_24h,
+                "excess_move_pct_24h": excess,
+                "funding_sign": "positive" if latest_funding != "" and latest_funding > 0 else "negative" if latest_funding != "" and latest_funding < 0 else "",
+                "funding_rate_8h": latest_funding,
+                "oi_change_pct_24h": "",
+                "is_top_candidate": "",
+                "decision": "",
+                "direction": "",
+                "direction_sign": "",
+            })
+
+    candidates = sorted(candidates, key=lambda r: abs(float(r["excess_move_pct_24h"])), reverse=True)
+    candidates = candidates[: int(scan_rules["candidates"]["target_per_scan_max"])]
+    top_n = int(scan_rules["candidates"]["top_n_for_review"])
+    for idx, row in enumerate(candidates):
+        row["is_top_candidate"] = "true" if idx < top_n else "false"
+        if idx >= top_n:
+            row["decision"] = "AutoSkipped"
+            row["direction"] = "Neutral"
+            row["direction_sign"] = 0
+
+    candidates_path = run_dir / "candidates.csv"
+    pd.DataFrame(candidates).to_csv(candidates_path, index=False)
+    append_rows(LEDGER_PATH, candidates)
+
+    manifest = {
+        "schema_version": "v1",
+        "run_id": run_id,
+        "scan_time_utc": scan_time,
+        "data_cutoff": int(snapshot["timestamp"].max()) if not snapshot.empty else None,
+        "snapshot_path": str(snapshot_path),
+        "snapshot_sha256": sha256_file(snapshot_path),
+        "symbol_meta_path": str(symbol_meta_path),
+        "symbol_meta_sha256": sha256_file(symbol_meta_path),
+        "return_tape_path": None,
+        "return_tape_sha256": None,
+        "benchmark_symbol": benchmark_symbol,
+        "benchmark_frozen_in_snapshot": bool((snapshot["symbol"] == benchmark_symbol).any()) if not snapshot.empty else False,
+        "candidate_count": len(candidates),
+        "integrity": {"no_lookahead_attested": True, "snapshot_is_90d_long_table": True},
+    }
+    (run_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    print(f"wrote run={run_id} snapshot_rows={len(snapshot)} candidates={len(candidates)}")
+
+
+if __name__ == "__main__":
+    main()
+
+
+

@@ -1,0 +1,120 @@
+schema_version: paper_execution_presets_v1
+preset_version: v0.1.0-draft
+status: DRAFT
+scope: PAPER_ONLY
+default_preset_id: standard
+auto_select_aggressive: false
+owner_approval_required: true
+
+disclaimer: >
+  Initial research hypotheses for historical replay calibration. These values
+  are not validated optimal parameters and cannot be used for live orders.
+
+distance_model:
+  basis: MAX_OF_STRUCTURE_VOLATILITY_COST
+  volatility_pct_formula: >
+    max(ATR14_1h / entry_price * 100,
+        std(log_return_1h, last_24h) * sqrt(holding_hours) * 100)
+  adverse_cost_floor_pct_formula: >
+    friction_bps_roundtrip / 100
+    + max(0, expected_adverse_funding_cost_decimal) * 100
+  stop_distance_pct_formula: >
+    max(structural_invalidation_distance_pct + structure_buffer_pct,
+        volatility_multiplier * volatility_pct,
+        cost_floor_multiplier * adverse_cost_floor_pct)
+  cost_floor_multiplier: 2.5
+  favorable_funding_may_reduce_cost_floor: false
+
+horizons:
+  4h:
+    hours: 4
+    approval_ttl_hours: 1
+    max_stop_distance_pct: 4
+  24h:
+    hours: 24
+    approval_ttl_hours: 2
+    max_stop_distance_pct: 7
+  72h:
+    hours: 72
+    approval_ttl_hours: 4
+    max_stop_distance_pct: 12
+  7d:
+    hours: 168
+    approval_ttl_hours: 4
+    max_stop_distance_pct: 18
+
+common_discipline:
+  - no_averaging_down
+  - no_stop_widening
+  - one_active_plan_per_record
+  - cancel_if_invalidation_already_touched
+  - cancel_if_favorable_drift_exceeds_0_5R_before_entry
+  - take_profit_weights_must_sum_to_100_pct
+  - same_bar_tp_and_sl_assume_sl_first
+  - gap_through_stop_uses_open_or_worse_price
+  - trailing_stop_may_only_tighten
+  - remaining_position_exits_at_time_stop
+  - costs_allocated_by_exit_weight_without_double_counting_full_roundtrip
+
+required_inputs:
+  - eligible_for_paper_yes
+  - paper_trade_decision
+  - direction_long_or_short
+  - hypothesis
+  - structural_invalidation
+  - holding_horizon
+  - entry_reference_after_owner_approval
+  - atr_or_volatility_estimate
+  - turnover
+  - funding
+  - friction_bps_roundtrip
+  - research_prompt_version_and_hash
+  - owner_confirmation
+
+presets:
+  conservative:
+    label_zh: 保守
+    validation_status: DRAFT
+    paper_risk_per_trade_pct: 0.25
+    max_open_portfolio_risk_pct: 0.75
+    volatility_multiplier: 1.10
+    structure_buffer_pct: 0.25
+    minimum_net_weighted_rr: 1.20
+    take_profit_targets:
+      - {r_multiple: 1.25, exit_weight_pct: 60}
+      - {r_multiple: 2.00, exit_weight_pct: 40}
+    after_tp1: move_stop_to_cost_adjusted_break_even
+  standard:
+    label_zh: 标准
+    validation_status: DRAFT
+    paper_risk_per_trade_pct: 0.50
+    max_open_portfolio_risk_pct: 1.50
+    volatility_multiplier: 1.00
+    structure_buffer_pct: 0.25
+    minimum_net_weighted_rr: 1.50
+    take_profit_targets:
+      - {r_multiple: 1.50, exit_weight_pct: 50}
+      - {r_multiple: 2.50, exit_weight_pct: 50}
+    after_tp1: move_stop_to_cost_adjusted_break_even
+  exploratory:
+    label_zh: 探索
+    validation_status: DRAFT
+    paper_risk_per_trade_pct: 0.75
+    max_open_portfolio_risk_pct: 2.25
+    volatility_multiplier: 0.90
+    structure_buffer_pct: 0.25
+    minimum_net_weighted_rr: 2.00
+    take_profit_targets:
+      - {r_multiple: 2.00, exit_weight_pct: 40}
+      - {r_multiple: 3.50, exit_weight_pct: 60}
+    after_tp1: enable_one_r_trailing_stop_tighten_only
+
+block_instead_of_clamp:
+  - computed_stop_exceeds_horizon_max
+  - missing_atr_or_volatility
+  - missing_turnover_funding_or_price
+  - expected_net_rr_below_preset_minimum
+  - liquidation_buffer_below_minimum
+  - preset_version_stale
+  - approval_ttl_expired
+

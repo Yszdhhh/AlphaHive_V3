@@ -1,0 +1,166 @@
+schema_version: deep_research_prompt_package_v1
+contract_version: v1.0.0-draft
+status: draft
+
+purpose: >
+  Convert a frozen anomaly candidate into a deterministic, auditable research
+  package. The package explains why the candidate surfaced and what must be
+  investigated. It never claims alpha, chooses direction, or places an order.
+
+modes:
+  HISTORICAL_REPLAY:
+    market_cutoff: scan_time_utc
+    open_web_result_usage: qualitative_only
+    performance_eligible: false
+  PROSPECTIVE_LIVE:
+    market_cutoff: scan_time_utc
+    external_information_cutoff: owner_decision_time_utc
+    entry_anchor: first_complete_bar_after_paper_approval
+    reuse_scan_entry_anchor: false
+
+ranking:
+  current_method: abs_btc_excess_move_pct_24h
+  description_zh: 按24小时相对BTC超额涨跌绝对值排序，仅代表异常强度，不是综合Alpha分数。
+  no_direction_claim: true
+
+trigger_catalog:
+  vol_quantile_high:
+    implementation_status: COMPUTED
+    label_zh: 24小时波动处于自身90天高分位
+    explanation_zh: 当前24小时实现波动位于该标的自身过去90天的高分位，说明波动状态异常。
+    limitation_zh: 不表示多空方向，也不证明异常会延续或反转。
+  large_move_abs:
+    implementation_status: COMPUTED
+    label_zh: 24小时绝对涨跌超过阈值
+    explanation_zh: 标的24小时绝对涨跌幅超过扫描阈值，值得核验事件、流动性和数据真实性。
+    limitation_zh: 可能包含整体市场Beta、项目事件或数据异常，不直接产生方向结论。
+  large_move_excess:
+    implementation_status: COMPUTED
+    label_zh: 24小时相对BTC超额涨跌超过阈值
+    explanation_zh: 扣除BTC同期涨跌后仍存在显著异动，说明仅用BTC一阶市场Beta无法解释。
+    limitation_zh: 尚未剔除板块Beta、事件冲击和多重检验影响，不等于可交易Alpha。
+  vol_quantile_low:
+    implementation_status: NOT_COMPUTED
+    label_zh: 异常低波动
+    explanation_zh: 配置已预留，但当前扫描器尚未实现。
+    limitation_zh: 不得展示为已触发或用0代替缺失值。
+  oi_change_quantile_high:
+    implementation_status: NOT_COMPUTED
+    label_zh: OI变化处于高分位
+    explanation_zh: 配置已预留，但当前扫描器尚未计算24小时OI变化分位。
+    limitation_zh: 不得推测OI拥挤或方向。
+  funding_quantile_high:
+    implementation_status: NOT_COMPUTED
+    label_zh: 资金费率处于高分位
+    explanation_zh: 配置已预留，但当前扫描器只记录最新资金费率，尚未计算分位。
+    limitation_zh: funding符号只用于成本和拥挤背景，不能单独给方向。
+  funding_quantile_low:
+    implementation_status: NOT_COMPUTED
+    label_zh: 资金费率处于低分位
+    explanation_zh: 配置已预留，但当前扫描器只记录最新资金费率，尚未计算分位。
+    limitation_zh: funding符号只用于成本和拥挤背景，不能单独给方向。
+
+quality_gate:
+  block_when:
+    - run_not_clean
+    - run_not_eligible_for_judgment
+    - snapshot_hash_mismatch
+    - manifest_data_cutoff_after_scan_time
+    - symbol_or_instrument_identity_unknown
+    - history_insufficient
+    - candidate_not_eligible_for_paper
+  warn_when:
+    - oi_missing
+    - depth_missing
+    - spread_fallback_used
+    - funding_series_validation_missing
+    - turnover_valid_bars_below_24
+    - partial_history
+    - extreme_turnover_ratio_requires_verification
+
+prompt_allowlist:
+  - schema_version
+  - run_id
+  - record_id
+  - scan_time_utc
+  - symbol
+  - rank
+  - turnover_24h_usd
+  - history_tier
+  - eligible_for_paper
+  - trigger_reason
+  - trigger_metric
+  - trigger_value
+  - trigger_quantile
+  - abs_move_pct_24h
+  - excess_move_pct_24h
+  - funding_sign
+  - funding_rate_8h
+  - oi_change_pct_24h
+  - is_top_candidate
+  - friction_bps_roundtrip
+
+prompt_denylist_patterns:
+  - exit_price_ref_*
+  - btc_exit_price_*
+  - dir_excess_ret_*
+  - dir_excess_ret_net_*
+  - return_tape
+  - evaluation
+  - falsified
+  - hypotheses_validated
+  - post_decision_notes
+
+mandatory_research_sections:
+  - instrument_identity_and_contract_status
+  - data_integrity_and_cross_market_consistency
+  - cutoff_safe_event_timeline
+  - btc_and_sector_beta_assessment
+  - derivatives_positioning_and_missing_data
+  - liquidity_and_execution_risk
+  - continuation_hypothesis
+  - reversal_hypothesis
+  - mean_reversion_hypothesis
+  - data_artifact_hypothesis
+  - no_trade_evidence
+  - falsifiable_conditions
+  - missing_evidence
+  - citations
+  - owner_checklist
+
+prohibited_actions:
+  - place_or_prepare_live_order
+  - treat_anomaly_as_validated_alpha
+  - invent_missing_oi_funding_spread_or_depth
+  - use_post_cutoff_market_performance_as_evidence
+  - infer_direction_from_funding_sign_alone
+  - override_local_risk_limits
+
+expected_output:
+  overall_evidence:
+    allowed:
+      - CONTINUATION_EVIDENCE_STRONGER
+      - REVERSAL_EVIDENCE_STRONGER
+      - MEAN_REVERSION_EVIDENCE_STRONGER
+      - DATA_ARTIFACT_LIKELY
+      - MIXED
+      - NO_TRADE_BLOCKER
+      - INSUFFICIENT_EVIDENCE
+    note: 研究支持强弱，不自动形成交易决定。
+  required_fields:
+    - identity_check
+    - data_integrity_verdict
+    - catalyst_timeline
+    - evidence_for_continuation
+    - evidence_for_reversal
+    - evidence_for_no_trade
+    - market_beta_assessment
+    - execution_risks
+    - missing_evidence
+    - scenario_matrix
+    - overall_evidence
+    - confidence
+    - confidence_reasons
+    - citations
+    - owner_checklist
+

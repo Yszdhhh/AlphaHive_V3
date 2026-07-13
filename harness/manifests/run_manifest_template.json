@@ -1,0 +1,55 @@
+{
+  "run_id": "PLACEHOLDER_run_id",
+  "scan_time_utc": "PLACEHOLDER_iso8601_utc",
+  "created_by": "02_scan_anomalies.py",
+  "config_versions": {
+    "schema_version": "v1",
+    "friction_model_version": "v1",
+    "prompt_version": "red_team_v1",
+    "scan_rules_version": "v1",
+    "universe_config_version": "v1"
+  },
+  "data_cutoff": {
+    "klines_last_timestamp_utc": "PLACEHOLDER",
+    "funding_last_timestamp_utc": "PLACEHOLDER",
+    "oi_last_timestamp_utc": "PLACEHOLDER"
+  },
+  "snapshot": {
+    "path": "harness/runs/PLACEHOLDER_run_id/input_snapshot.csv",
+    "format": "long_table",
+    "lookback_days": 90,
+    "n_symbols": 0,
+    "n_rows": 0,
+    "sha256": "PLACEHOLDER"
+  },
+  "random": {
+    "seed_module": "harness/seed.py",
+    "master_seed": 42,
+    "baseline_seed_formula": "md5(scan_time_utc + record_id + baseline_type)"
+  },
+  "universe": {
+    "n_symbols": 0,
+    "rank_min": 10,
+    "rank_max": 80,
+    "min_turnover_usd": 10000000,
+    "benchmark_symbol": "BTCUSDT",
+    "universe_json_path": "config/universe.json"
+  },
+  "outputs": {
+    "candidates_csv": "harness/runs/PLACEHOLDER_run_id/candidates.csv",
+    "baselines_csv": "harness/runs/PLACEHOLDER_run_id/baselines.csv",
+    "red_team_requests": "harness/runs/PLACEHOLDER_run_id/red_team_requests.jsonl",
+    "red_team_responses": "harness/runs/PLACEHOLDER_run_id/red_team_responses.jsonl"
+  },
+  "candidate_summary": {
+    "n_candidates": 0,
+    "n_top_for_review": 0,
+    "n_autoskipped": 0
+  },
+  "integrity": {
+    "data_contracts_passed": false,
+    "funding_unit_check_passed": false,
+    "no_lookahead_attested": true,
+    "no_live_trading": true
+  }
+}

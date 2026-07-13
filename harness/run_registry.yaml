@@ -1,0 +1,94 @@
+﻿schema_version: v1
+runs:
+  - run_id: "20260707_0346_utc"
+    status: dirty
+    reason: "pre-fix bad values: hardcoded 24h funding, baseline column mismatch, and entry fallback"
+    created_utc: "2026-07-07T03:46:00Z"
+    superseded_by: null
+    eligible_for_dod: false
+    eligible_for_judgment: false
+
+  - run_id: "20260707_0349_utc"
+    status: superseded
+    reason: "candidate_pool_random degenerated to single-symbol control; research-invalid but not a code-corrupt dirty run"
+    created_utc: "2026-07-07T03:49:00Z"
+    superseded_by: null
+    eligible_for_dod: false
+    eligible_for_judgment: false
+
+  - run_id: "20260707_0804_utc"
+    status: superseded
+    reason: "pre-registry run generated before funding contract and research gates were enforced"
+    created_utc: "2026-07-07T08:04:00Z"
+    superseded_by: null
+    eligible_for_dod: false
+    eligible_for_judgment: false
+
+  - run_id: "20260707_0912_utc"
+    status: quarantined
+    reason: "post-P0 code path ran, but candidate_pool_random has insufficient_pool (1 unique symbol); not eligible for judgment"
+    created_utc: "2026-07-07T09:12:00Z"
+    superseded_by: null
+    eligible_for_dod: false
+    eligible_for_judgment: false
+    hashes:
+      input_snapshot_sha256: "28f5f90f196a5de5de9b28a62b929647b4bc4fc3ad1a1da8608e528503ba37c2"
+      return_tape_sha256: null
+
+  - run_id: "20260707_1341_utc"
+    status: quarantined
+    reason: "post-Hermes wall-clock run; candidate_pool_random has 1 unique symbol and return_tape is empty because data cutoff lags scan time"
+    created_utc: "2026-07-07T13:41:00Z"
+    superseded_by: null
+    eligible_for_dod: false
+    eligible_for_judgment: false
+
+  - run_id: "20260630_0100_utc_replay"
+    status: quarantined
+    reason: "historical replay scan has zero candidates under current trigger rules"
+    created_utc: "2026-06-30T01:00:00Z"
+    superseded_by: null
+    eligible_for_dod: false
+    eligible_for_judgment: false
+
+  - run_id: "20260511_1200_utc_replay"
+    status: clean
+    reason: "historical replay infrastructure run; pool diversity ok, return_tape present, P0-DATA gates expected to pass; no human direction decisions yet"
+    created_utc: "2026-05-11T12:00:00Z"
+    superseded_by: null
+    eligible_for_dod: true
+    eligible_for_judgment: true
+    hashes:
+      input_snapshot_sha256: "98a0b581ff813164ba10019fc8cb0858f4e3c9cae6468c4d92d37d828b3d3d6c"
+      return_tape_sha256: "1969bd4a593bb24c8680ce5e1910225a564d0e9dd166fabbfab4489c67ff8c74"
+
+  - run_id: "20260408_0000_utc_replay"
+    status: clean
+    reason: "historical replay clean run; pool diversity ok, return_tape present, no human direction decisions yet"
+    created_utc: "2026-04-08T00:00:00Z"
+    superseded_by: null
+    eligible_for_dod: true
+    eligible_for_judgment: true
+    hashes:
+      input_snapshot_sha256: "6d5d7fedaa7b45caad265dcccbd1c4f3f44ca2d4b7b56dc2a93b677e08a39351"
+      return_tape_sha256: "6baa3ff8bee63df3d453a15c46fa315bcd48c4bdf0a7c919d1a2d231435b2bf4"
+  - run_id: "20260414_0000_utc_replay"
+    status: clean
+    reason: "historical replay clean run; pool diversity ok, return_tape present, no human direction decisions yet"
+    created_utc: "2026-04-14T00:00:00Z"
+    superseded_by: null
+    eligible_for_dod: true
+    eligible_for_judgment: true
+    hashes:
+      input_snapshot_sha256: "7ef381334039224b86eb1442e2e9020fbde9148e7a6c725e9bc91289b8414b10"
+      return_tape_sha256: "ef8e0b0b7d0ff0b65bb8c9cb27a90005e167cfe8ca40407b47e5ea9c643e3a64"
+  - run_id: "20260528_1200_utc_replay"
+    status: clean
+    reason: "historical replay clean run; pool diversity ok, return_tape present, no human direction decisions yet"
+    created_utc: "2026-05-28T12:00:00Z"
+    superseded_by: null
+    eligible_for_dod: true
+    eligible_for_judgment: true
+    hashes:
+      input_snapshot_sha256: "65bd161ef30c3e9e78dca5252017b666e89011460d7c9abe2328c88d136db1c7"
+      return_tape_sha256: "d333d642e8f10a013ef8d2ba31c7e3ea3b74e9b7a6165edc36f2e8f1886ff6a7"

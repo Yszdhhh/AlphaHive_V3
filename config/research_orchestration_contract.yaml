@@ -1,0 +1,173 @@
+schema_version: research_orchestration_contract_v1
+status: P0_ACCEPTED_RESEARCHJOB_MVP_001A_READY
+purpose: >
+  Define a deterministic central orchestrator for AlphaHive research jobs.
+  Runtime research agents exchange immutable JSON artifacts only. Agents
+  never mutate one another's artifacts, quality gates, Paper plans, or Owner decisions.
+
+roles:
+  development:
+    codex:
+      role: ARCHITECT_AND_FINAL_ACCEPTOR
+      can_modify: [contracts, architecture_docs, integration_decision]
+    anti_gravity:
+      role: PRIMARY_CODE_EXECUTOR_VIA_GEMINI_31_PRO
+      can_modify: [server, dashboard, stores, deterministic_engines, tests]
+    claude_46:
+      role: READ_ONLY_REVIEWER_AND_FAILURE_PATH_AUDITOR
+      can_modify: []
+    mimo:
+      role: FIXTURE_AND_LOW_RISK_HELPER
+      can_modify: [fixtures, test_data, documentation, smoke_helpers]
+    grok_45:
+      role: FROZEN_EXTERNAL_INTEL_FIXTURE
+      can_modify: [fixtures, research_reports]
+      cannot_modify: [production_code, quality_gate, paper_plan, owner_decision]
+  runtime:
+    research_orchestrator:
+      role: CENTRAL_STATE_MACHINE
+    theme_scout:
+      role: DISCOVER_EXTERNAL_THEMES
+      output: [ThemeDiscoveryReport, QuantCheckRequest]
+    candidate_evidence_collector:
+      role: COLLECT_EXTERNAL_EVIDENCE
+      output: [ExternalResearchEvidence]
+    evidence_verifier:
+      role: VERIFY_SOURCES_AND_CUTOFF
+      output: [EvidenceVerificationReport]
+    research_synthesizer:
+      role: SYNTHESIZE_VERIFIED_EVIDENCE
+      output: [ResearchAssessment]
+    paper_plan_engine:
+      role: DETERMINISTIC_PAPER_PLAN_ENGINE
+      is_agent: false
+    notification_worker:
+      role: DETERMINISTIC_OUTBOX_CONSUMER
+      is_agent: false
+
+provider_policy:
+  default_provider: manual_import
+  allowed_providers: [manual_import, grok_x, web_search, rss, other_llm, other_x_provider]
+  provider_neutral_core: true
+  api_keys_in_repository: false
+  active_automatic_provider: none
+  current_grok_usage: >
+    Grok is not an active provider. Its historical output remains a frozen
+    fixture. Gemini, Claude and future providers are manually operated external
+    research executors that must emit the same provider-neutral artifact.
+
+state_machine:
+  normal:
+    - SCANNED
+    - PACKAGE_READY
+    - RESEARCH_JOB_CREATED
+    - AWAITING_EVIDENCE
+    - EVIDENCE_IMPORTED
+    - EVIDENCE_VERIFIED
+    - RESEARCH_ASSESSMENT_READY
+    - OWNER_REVIEW
+    - WATCHLISTED
+    - PAPER_APPROVED
+    - ENTRY_ANCHOR_PENDING
+    - PAPER_PLAN_ACTIVE
+    - PAPER_PLAN_CLOSED
+  terminal_or_exception:
+    - REJECTED
+    - BLOCKED
+    - QUARANTINED
+    - OWNER_ACTION_REQUIRED
+  transitions_are_owned_by: research_orchestrator
+  invalid_transition: STOP_AND_REPORT
+  manual_phase_event_types: [RESEARCH_TASK_EXPORTED, EVIDENCE_IMPORT_REJECTED]
+  future_provider_states: [PROVIDER_REQUESTED, PROVIDER_RUNNING, PROVIDER_COMPLETED, PROVIDER_FAILED]
+
+import_attempts:
+  statuses: [ACCEPTED, REJECTED_SCHEMA, REJECTED_HASH, REJECTED_CUTOFF, REJECTED_RECORD_MISMATCH, DUPLICATE]
+  rejected_attempt_keeps_job_state: AWAITING_EVIDENCE
+  accepted_evidence_later_found_invalid: [OWNER_ACTION_REQUIRED, QUARANTINED]
+
+cutoff_policy:
+  historical_replay:
+    market_cutoff: scan_time_utc
+    external_information_cutoff: scan_time_utc
+    external_evidence_use: qualitative_only
+    performance_eligible: false
+  prospective_live:
+    market_cutoff: scan_time_utc
+    external_information_cutoff: owner_decision_time_utc
+    entry_anchor: first_complete_bar_after_paper_approval
+    reuse_scan_entry_anchor: false
+  unknown_or_missing_cutoff: BLOCK
+
+quality_gates:
+  ordered:
+    - integrity_gate
+    - identity_gate
+    - history_gate
+    - derivatives_gate
+    - liquidity_gate
+    - paper_eligibility_gate
+  output_statuses: [PASS, WARN, BLOCK]
+  missing_information_never_defaults_to_zero: true
+  paper_eligibility_shape:
+    status: [ALLOW, REVIEW_REQUIRED, BLOCK]
+    reason_codes: list
+    owner_override_allowed: false
+  capability_policy:
+    quality_block_allows: [research_capability, owner_review_capability]
+    quality_block_blocks: [paper_plan_capability]
+
+hash_semantics:
+  content_hash: immutable_content_without_generation_time_or_self_hash
+  artifact_hash: persisted_artifact_bytes
+  input_fingerprint: input_refs_and_versions
+  package_hash_must_not_serve_all_three_roles: true
+  semantic_duplicate_key: [record_id, normalized_content_hash, cutoff_policy, contract_version]
+
+artifact_store:
+  root: alpha_hive/results/research_jobs
+  job_files:
+    job: job.json
+    input_package: candidate_package.json
+    evidence_dir: evidence/{content_hash}.json
+    imports_dir: imports/{import_id}.json
+    verification_dir: verification/vNNNN.json
+    assessment_dir: assessment/vNNNN.json
+    owner_decision_dir: owner_decisions/vNNNN.json
+    paper_plan_dir: paper_plans/vNNNN.json
+    pointers: pointers.json
+    events: events.jsonl
+  incoming_quarantine: alpha_hive/results/research_jobs/_incoming/quarantine
+  immutable_artifacts: true
+  job_id_generation: server_generated_ulid_or_uuid
+  record_id_pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'
+  forbidden_job_id_content: ['..', '/', '\\']
+  outbox:
+    root: alpha_hive/results/notification_outbox
+    states: [pending, sending, sent, dead]
+    claim_method: atomic_rename
+    required_fields: [notification_id, idempotency_key, destination, payload_hash, attempt_count, status, next_attempt_at_utc, last_error]
+
+task_contract:
+  schema_version: agent_task_v1
+  required_fields: [task_id, job_id, task_type, contract_version, input_refs, cutoff_policy, allowed_tools, requested_at_utc, status]
+  agent_output_required: [producer, input_fingerprint, contract_version, artifact_hash]
+  chat_history_is_not_source_of_truth: true
+  artifact_store_is_source_of_truth: true
+
+owner_gate:
+  required_fields: [owner_id, decision_time_utc, candidate_package_hash, evidence_set_hash, verification_hash, assessment_hash, selected_preset_version, confirmation_text_version, owner_confirmation]
+  allowed_decisions: [REJECT, WATCH, APPROVE_PAPER]
+  direction_values: [LONG, SHORT, NONE]
+  agent_cannot_sign_owner_decision: true
+
+current_priority:
+  active_slice: RESEARCHJOB-MVP-001A
+  sequence:
+    - RESEARCHJOB-MVP-001A_STORE_AND_CREATE_GET
+    - RESEARCHJOB-MVP-001B_EVIDENCE_IMPORT
+    - RESEARCHJOB-MVP-002_VERIFICATION_AND_ASSESSMENT
+    - RESEARCHJOB-MVP-003_OWNER_DECISION
+    - RESEARCHJOB-MVP-004_PAPER_PLAN
+    - RESEARCHJOB-MVP-005_OUTBOX_AND_FEISHU
+  current_slice_excludes: [evidence_import, automatic_provider_calls, owner_decision, paper_plan, notification_delivery]

@@ -1,0 +1,72 @@
+# AlphaHive V3.1.1 - Anomaly_Ledger schema
+# 供 99_validate_schema.py 自动校验主账本每一行
+schema_version: v1
+
+fields:
+  schema_version: {type: str, required: true, allowed: [v1]}
+  run_id: {type: str, required: true}                      # 关联 harness/runs/{run_id}
+  record_id: {type: str, required: true, unique: true}
+  scan_time_utc: {type: datetime, required: true, tz: UTC}
+  symbol: {type: str, required: true}
+  rank: {type: int, required: true, min: 10, max: 80}
+  turnover_24h_usd: {type: float, required: true, min: 10000000}
+  history_tier: {type: str, required: true, allowed: [Full, Partial, Insufficient]}
+  eligible_for_paper: {type: str, required: true, allowed: [Yes, No]}
+  trigger_reason: {type: str, required: true}             # ❌禁止事后补(禁止事项7)
+  trigger_metric: {type: str, required: true}
+  trigger_value: {type: float, required: true}
+  trigger_quantile: {type: float, required: false, min: 0, max: 1}
+  large_move_flag_24h: {type: bool, required: true}
+  abs_move_pct_24h: {type: float, required: false}
+  excess_move_pct_24h: {type: float, required: false}
+  funding_sign: {type: str, required: true, allowed: [positive, negative, zero, unknown]}
+  funding_rate_8h: {type: float, required: false}         # 单位已在 data_contracts 校验
+  oi_change_pct_24h: {type: float, required: false}
+  is_top_candidate: {type: bool, required: true}
+  decision: {type: str, required: true, allowed: [AutoSkipped, No Trade, Watch, Paper Trade]}  # Tiny Live 第1周禁用
+  direction: {type: str, required: true, allowed: [Long, Short, Neutral, "", AutoSkipped]}
+  direction_sign: {type: int, required: true, allowed: [1, -1, 0]}
+  testable_hypothesis: {type: str, required: false}       # Paper Trade 必填
+  falsified: {type: str, required: false, allowed: [Yes, No, Pending, ""]}
+  # 价格锚（硬约束4）
+  entry_price_ref: {type: float, required: false, min: 0}
+  exit_price_ref_4h: {type: float, required: false, min: 0}
+  exit_price_ref_24h: {type: float, required: false, min: 0}
+  exit_price_ref_72h: {type: float, required: false, min: 0}
+  exit_price_ref_7d: {type: float, required: false, min: 0}
+  btc_entry_price: {type: float, required: false, min: 0}
+  btc_exit_price_4h: {type: float, required: false, min: 0}
+  btc_exit_price_24h: {type: float, required: false, min: 0}
+  btc_exit_price_72h: {type: float, required: false, min: 0}
+  btc_exit_price_7d: {type: float, required: false, min: 0}
+  # 方向性超额收益(硬约束3)
+  dir_excess_ret_4h: {type: float, required: false}
+  dir_excess_ret_24h: {type: float, required: false}
+  dir_excess_ret_72h: {type: float, required: false}
+  dir_excess_ret_7d: {type: float, required: false}
+  # 摩擦后(硬约束：无friction不进判断)
+  friction_bps_roundtrip: {type: float, required: false, min: 0}
+  funding_cost_component: {type: float, required: false}
+  dir_excess_ret_net_4h: {type: float, required: false}
+  dir_excess_ret_net_24h: {type: float, required: false}
+  dir_excess_ret_net_72h: {type: float, required: false}
+  dir_excess_ret_net_7d: {type: float, required: false}
+  red_team_ref: {type: str, required: false}             # 指向 red_team_responses.jsonl 的 id
+  decision_time_utc: {type: datetime, required: false, tz: UTC}
+  notes: {type: str, required: false}
+
+# ---- 跨字段一致性规则 ----
+cross_field_rules:
+  - "direction=Long → direction_sign=1"
+  - "direction=Short → direction_sign=-1"
+  - "decision=AutoSkipped → direction_sign=0 AND is_top_candidate=false"
+  - "decision=Paper Trade → testable_hypothesis 非空 AND eligible_for_paper=Yes"
+  - "history_tier=Partial → eligible_for_paper=No"
+  - "history_tier=Insufficient → trigger_quantile 为空(仅绝对阈值)"
+  - "任何 dir_excess_ret_net_* 非空 → friction_bps_roundtrip 非空(无friction不进判断)"
+  - "decision != AutoSkipped → 该record在Baseline_Ledger有至少2条(基线A+B)对照"
+
+# ---- 回归闸（洞2/约束2）----
+regression_gate:
+  description: "同一 run_id 用 seed.py 重跑分位与基线，结果须字节级一致"
+  deterministic_fields: [trigger_quantile, dir_excess_ret_4h, dir_excess_ret_24h]

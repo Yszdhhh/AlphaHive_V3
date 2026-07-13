@@ -1,0 +1,20 @@
+{
+  "baseline_id": "baseline_20260712_researchjob_ready",
+  "workspace_root": "G:\\Quant test",
+  "git_commit_sha": "UNAVAILABLE_NO_VALID_GIT_METADATA",
+  "tests_collected": 284,
+  "tests_passed": 284,
+  "tests_failed": 0,
+  "tests_skipped": 0,
+  "warnings": [
+    "StarletteDeprecationWarning: FastAPI TestClient/httpx compatibility warning"
+  ],
+  "latest_json_sha256": "82d1e5dd6646e970ffaf4778908709cacd55095965abeedb953522a639667e8d",
+  "signal_review_tree_sha256": "4e8d478f90cb95406eb3f7b524dce90dbbc6beb271ff2a95e5ed2dfc5ac109ed",
+  "signal_review_file_count": 3,
+  "verified_at_utc": "2026-07-12T23:00:00Z",
+  "notes": [
+    "The latest real candidate is intentionally BLOCK because contract_identity is missing.",
+    "This baseline is a test and production-result integrity reference for RESEARCHJOB-MVP-001A."
+  ]
+}

@@ -1,0 +1,410 @@
+{
+  "schema_version": "v1",
+  "universe_config_version": "v1",
+  "created_at_utc": "2026-07-07T03:49:49.388619+00:00",
+  "source_db": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db",
+  "funding_unit_report": {
+    "status": "ok",
+    "sample_symbols": 20,
+    "median_abs_raw": 0.006398,
+    "expected_abs_range": [
+      1e-05,
+      0.01
+    ],
+    "unit_check": "within_spec",
+    "divided_by_100_risk": false,
+    "multiplied_by_100_risk": false
+  },
+  "symbols": [
+    {
+      "symbol": "DOGEUSDT",
+      "rank": 10,
+      "turnover_24h_usd": 47418372.62873,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\DOGEUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\DOGEUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\DOGEUSDT.parquet"
+    },
+    {
+      "symbol": "WLDUSDT",
+      "rank": 11,
+      "turnover_24h_usd": 24139215.6087,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\WLDUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\WLDUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\WLDUSDT.parquet"
+    },
+    {
+      "symbol": "XAUUSDT",
+      "rank": 13,
+      "turnover_24h_usd": 1570893991.4414701,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\XAUUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\XAUUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\XAUUSDT.parquet"
+    },
+    {
+      "symbol": "XAGUSDT",
+      "rank": 14,
+      "turnover_24h_usd": 993876610.65802,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\XAGUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\XAGUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\XAGUSDT.parquet"
+    },
+    {
+      "symbol": "SUIUSDT",
+      "rank": 15,
+      "turnover_24h_usd": 23428805.29862,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\SUIUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\SUIUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\SUIUSDT.parquet"
+    },
+    {
+      "symbol": "ESPORTSUSDT",
+      "rank": 16,
+      "turnover_24h_usd": 111554494.86948,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\ESPORTSUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\ESPORTSUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\ESPORTSUSDT.parquet"
+    },
+    {
+      "symbol": "ONDOUSDT",
+      "rank": 17,
+      "turnover_24h_usd": 10479438.83291,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\ONDOUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\ONDOUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\ONDOUSDT.parquet"
+    },
+    {
+      "symbol": "UBUSDT",
+      "rank": 18,
+      "turnover_24h_usd": 95099036.80748999,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\UBUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\UBUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\UBUSDT.parquet"
+    },
+    {
+      "symbol": "ADAUSDT",
+      "rank": 19,
+      "turnover_24h_usd": 27623753.14596,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\ADAUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\ADAUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\ADAUSDT.parquet"
+    },
+    {
+      "symbol": "LINKUSDT",
+      "rank": 20,
+      "turnover_24h_usd": 14809386.8228,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\LINKUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\LINKUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\LINKUSDT.parquet"
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "rank": 22,
+      "turnover_24h_usd": 13328154.47382,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\AVAXUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\AVAXUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\AVAXUSDT.parquet"
+    },
+    {
+      "symbol": "TRXUSDT",
+      "rank": 24,
+      "turnover_24h_usd": 35838311.54835,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\TRXUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\TRXUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\TRXUSDT.parquet"
+    },
+    {
+      "symbol": "LTCUSDT",
+      "rank": 25,
+      "turnover_24h_usd": 13694058.31374,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\LTCUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\LTCUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\LTCUSDT.parquet"
+    },
+    {
+      "symbol": "GRASSUSDT",
+      "rank": 26,
+      "turnover_24h_usd": 41001187.228640005,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\GRASSUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\GRASSUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\GRASSUSDT.parquet"
+    },
+    {
+      "symbol": "BZUSDT",
+      "rank": 27,
+      "turnover_24h_usd": 332322447.38379997,
+      "history_tier": "Partial",
+      "eligible_for_paper": "No",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\BZUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\BZUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\BZUSDT.parquet"
+    },
+    {
+      "symbol": "BCHUSDT",
+      "rank": 29,
+      "turnover_24h_usd": 10283035.7789,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\BCHUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\BCHUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\BCHUSDT.parquet"
+    },
+    {
+      "symbol": "LABUSDT",
+      "rank": 31,
+      "turnover_24h_usd": 200209530.76867,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\LABUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\LABUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\LABUSDT.parquet"
+    },
+    {
+      "symbol": "1000PEPEUSDT",
+      "rank": 33,
+      "turnover_24h_usd": 20454189.15578624,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\1000PEPEUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\1000PEPEUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\1000PEPEUSDT.parquet"
+    },
+    {
+      "symbol": "ENAUSDT",
+      "rank": 34,
+      "turnover_24h_usd": 12109759.742547,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\ENAUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\ENAUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\ENAUSDT.parquet"
+    },
+    {
+      "symbol": "AAVEUSDT",
+      "rank": 35,
+      "turnover_24h_usd": 25092357.93881,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\AAVEUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\AAVEUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\AAVEUSDT.parquet"
+    },
+    {
+      "symbol": "VVVUSDT",
+      "rank": 38,
+      "turnover_24h_usd": 56804825.48261,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\VVVUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\VVVUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\VVVUSDT.parquet"
+    },
+    {
+      "symbol": "MUUSDT",
+      "rank": 40,
+      "turnover_24h_usd": 1476390268.6294,
+      "history_tier": "Partial",
+      "eligible_for_paper": "No",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\MUUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\MUUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\MUUSDT.parquet"
+    },
+    {
+      "symbol": "SNDKUSDT",
+      "rank": 46,
+      "turnover_24h_usd": 386995552.3234,
+      "history_tier": "Partial",
+      "eligible_for_paper": "No",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\SNDKUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\SNDKUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\SNDKUSDT.parquet"
+    },
+    {
+      "symbol": "XLMUSDT",
+      "rank": 48,
+      "turnover_24h_usd": 103566620.28850001,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\XLMUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\XLMUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\XLMUSDT.parquet"
+    },
+    {
+      "symbol": "FARTCOINUSDT",
+      "rank": 51,
+      "turnover_24h_usd": 25301573.909620002,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\FARTCOINUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\FARTCOINUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\FARTCOINUSDT.parquet"
+    },
+    {
+      "symbol": "XPLUSDT",
+      "rank": 52,
+      "turnover_24h_usd": 17485440.768756002,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\XPLUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\XPLUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\XPLUSDT.parquet"
+    },
+    {
+      "symbol": "HUSDT",
+      "rank": 57,
+      "turnover_24h_usd": 66670997.94632,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\HUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\HUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\HUSDT.parquet"
+    },
+    {
+      "symbol": "NVDAUSDT",
+      "rank": 58,
+      "turnover_24h_usd": 95484307.21519999,
+      "history_tier": "Partial",
+      "eligible_for_paper": "No",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\NVDAUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\NVDAUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\NVDAUSDT.parquet"
+    },
+    {
+      "symbol": "XMRUSDT",
+      "rank": 61,
+      "turnover_24h_usd": 48792258.20455,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\XMRUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\XMRUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\XMRUSDT.parquet"
+    },
+    {
+      "symbol": "SKYAIUSDT",
+      "rank": 64,
+      "turnover_24h_usd": 51250717.11665,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\SKYAIUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\SKYAIUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\SKYAIUSDT.parquet"
+    },
+    {
+      "symbol": "1000BONKUSDT",
+      "rank": 68,
+      "turnover_24h_usd": 11214217.57165671,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\1000BONKUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\1000BONKUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\1000BONKUSDT.parquet"
+    },
+    {
+      "symbol": "RIVERUSDT",
+      "rank": 70,
+      "turnover_24h_usd": 39806847.111200005,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\RIVERUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\RIVERUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\RIVERUSDT.parquet"
+    },
+    {
+      "symbol": "INTCUSDT",
+      "rank": 72,
+      "turnover_24h_usd": 93863411.5651,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\INTCUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\INTCUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\INTCUSDT.parquet"
+    },
+    {
+      "symbol": "RAVEUSDT",
+      "rank": 73,
+      "turnover_24h_usd": 15512663.34155,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\RAVEUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\RAVEUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\RAVEUSDT.parquet"
+    },
+    {
+      "symbol": "MONUSDT",
+      "rank": 74,
+      "turnover_24h_usd": 11193368.42664,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\MONUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\MONUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\MONUSDT.parquet"
+    },
+    {
+      "symbol": "CRCLUSDT",
+      "rank": 75,
+      "turnover_24h_usd": 105659310.1435,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\CRCLUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\CRCLUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\CRCLUSDT.parquet"
+    },
+    {
+      "symbol": "FFUSDT",
+      "rank": 78,
+      "turnover_24h_usd": 124429611.66338,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\FFUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\FFUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\FFUSDT.parquet"
+    },
+    {
+      "symbol": "TSLAUSDT",
+      "rank": 79,
+      "turnover_24h_usd": 72492233.8946,
+      "history_tier": "Full",
+      "eligible_for_paper": "Yes",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\TSLAUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\TSLAUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\TSLAUSDT.parquet"
+    },
+    {
+      "symbol": "SPCXUSDT",
+      "rank": 80,
+      "turnover_24h_usd": 25210294.4575,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No",
+      "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\SPCXUSDT.parquet",
+      "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\SPCXUSDT.parquet",
+      "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\SPCXUSDT.parquet"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+﻿# AlphaHive V3.1.1 Phase 1 - 摩擦模型配置
+# 版本锁：改任何值都要 Owner 签批 + version +1
+# 这是成本的【单一真理源】。禁止在脚本里散落成本 magic number。
+friction_model_version: v1
+
+# ---- 悲观摩擦（第1周口径）----
+# 原则：宁可高估成本。收益必须扣完摩擦才进判断（硬约束）。
+
+fees:
+  taker_fee_bps: 5.5             # taker 单边，币安永续 taker ~0.055%
+  maker_fee_bps: 2.0            # maker 单边（第1周默认按 taker 算，maker 仅参考）
+  use_taker_for_pessimistic: true
+
+# ---- 滑点分档（按 24h 成交额，低容量标的更高）----
+# ⚠️ Capacity Edge 假设押在低容量标的，滑点恰在这里最吃紧，务必悲观
+slippage_tiers_bps:
+  - {min_turnover_usd: 100000000, slippage_bps: 5}    # ≥$100M
+  - {min_turnover_usd: 30000000,  slippage_bps: 10}   # $30M-100M
+  - {min_turnover_usd: 10000000,  slippage_bps: 20}   # $10M-30M（门槛下限）
+  - {min_turnover_usd: 0,         slippage_bps: 40}   # <$10M（本不该进universe，兜底）
+
+# ---- 点差 fallback（洞5附注：数据缺失时不当0）----
+# 第1周无真点差数据 → 用保守常数按成交额分档，避免系统性低估低容量成本
+spread_bps_fallback:
+  enabled: true
+  is_estimate: true             # 标记为估计值，第2周补真数据后重算
+  tiers:
+    - {min_turnover_usd: 100000000, spread_bps: 5}
+    - {min_turnover_usd: 30000000,  spread_bps: 10}
+    - {min_turnover_usd: 0,         spread_bps: 20}
+
+# ---- Funding（⚠️ 历史三次踩坑，单位口径写死）----
+funding:
+  unit_contract_ref: "data_contracts.yaml#funding"
+  periods_per_day: 3
+  annualize_formula: "rate_8h_decimal * 3 * 365"
+  apply_to_holding: true
+  cost_formula: "sum_over_settlements(rate_8h_decimal) * direction_sign"
+
+# ---- 总摩擦（单边）----
+# total_one_way_bps = taker_fee + slippage + spread_fallback
+# 双边（进+出）= 2 × total_one_way_bps
+# 加 funding（按持有小时数计）
+notes: |
+  悲观摩擦后收益 = 方向性超额收益 - 双边摩擦bps/1e4 - funding分量
+  第1周摩擦不含市场冲击(impact)模型，标为已知不完整(见ARCHITECT_REVIEW附注)
+
+impact_model: "none (KNOWN_INCOMPLETE)"
+

@@ -1,0 +1,48 @@
+﻿# AlphaHive V3.1.1 Phase 1 - 扫描规则
+# 版本锁：改任何值都要 Owner 签批 + version +1
+scan_rules_version: v1
+
+# ---- 分位数口径（硬约束1）----
+quantile:
+  method: self_timeseries        # 标的自身过去90天时间序列分位，NOT 横截面
+  lookback_days: 90
+  # z-score 也基于同一 90 天自序列
+
+# ---- large_move 触发（原方案 §二）----
+large_move:
+  large_move_threshold_abs_pct_24h: 10.0      # 绝对波动 ≥10%（24h）
+  large_move_threshold_excess_pct_24h: 7.0    # 超额波动 ≥7%（24h，扣BTC）
+  # 满足任一即 large_move_flag_24h = True
+
+# ---- Stage 1 候选触发规则（第1周初版，可调）----
+# 触发逻辑 = 分位极端 OR large_move。第1周宽松，先保证有样本流。
+triggers:
+  # 波动分位极端（自序列90d）
+  vol_quantile_high: 0.90        # 24h波动落在自身90d的≥90分位
+  vol_quantile_low: 0.10         # 或 ≤10分位（异常平静后突变）
+  # OI 变化分位（衍生数据，2024-06起才有）
+  oi_change_quantile_high: 0.90
+  # funding 极端分位（单位已在 data_contracts 校验）
+  funding_quantile_high: 0.90
+  funding_quantile_low: 0.10
+
+# ---- 候选数量控制 ----
+candidates:
+  target_per_scan_min: 10        # 第1周目标 10-20 候选/次
+  target_per_scan_max: 20
+  top_n_for_review: 5            # Top 5 进人工审查(Red Team)，其余 AutoSkipped
+
+# ---- 持有期（收益回填用，对应硬约束4）----
+holding_periods_hours: [4, 24, 72, 168]   # 4h/24h/72h/7d
+
+# ---- 点差过滤（第1周关闭，数据缺失）----
+spread_filter:
+  enabled: false                 # 第1周关闭，仅靠成交额门槛
+  max_spread_bps: 10             # ≤0.1%，第2周有点差数据后启用
+
+baseline_pool:
+  min_unique_symbols_candidate_pool: 10
+  max_single_symbol_share: 0.30
+  min_shannon_entropy_ratio: 0.60
+  min_effective_turnover_usd: 10000000
+  min_valid_turnover_bars_24h: 18

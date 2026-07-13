@@ -1,0 +1,16 @@
+**/__pycache__/
+**/.pytest_cache/
+*.pyc
+
+# Local credentials and secret material
+.env
+.env.*
+**/.env
+**/.env.*
+**/*secret*
+**/*SECRET*
+*.secret
+**/*.secret
+
+# Real/generated run output; keep mock data under harness/fixtures tracked.
+harness/runs/**
