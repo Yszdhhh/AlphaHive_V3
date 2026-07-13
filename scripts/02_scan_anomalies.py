@@ -21,6 +21,7 @@ from harness.lib.cutoff import (
     filter_completed_bars,
     resolve_completed_bar_cutoff,
 )
+from harness.lib.derivative_metrics import compute_metric_summary, empty_metric_summary
 from harness.lib.turnover import turnover_map_from_snapshot
 
 DB_ROOT = Path(r"C:\Users\10639\Desktop\加密\coinglass_db")
@@ -135,7 +136,36 @@ def normalize_kline(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
     return out
 
 
-def merge_derivatives(base: pd.DataFrame, symbol: str, input_inventory: list[dict] | None = None) -> pd.DataFrame:
+def _summary_columns(prefix: str, summary: dict) -> dict:
+    return {
+        f"{prefix}_status": summary["status"],
+        f"{prefix}_n_valid": summary["n_valid"],
+        f"{prefix}_window_start": summary["window_start"],
+        f"{prefix}_window_end": summary["window_end"],
+        f"{prefix}_coverage": summary["coverage"],
+        f"{prefix}_reason": summary["reason"],
+    }
+
+
+def _attach_latest_quantile(frame: pd.DataFrame, summary: dict, column: str) -> pd.DataFrame:
+    frame[column] = pd.NA
+    latest_timestamp = summary.get("latest_timestamp")
+    if latest_timestamp is not None:
+        frame.loc[pd.to_numeric(frame["timestamp"], errors="coerce") == latest_timestamp, column] = summary["quantile"]
+    return frame
+
+
+def merge_derivatives(
+    base: pd.DataFrame,
+    symbol: str,
+    effective_cutoff_ms: int,
+    lookback_hours: int,
+    input_inventory: list[dict] | None = None,
+) -> tuple[pd.DataFrame, dict[str, dict]]:
+    summaries = {
+        "oi": empty_metric_summary("oi", "MISSING_SOURCE"),
+        "funding": empty_metric_summary("funding", "MISSING_SOURCE"),
+    }
     funding_path = RAW_1H / "funding_ohlc" / f"{symbol}.parquet"
     funding = read_parquet_if_exists(
         funding_path,
@@ -150,6 +180,20 @@ def merge_derivatives(base: pd.DataFrame, symbol: str, input_inventory: list[dic
             funding["funding_rate_8h"] = normalize_funding(funding["funding_rate_8h_raw"])
         except AssertionError as exc:
             raise SystemExit(f"STOP_AND_REPORT_OWNER funding guard failed symbol={symbol}: {exc}") from exc
+        summaries["funding"], funding_metric = compute_metric_summary(
+            funding,
+            metric="funding",
+            timestamp_col="timestamp",
+            value_col="funding_rate_8h",
+            effective_cutoff_ms=effective_cutoff_ms,
+            lookback_hours=lookback_hours,
+        )
+        funding = funding.merge(
+            funding_metric.rename(columns={"metric_value": "funding_metric_value"}),
+            on="timestamp",
+            how="left",
+        )
+        funding = _attach_latest_quantile(funding, summaries["funding"], "funding_self_quantile")
         base = base.merge(funding, on="timestamp", how="left")
     elif funding_path.exists():
         try:
@@ -159,6 +203,8 @@ def merge_derivatives(base: pd.DataFrame, symbol: str, input_inventory: list[dic
     else:
         base["funding_rate_8h_raw"] = pd.NA
         base["funding_rate_8h"] = pd.NA
+        base["funding_metric_value"] = pd.NA
+        base["funding_self_quantile"] = pd.NA
 
     oi = read_parquet_if_exists(
         RAW_1H / "oi_ohlc" / f"{symbol}.parquet",
@@ -169,10 +215,27 @@ def merge_derivatives(base: pd.DataFrame, symbol: str, input_inventory: list[dic
     )
     if not oi.empty:
         oi = oi[["time", "close"]].rename(columns={"time": "timestamp", "close": "open_interest"})
+        summaries["oi"], oi_metric = compute_metric_summary(
+            oi,
+            metric="oi_change_24h",
+            timestamp_col="timestamp",
+            value_col="open_interest",
+            effective_cutoff_ms=effective_cutoff_ms,
+            lookback_hours=lookback_hours,
+            derive_24h_change=True,
+        )
+        oi = oi.merge(
+            oi_metric.rename(columns={"metric_value": "oi_change_pct_24h"}),
+            on="timestamp",
+            how="left",
+        )
+        oi = _attach_latest_quantile(oi, summaries["oi"], "oi_self_quantile")
         base = base.merge(oi, on="timestamp", how="left")
     else:
         base["open_interest"] = pd.NA
-    return base
+        base["oi_change_pct_24h"] = pd.NA
+        base["oi_self_quantile"] = pd.NA
+    return base, summaries
 
 
 def sha256_file(path: Path) -> str:
@@ -203,6 +266,7 @@ def build_symbol_meta(
     universe_meta: dict,
     min_valid_bars: int,
     min_effective_turnover_usd: float,
+    derivative_meta: dict[str, dict[str, dict]],
 ) -> pd.DataFrame:
     turnover_map = turnover_map_from_snapshot(
         snapshot,
@@ -223,6 +287,8 @@ def build_symbol_meta(
             "valid_bar_pass": result.valid_bar_pass,
             "confidence": result.confidence,
             "turnover_reason": result.reason,
+            **_summary_columns("oi", derivative_meta.get(symbol, {}).get("oi", empty_metric_summary("oi", "MISSING_SUMMARY"))),
+            **_summary_columns("funding", derivative_meta.get(symbol, {}).get("funding", empty_metric_summary("funding", "MISSING_SUMMARY"))),
         })
     return pd.DataFrame(rows)
 
@@ -253,6 +319,7 @@ def main() -> None:
     min_turnover = float(scan_rules.get("baseline_pool", {}).get("min_effective_turnover_usd"))
     frames = []
     input_inventory: list[dict] = []
+    derivative_meta: dict[str, dict[str, dict]] = {}
     cutoff_audit = {
         "rows_read": 0,
         "rows_kept": 0,
@@ -285,7 +352,14 @@ def main() -> None:
             else:
                 cutoff_audit[key] += value
         snap = norm.tail(lookback_hours)
-        snap = merge_derivatives(snap, symbol, input_inventory=input_inventory)
+        snap, summaries = merge_derivatives(
+            snap,
+            symbol,
+            effective_cutoff_ms=effective_cutoff_ms,
+            lookback_hours=lookback_hours,
+            input_inventory=input_inventory,
+        )
+        derivative_meta[symbol] = summaries
         frames.append(snap)
 
     benchmark_kline = read_parquet_if_exists(
@@ -305,7 +379,14 @@ def main() -> None:
             else:
                 cutoff_audit[key] += value
         benchmark_snap = benchmark_norm.tail(lookback_hours)
-        benchmark_snap = merge_derivatives(benchmark_snap, benchmark_symbol, input_inventory=input_inventory)
+        benchmark_snap, summaries = merge_derivatives(
+            benchmark_snap,
+            benchmark_symbol,
+            effective_cutoff_ms=effective_cutoff_ms,
+            lookback_hours=lookback_hours,
+            input_inventory=input_inventory,
+        )
+        derivative_meta[benchmark_symbol] = summaries
         benchmark_snap["is_benchmark"] = True
         frames.append(benchmark_snap)
 
@@ -315,9 +396,15 @@ def main() -> None:
     snapshot["is_benchmark"] = snapshot["is_benchmark"].fillna(False)
 
     symbol_meta = (
-        build_symbol_meta(snapshot, meta_by_symbol, min_valid_bars, min_turnover)
+        build_symbol_meta(snapshot, meta_by_symbol, min_valid_bars, min_turnover, derivative_meta)
         if not snapshot.empty else pd.DataFrame()
     )
+    if not snapshot.empty:
+        for symbol, summaries in derivative_meta.items():
+            mask = snapshot["symbol"] == symbol
+            for prefix, summary in summaries.items():
+                for column, value in _summary_columns(prefix, summary).items():
+                    snapshot.loc[mask, column] = value
     if not symbol_meta.empty:
         meta_cols = symbol_meta[[
             "symbol", "turnover_24h_usd_effective", "n_valid_bars",
@@ -363,6 +450,8 @@ def main() -> None:
             excess = ret_24h - btc_ret
             funding = pd.to_numeric(df["funding_rate_8h"], errors="coerce").dropna()
             latest_funding = float(funding.iloc[-1]) if not funding.empty else ""
+            oi_change = pd.to_numeric(df.get("oi_change_pct_24h"), errors="coerce").dropna()
+            latest_oi_change = float(oi_change.iloc[-1]) if not oi_change.empty else ""
             triggers = []
             if vol_quantile >= float(scan_rules["triggers"]["vol_quantile_high"]):
                 triggers.append("vol_quantile_high")
@@ -392,7 +481,7 @@ def main() -> None:
                 "excess_move_pct_24h": excess,
                 "funding_sign": "positive" if latest_funding != "" and latest_funding > 0 else "negative" if latest_funding != "" and latest_funding < 0 else "",
                 "funding_rate_8h": latest_funding,
-                "oi_change_pct_24h": "",
+                "oi_change_pct_24h": latest_oi_change,
                 "is_top_candidate": "",
                 "decision": "",
                 "direction": "",
