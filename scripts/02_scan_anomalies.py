@@ -16,6 +16,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from harness.lib.funding_normalize import normalize_funding
+from harness.lib.cutoff import (
+    KLINE_BAR_RESOLUTION,
+    filter_completed_bars,
+    resolve_completed_bar_cutoff,
+)
 from harness.lib.turnover import turnover_map_from_snapshot
 
 DB_ROOT = Path(r"C:\Users\10639\Desktop\加密\coinglass_db")
@@ -141,12 +146,24 @@ def main() -> None:
     scan_dt = pd.Timestamp(args.scan_time_utc).tz_convert("UTC") if args.scan_time_utc else pd.Timestamp(now)
     run_id = args.run_id or scan_dt.strftime("%Y%m%d_%H%M_utc")
     scan_time = scan_dt.isoformat()
+    effective_cutoff_ms, cutoff_blockers = resolve_completed_bar_cutoff(scan_time)
+    if cutoff_blockers:
+        raise SystemExit(f"STOP_AND_REPORT_OWNER cutoff resolution failed: {cutoff_blockers}")
     run_dir = PROJECT_ROOT / "harness" / "runs" / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
     lookback_hours = int(scan_rules["quantile"]["lookback_days"]) * 24
     min_valid_bars = int(scan_rules.get("baseline_pool", {}).get("min_valid_turnover_bars_24h", 18))
     frames = []
+    cutoff_audit = {
+        "rows_read": 0,
+        "rows_kept": 0,
+        "filtered_rows": 0,
+        "filtered_incomplete_or_future_rows": 0,
+        "filtered_invalid_timestamp_rows": 0,
+        "completed_bar_violations": 0,
+        "max_kept_bar_end_ms": None,
+    }
     meta_by_symbol = {item["symbol"]: item for item in universe}
     benchmark_symbol = "BTCUSDT"
 
@@ -156,7 +173,13 @@ def main() -> None:
         if kline.empty:
             continue
         norm = normalize_kline(kline, symbol)
-        norm = norm[pd.to_numeric(norm["timestamp"], errors="coerce") < int(scan_dt.value / 1e6)]
+        norm, audit = filter_completed_bars(norm, effective_cutoff_ms)
+        for key, value in audit.items():
+            if key == "max_kept_bar_end_ms":
+                if value is not None:
+                    cutoff_audit[key] = max(cutoff_audit[key] or value, value)
+            else:
+                cutoff_audit[key] += value
         snap = norm.tail(lookback_hours)
         snap = merge_derivatives(snap, symbol)
         frames.append(snap)
@@ -164,7 +187,13 @@ def main() -> None:
     benchmark_kline = read_parquet_if_exists(RAW_1H / "klines" / f"{benchmark_symbol}.parquet")
     if not benchmark_kline.empty:
         benchmark_norm = normalize_kline(benchmark_kline, benchmark_symbol)
-        benchmark_norm = benchmark_norm[pd.to_numeric(benchmark_norm["timestamp"], errors="coerce") < int(scan_dt.value / 1e6)]
+        benchmark_norm, audit = filter_completed_bars(benchmark_norm, effective_cutoff_ms)
+        for key, value in audit.items():
+            if key == "max_kept_bar_end_ms":
+                if value is not None:
+                    cutoff_audit[key] = max(cutoff_audit[key] or value, value)
+            else:
+                cutoff_audit[key] += value
         benchmark_snap = benchmark_norm.tail(lookback_hours)
         benchmark_snap = merge_derivatives(benchmark_snap, benchmark_symbol)
         benchmark_snap["is_benchmark"] = True
@@ -268,7 +297,16 @@ def main() -> None:
         "schema_version": "v1",
         "run_id": run_id,
         "scan_time_utc": scan_time,
-        "data_cutoff": int(snapshot["timestamp"].max()) if not snapshot.empty else None,
+        "requested_scan_time_utc": scan_time,
+        "resolved_effective_cutoff_ms": effective_cutoff_ms,
+        "resolved_effective_cutoff_utc": pd.to_datetime(effective_cutoff_ms, unit="ms", utc=True).isoformat(),
+        "last_completed_bar_ms": int(snapshot["timestamp"].max()) if not snapshot.empty else None,
+        "last_completed_bar_utc": (
+            pd.to_datetime(int(snapshot["timestamp"].max()), unit="ms", utc=True).isoformat()
+            if not snapshot.empty else None
+        ),
+        "bar_resolution": KLINE_BAR_RESOLUTION,
+        "data_cutoff": effective_cutoff_ms,
         "snapshot_path": str(snapshot_path),
         "snapshot_sha256": sha256_file(snapshot_path),
         "symbol_meta_path": str(symbol_meta_path),
@@ -278,7 +316,19 @@ def main() -> None:
         "benchmark_symbol": benchmark_symbol,
         "benchmark_frozen_in_snapshot": bool((snapshot["symbol"] == benchmark_symbol).any()) if not snapshot.empty else False,
         "candidate_count": len(candidates),
-        "integrity": {"no_lookahead_attested": True, "snapshot_is_90d_long_table": True},
+        "integrity": {
+            "no_lookahead_attested": bool(
+                cutoff_audit["completed_bar_violations"] == 0
+                and cutoff_audit["rows_kept"] <= cutoff_audit["rows_read"]
+                and (
+                    cutoff_audit["max_kept_bar_end_ms"] is None
+                    or cutoff_audit["max_kept_bar_end_ms"] <= effective_cutoff_ms
+                )
+            ),
+            "snapshot_is_90d_long_table": True,
+            "completed_bar_rule": "bar_open_time + 1h <= resolved_effective_cutoff",
+            "cutoff_audit": cutoff_audit,
+        },
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"wrote run={run_id} snapshot_rows={len(snapshot)} candidates={len(candidates)}")
