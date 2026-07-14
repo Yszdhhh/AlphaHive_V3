@@ -1,5 +1,7 @@
 # F2.1 agent task pack
 
+实时派单状态、原文 provenance 和 `MISSING` 记录见 `agent_tasks/DISPATCH_MATRIX.md`。
+
 ## 一句话派单
 
 请先阅读 `G:\Quant test\AlphaHive_V3\agent_tasks\README.md`，再按你被派发的提示词执行；只把原始结果写入提示词指定的 Desktop 输出路径，不修改 `AlphaHive_V3/`。
