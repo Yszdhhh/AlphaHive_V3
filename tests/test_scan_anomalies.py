@@ -103,6 +103,24 @@ class TestOpenInterestContract(unittest.TestCase):
         self.assertEqual(oi["absolute_value_unit"], "NOT_DECLARED")
 
 
+class TestSchemaV2Compatibility(unittest.TestCase):
+    def test_v2_contract_is_additive_and_accepts_v1_consumers(self):
+        contract = yaml.safe_load(
+            (PROJECT_ROOT / "config" / "data_contracts.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(contract["schema_version"], "v2")
+        self.assertEqual(contract["compatibility"]["previous_schema_versions"], ["v1"])
+        self.assertEqual(contract["compatibility"]["unknown_fields"], "ignore")
+
+        anomaly_schema = yaml.safe_load(
+            (PROJECT_ROOT / "harness" / "schemas" / "anomaly_ledger_schema.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(anomaly_schema["schema_version"], "v2")
+        self.assertEqual(anomaly_schema["compatibility"]["accepted_versions"], ["v1", "v2"])
+        for field in ("oi_status", "funding_status", "input_inventory_status"):
+            self.assertIn(field, anomaly_schema["fields"])
+
+
 class TestTurnoverAndDerivativeStatus(unittest.TestCase):
     def test_partial_turnover_never_passes_valid_bar_gate(self):
         frame = pd.DataFrame({

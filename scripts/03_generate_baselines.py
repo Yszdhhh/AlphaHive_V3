@@ -111,7 +111,7 @@ def main() -> None:
                 if baseline_type == "full_pool_random" and symbol:
                     drawn_full.append(symbol)
                 rows.append({
-                    "schema_version": "v1",
+                    "schema_version": "v2",
                     "run_id": run_id,
                     "baseline_id": f"{cand['record_id']}_{holding_period}h_{baseline_type}",
                     "parent_record_id": cand["record_id"],

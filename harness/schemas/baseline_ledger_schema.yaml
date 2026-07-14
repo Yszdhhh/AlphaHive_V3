@@ -1,9 +1,13 @@
 # AlphaHive V3.1.1 - Baseline_Ledger schema
 # 随机基线对照账本。每条非-AutoSkipped 候选须有基线A(候选池随机)+基线B(全池随机)
-schema_version: v1
+schema_version: v2
+
+compatibility:
+  accepted_versions: [v1, v2]
+  unknown_fields: ignore
 
 fields:
-  schema_version: {type: str, required: true, allowed: [v1]}
+  schema_version: {type: str, required: true, allowed: [v1, v2]}
   run_id: {type: str, required: true}
   baseline_id: {type: str, required: true, unique: true}
   parent_record_id: {type: str, required: true}          # 关联 Anomaly_Ledger.record_id
@@ -22,6 +26,9 @@ fields:
   friction_bps_roundtrip: {type: float, required: false, min: 0}
   funding_cost_component: {type: float, required: false}
   dir_excess_ret_net: {type: float, required: false}
+  pool_status: {type: str, required: false}
+  pool_unique_n: {type: int, required: false}
+  pool_entropy_ratio: {type: float, required: false}
   notes: {type: str, required: false}
 
 cross_field_rules:

@@ -1,9 +1,13 @@
 # AlphaHive V3.1.1 - Anomaly_Ledger schema
 # 供 99_validate_schema.py 自动校验主账本每一行
-schema_version: v1
+schema_version: v2
+
+compatibility:
+  accepted_versions: [v1, v2]
+  unknown_fields: ignore
 
 fields:
-  schema_version: {type: str, required: true, allowed: [v1]}
+  schema_version: {type: str, required: true, allowed: [v1, v2]}
   run_id: {type: str, required: true}                      # 关联 harness/runs/{run_id}
   record_id: {type: str, required: true, unique: true}
   scan_time_utc: {type: datetime, required: true, tz: UTC}
@@ -22,6 +26,9 @@ fields:
   funding_sign: {type: str, required: true, allowed: [positive, negative, zero, unknown]}
   funding_rate_8h: {type: float, required: false}         # 单位已在 data_contracts 校验
   oi_change_pct_24h: {type: float, required: false}
+  oi_status: {type: str, required: false, allowed: [COMPUTED, PARTIAL, NOT_COMPUTED]}
+  funding_status: {type: str, required: false, allowed: [COMPUTED, PARTIAL, NOT_COMPUTED]}
+  input_inventory_status: {type: str, required: false, allowed: [RECORDED, PARTIAL, NOT_COMPUTED]}
   is_top_candidate: {type: bool, required: true}
   decision: {type: str, required: true, allowed: [AutoSkipped, No Trade, Watch, Paper Trade]}  # Tiny Live 第1周禁用
   direction: {type: str, required: true, allowed: [Long, Short, Neutral, "", AutoSkipped]}

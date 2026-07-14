@@ -3,7 +3,7 @@
   "scan_time_utc": "PLACEHOLDER_iso8601_utc",
   "created_by": "02_scan_anomalies.py",
   "config_versions": {
-    "schema_version": "v1",
+    "schema_version": "v2",
     "friction_model_version": "v1",
     "prompt_version": "red_team_v1",
     "scan_rules_version": "v1",
@@ -13,6 +13,11 @@
     "klines_last_timestamp_utc": "PLACEHOLDER",
     "funding_last_timestamp_utc": "PLACEHOLDER",
     "oi_last_timestamp_utc": "PLACEHOLDER"
+  },
+  "input_inventory_status": "NOT_COMPUTED",
+  "derivative_inventory": {
+    "funding_status": "NOT_COMPUTED",
+    "oi_status": "NOT_COMPUTED"
   },
   "snapshot": {
     "path": "harness/runs/PLACEHOLDER_run_id/input_snapshot.csv",

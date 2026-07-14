@@ -1,6 +1,10 @@
 ﻿# AlphaHive V3.1.1 Phase 1 - 原始输入数据契约
 # schema 定义 + 校验规则，供脚本读取前校验。是原始数据的【单一真理源】。
-schema_version: v1
+schema_version: v2
+compatibility:
+  previous_schema_versions: [v1]
+  unknown_fields: ignore
+  migration: additive_only
 funding:
   source_path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\{SYMBOL}.parquet"
   raw_unit: percent

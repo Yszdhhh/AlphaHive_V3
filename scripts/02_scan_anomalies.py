@@ -27,6 +27,7 @@ from harness.lib.turnover import turnover_map_from_snapshot
 DB_ROOT = Path(r"C:\Users\10639\Desktop\加密\coinglass_db")
 RAW_1H = DB_ROOT / "raw_1h"
 LEDGER_PATH = PROJECT_ROOT / "ledger" / "Anomaly_Ledger.csv"
+ARTIFACT_SCHEMA_VERSION = "v2"
 
 HONESTY = [
     "1. This system does not produce alpha or validate direction; it records anomalies, net excess returns, and hypotheses.",
@@ -246,6 +247,17 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def inventory_status(input_inventory: list[dict], input_type: str) -> str:
+    entries = [item for item in input_inventory if item.get("input_type") == input_type]
+    if not entries:
+        return "NOT_COMPUTED"
+    if all(item.get("exists") is True for item in entries):
+        return "COMPUTED"
+    if any(item.get("exists") is True for item in entries):
+        return "PARTIAL"
+    return "NOT_COMPUTED"
+
+
 def ledger_header() -> list[str]:
     with LEDGER_PATH.open("r", encoding="utf-8-sig", newline="") as f:
         return next(csv.reader(f))
@@ -463,7 +475,7 @@ def main() -> None:
                 continue
             meta = meta_by_symbol[symbol]
             candidates.append({
-                "schema_version": "v1",
+                "schema_version": ARTIFACT_SCHEMA_VERSION,
                 "run_id": run_id,
                 "record_id": f"{run_id}_{len(candidates)+1:04d}",
                 "scan_time_utc": scan_time,
@@ -482,6 +494,9 @@ def main() -> None:
                 "funding_sign": "positive" if latest_funding != "" and latest_funding > 0 else "negative" if latest_funding != "" and latest_funding < 0 else "",
                 "funding_rate_8h": latest_funding,
                 "oi_change_pct_24h": latest_oi_change,
+                "oi_status": smeta.get("oi_status", "NOT_COMPUTED"),
+                "funding_status": smeta.get("funding_status", "NOT_COMPUTED"),
+                "input_inventory_status": "RECORDED",
                 "is_top_candidate": "",
                 "decision": "",
                 "direction": "",
@@ -503,7 +518,7 @@ def main() -> None:
     append_rows(LEDGER_PATH, candidates)
 
     manifest = {
-        "schema_version": "v1",
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
         "run_id": run_id,
         "scan_time_utc": scan_time,
         "requested_scan_time_utc": scan_time,
@@ -516,6 +531,11 @@ def main() -> None:
         ),
         "bar_resolution": KLINE_BAR_RESOLUTION,
         "data_cutoff": effective_cutoff_ms,
+        "input_inventory_status": "RECORDED",
+        "derivative_inventory": {
+            "funding_status": inventory_status(input_inventory, "funding_ohlc"),
+            "oi_status": inventory_status(input_inventory, "oi_ohlc"),
+        },
         "input_inventory": input_inventory,
         "snapshot_path": str(snapshot_path),
         "snapshot_sha256": sha256_file(snapshot_path),
