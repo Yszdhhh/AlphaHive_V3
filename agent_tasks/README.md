@@ -34,6 +34,17 @@
 
 完成后在输出文档顶部写明：`agent`、`task_id`、UTC 时间、读取过的输入、`GREEN/PARK/UNVERIFIED` 状态、未解决项。不要把摘要代替原文。
 
+## v2 重新派单（本轮）
+
+旧的 `F21-RECON-001` 与 `F21-PROMPT-001` 曾被记录为 `MISSING`，不得覆盖或冒充新原文。本轮使用新的 task id：
+
+| task_id | 派给 | 五段式派单 | 原始输出 |
+|---|---|---|---|
+| `F21-RECON-002` | Mimo | `agent_tasks/mimo__codex__data_refresh_recon_v2.md` | `agent_outputs/mimo/F21-RECON-002_DATA_REFRESH_RECON.md` |
+| `F21-PROMPT-002` | Agy / antigravity | `agent_tasks/antigravity__codex__prompt_rerender_v2.md` | `agent_outputs/antigravity/F21-PROMPT-002_*` |
+
+这两单由 Owner 分别交给对应 agent；codex 只在收到原文后验收、复制到 `_bus/`、交叉核对并打包。
+
 ## 提示词索引
 
 | task_id | 派给 | tier | 提示词 | 原始输出 |
