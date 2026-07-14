@@ -1,10 +1,25 @@
-# F2.1 agent task pack
+# AlphaHive agent task pack
 
-实时派单状态、原文 provenance 和 `MISSING` 记录见 `agent_tasks/DISPATCH_MATRIX.md`。
+F21 的历史派单状态、原文 provenance 和 `MISSING` 记录见 `agent_tasks/DISPATCH_MATRIX.md`。
+当前的 Charter 弧线派单以 `agent_tasks/ARC_NEXT_STAGE_DISPATCH_PLAN.md` 为准。
 
 ## 一句话派单
 
 请先阅读 `G:\Quant test\AlphaHive_V3\agent_tasks\README.md`，再按你被派发的提示词执行；只把原始结果写入提示词指定的 Desktop 输出路径，不修改 `AlphaHive_V3/`。
+
+## 防串单规则（必须遵守）
+
+所有 agent 共享同一个工作区，**但不共享任务所有权**。agent 不得从目录名、表格或其他 agent 的文件中自行选择任务，也不得执行未被调度消息明确点名的 task 文件。调度者必须在消息中写清楚 `task_id` 与完整任务文件路径；agent 只读这个任务文件及其列出的前置必读。若 task id、角色或输出路径与自身收到的调度消息不一致，立即停止并交付 `PARK` 说明，不猜测、不转派。
+
+## 当前派单：Autonomous Arc Charter v1
+
+`AUTONOMOUS_ARC_CHARTER_v1`（2026-07-14）是当前阶段的节奏附录。开始任何新单前，先读：
+
+- `agent_tasks/ARC_NEXT_STAGE_DISPATCH_PLAN.md`（当前任务、顺序与边界）
+- 本文件的共享必读与角色边界
+- 自己被派发的 `agent_tasks/*arc*` 指令文件
+
+新单不会覆盖 F21 的原文或 `MISSING` 记录。每个新 task id 有独立 Desktop 输出目录；收到外部原文前，codex 不得以 pc_fallback 冒充 agent provenance。
 
 ## 共享必读
 
