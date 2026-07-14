@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -119,6 +120,19 @@ class TestSchemaV2Compatibility(unittest.TestCase):
         self.assertEqual(anomaly_schema["compatibility"]["accepted_versions"], ["v1", "v2"])
         for field in ("oi_status", "funding_status", "input_inventory_status"):
             self.assertIn(field, anomaly_schema["fields"])
+
+
+class TestKnownListV1(unittest.TestCase):
+    def test_existing_universe_is_known_list_v1_with_bounded_selection(self):
+        universe = json.loads((PROJECT_ROOT / "config" / "universe.json").read_text(encoding="utf-8"))
+        known_list = universe["known_list"]
+        self.assertEqual(known_list["version"], "v1")
+        self.assertEqual(known_list["migration_history_status"], "NOT_AVAILABLE")
+        selection = known_list["selection"]
+        for symbol in universe["symbols"]:
+            self.assertGreaterEqual(symbol["rank"], selection["rank_min"])
+            self.assertLessEqual(symbol["rank"], selection["rank_max"])
+            self.assertGreaterEqual(symbol["turnover_24h_usd"], selection["min_turnover_24h_usd"])
 
 
 class TestTurnoverAndDerivativeStatus(unittest.TestCase):

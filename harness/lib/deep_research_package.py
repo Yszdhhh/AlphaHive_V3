@@ -205,6 +205,7 @@ ALLOWED_MANIFEST_FIELDS: set[str] = {
     "benchmark_frozen_in_snapshot", "candidate_count", "integrity",
     "snapshot_path", "symbol_meta_path",
     "return_tape_path",
+    "known_list_version", "known_list_source", "migration_history_status",
 }
 
 ALLOWED_MARKET_SNAPSHOT_FIELDS: set[str] = {
@@ -696,6 +697,8 @@ def _evaluate_identity_gate(
     candidate: dict,
     symbol_meta: dict,
     known_symbols: Optional[list[str]] = None,
+    known_list_version: str = "v1",
+    known_list_source: str = "config/universe.json:known_list",
 ) -> dict:
     """Bounded identity check; migration history remains explicitly unavailable."""
     blockers: list[str] = []
@@ -746,6 +749,8 @@ def _evaluate_identity_gate(
         "human_checks": human_checks,
         "migration_history_status": migration_status,
         "known_list_status": "PASS" if known_symbols else "NOT_AVAILABLE",
+        "known_list_version": known_list_version if known_symbols else None,
+        "known_list_source": known_list_source if known_symbols else None,
     }
 
 
@@ -934,6 +939,8 @@ def evaluate_quality_gate(
         candidate,
         symbol_meta,
         known_symbols=manifest.get("known_symbols"),
+        known_list_version=str(manifest.get("known_list_version", "v1")),
+        known_list_source=str(manifest.get("known_list_source", "config/universe.json:known_list")),
     )
     human_checks.extend(identity_gate["human_checks"])
     sub_gates.append(SubGateResult(

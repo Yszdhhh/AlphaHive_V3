@@ -19,6 +19,9 @@
     "funding_status": "NOT_COMPUTED",
     "oi_status": "NOT_COMPUTED"
   },
+  "known_list_version": "v1",
+  "known_list_source": "config/universe.json:known_list",
+  "migration_history_status": "NOT_AVAILABLE",
   "snapshot": {
     "path": "harness/runs/PLACEHOLDER_run_id/input_snapshot.csv",
     "format": "long_table",

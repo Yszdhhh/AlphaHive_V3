@@ -122,6 +122,16 @@ def main() -> None:
     out = {
         "schema_version": "v1",
         "universe_config_version": config["universe_config_version"],
+        "known_list": {
+            "version": "v1",
+            "source": "existing_universe_symbols",
+            "selection": {
+                "rank_min": rank_min,
+                "rank_max": rank_max,
+                "min_turnover_24h_usd": min_turnover,
+            },
+            "migration_history_status": "NOT_AVAILABLE",
+        },
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_db": str(DB_ROOT),
         "funding_unit_report": funding_report,
