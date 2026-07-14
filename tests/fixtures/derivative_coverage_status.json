@@ -1,0 +1,12 @@
+{
+  "lookback_hours": 2160,
+  "coverage_policy": {
+    "computed_min": 0.6,
+    "partial_min": 0.3
+  },
+  "cases": [
+    {"name": "computed", "valid_points": 1440, "expected_status": "COMPUTED"},
+    {"name": "partial", "valid_points": 864, "expected_status": "PARTIAL"},
+    {"name": "not_computed", "valid_points": 432, "expected_status": "NOT_COMPUTED"}
+  ]
+}

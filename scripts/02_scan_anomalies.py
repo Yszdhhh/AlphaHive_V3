@@ -162,6 +162,7 @@ def merge_derivatives(
     effective_cutoff_ms: int,
     lookback_hours: int,
     input_inventory: list[dict] | None = None,
+    coverage_policy: dict | None = None,
 ) -> tuple[pd.DataFrame, dict[str, dict]]:
     summaries = {
         "oi": empty_metric_summary("oi", "MISSING_SOURCE"),
@@ -188,6 +189,7 @@ def merge_derivatives(
             value_col="funding_rate_8h",
             effective_cutoff_ms=effective_cutoff_ms,
             lookback_hours=lookback_hours,
+            coverage_policy=coverage_policy,
         )
         funding = funding.merge(
             funding_metric.rename(columns={"metric_value": "funding_metric_value"}),
@@ -224,6 +226,7 @@ def merge_derivatives(
             effective_cutoff_ms=effective_cutoff_ms,
             lookback_hours=lookback_hours,
             derive_24h_change=True,
+            coverage_policy=coverage_policy,
         )
         oi = oi.merge(
             oi_metric.rename(columns={"metric_value": "oi_change_pct_24h"}),
@@ -327,6 +330,7 @@ def main() -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
 
     lookback_hours = int(scan_rules["quantile"]["lookback_days"]) * 24
+    coverage_policy = scan_rules.get("derivatives", {}).get("coverage_status", {})
     min_valid_bars = int(scan_rules.get("baseline_pool", {}).get("min_valid_turnover_bars_24h", 18))
     min_turnover = float(scan_rules.get("baseline_pool", {}).get("min_effective_turnover_usd"))
     frames = []
@@ -370,6 +374,7 @@ def main() -> None:
             effective_cutoff_ms=effective_cutoff_ms,
             lookback_hours=lookback_hours,
             input_inventory=input_inventory,
+            coverage_policy=coverage_policy,
         )
         derivative_meta[symbol] = summaries
         frames.append(snap)
@@ -397,6 +402,7 @@ def main() -> None:
             effective_cutoff_ms=effective_cutoff_ms,
             lookback_hours=lookback_hours,
             input_inventory=input_inventory,
+            coverage_policy=coverage_policy,
         )
         derivative_meta[benchmark_symbol] = summaries
         benchmark_snap["is_benchmark"] = True

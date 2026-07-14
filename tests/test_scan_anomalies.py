@@ -32,6 +32,7 @@ from harness.lib.deep_research_package import (  # noqa: E402
     _resolve_paper_eligibility,
 )
 from harness.lib.derivative_metrics import compute_metric_summary  # noqa: E402
+from harness.lib.derivative_metrics import coverage_status  # noqa: E402
 from harness.lib.funding_normalize import (  # noqa: E402
     normalize_funding,
     normalized_funding_abs_max,
@@ -149,7 +150,7 @@ class TestTurnoverAndDerivativeStatus(unittest.TestCase):
         self.assertEqual(result.confidence, "partial")
         self.assertIn("VALID_BARS_BELOW_MINIMUM", result.reason)
 
-    def test_derivative_status_is_partial_until_policy_unlock(self):
+    def test_derivative_status_is_not_computed_below_partial_coverage(self):
         hour = 60 * 60 * 1000
         frame = pd.DataFrame({
             "time": [i * hour for i in range(49)],
@@ -159,10 +160,35 @@ class TestTurnoverAndDerivativeStatus(unittest.TestCase):
             frame, "oi_change_24h", "time", "value", effective_cutoff_ms=50 * hour,
             lookback_hours=2160, derive_24h_change=True,
         )
-        self.assertEqual(summary["status"], "PARTIAL")
+        self.assertEqual(summary["status"], "NOT_COMPUTED")
         self.assertGreater(summary["n_valid"], 0)
         self.assertIsNotNone(summary["quantile"])
         self.assertTrue((series["timestamp"] <= 50 * hour).all())
+
+    def test_90d_coverage_policy_fixture(self):
+        fixture = json.loads(
+            (PROJECT_ROOT / "tests" / "fixtures" / "derivative_coverage_status.json").read_text(encoding="utf-8")
+        )
+        policy = fixture["coverage_policy"]
+        for case in fixture["cases"]:
+            coverage = case["valid_points"] / fixture["lookback_hours"]
+            status, _ = coverage_status(coverage, policy)
+            self.assertEqual(status, case["expected_status"], case["name"])
+
+    def test_derivative_status_can_be_computed_with_sufficient_history(self):
+        hour = 60 * 60 * 1000
+        n_points = 1440
+        frame = pd.DataFrame({
+            "time": [i * hour for i in range(n_points)],
+            "value": [1000.0 + i for i in range(n_points)],
+        })
+        summary, series = compute_metric_summary(
+            frame, "funding", "time", "value", effective_cutoff_ms=2160 * hour,
+            lookback_hours=2160, coverage_policy={"computed_min": 0.60, "partial_min": 0.30},
+        )
+        self.assertEqual(summary["status"], "COMPUTED")
+        self.assertGreaterEqual(summary["coverage"], 0.60)
+        self.assertTrue((series["timestamp"] <= 2160 * hour).all())
 
     def test_derivative_degenerate_and_nonmonotonic_are_not_computed(self):
         hour = 60 * 60 * 1000

@@ -1,7 +1,7 @@
 """Honest, self-timeseries derivative metric summaries for the scanner."""
 from __future__ import annotations
 
-from typing import Tuple
+from typing import Optional, Tuple
 
 import pandas as pd
 
@@ -23,6 +23,20 @@ def empty_metric_summary(metric: str, reason: str) -> dict:
     }
 
 
+def coverage_status(coverage: float, policy: Optional[dict] = None) -> tuple[str, str]:
+    """Classify valid-point coverage using the scan_rules policy."""
+    rules = policy or {"computed_min": 0.60, "partial_min": 0.30}
+    computed_min = float(rules.get("computed_min", 0.60))
+    partial_min = float(rules.get("partial_min", 0.30))
+    if not 0.0 <= partial_min <= computed_min <= 1.0:
+        raise ValueError("coverage_status thresholds must satisfy 0 <= partial_min <= computed_min <= 1")
+    if coverage >= computed_min:
+        return "COMPUTED", "COVERAGE_AT_OR_ABOVE_COMPUTED_MIN"
+    if coverage >= partial_min:
+        return "PARTIAL", "COVERAGE_AT_OR_ABOVE_PARTIAL_MIN"
+    return "NOT_COMPUTED", "COVERAGE_BELOW_PARTIAL_MIN"
+
+
 def compute_metric_summary(
     frame: pd.DataFrame,
     metric: str,
@@ -31,13 +45,14 @@ def compute_metric_summary(
     effective_cutoff_ms: int,
     lookback_hours: int,
     derive_24h_change: bool = False,
+    coverage_policy: Optional[dict] = None,
 ) -> Tuple[dict, pd.DataFrame]:
     """Compute one symbol's metric using only its own completed history.
 
-    The returned status is deliberately capped at PARTIAL until the parked
-    minimum-sample/coverage policy is approved.  The returned series is safe
-    to merge back into the frozen kline snapshot; it never contains post-cutoff
-    rows.
+    The returned series is safe to merge back into the frozen kline snapshot;
+    it never contains post-cutoff rows. Coverage status is policy-driven so a
+    historical replay can honestly reach COMPUTED while sparse live data stays
+    NOT_COMPUTED/PARTIAL.
     """
     if frame.empty or timestamp_col not in frame.columns or value_col not in frame.columns:
         return empty_metric_summary(metric, "MISSING_SOURCE_OR_FIELD"), pd.DataFrame(columns=["timestamp", "metric_value"])
@@ -83,16 +98,18 @@ def compute_metric_summary(
     latest_timestamp = int(metric_series["timestamp"].iloc[-1])
     latest_value = float(metric_values.iloc[-1])
     self_quantile = float((metric_values <= latest_value).mean())
+    coverage = min(float(n_valid) / float(expected_points), 1.0)
+    status, status_reason = coverage_status(coverage, coverage_policy)
     summary = {
         "metric": metric,
-        "status": "PARTIAL",
+        "status": status,
         "n_valid": n_valid,
         "window_start": pd.to_datetime(int(metric_series["timestamp"].min()), unit="ms", utc=True).isoformat(),
         "window_end": pd.to_datetime(int(metric_series["timestamp"].max()), unit="ms", utc=True).isoformat(),
-        "coverage": min(float(n_valid) / float(expected_points), 1.0),
+        "coverage": coverage,
         "quantile": self_quantile,
         "latest_value": latest_value,
         "latest_timestamp": latest_timestamp,
-        "reason": "MIN_SAMPLE_COVERAGE_POLICY_PARKED",
+        "reason": status_reason,
     }
     return summary, metric_series

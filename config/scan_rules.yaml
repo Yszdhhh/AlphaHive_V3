@@ -8,6 +8,12 @@ quantile:
   lookback_days: 90
   # z-score 也基于同一 90 天自序列
 
+# ---- OI/funding 历史回放数据覆盖状态（不点火候选 trigger）----
+derivatives:
+  coverage_status:
+    computed_min: 0.60   # 90d 有效点覆盖率 >= 60% → COMPUTED
+    partial_min: 0.30    # 30%-60% → PARTIAL；<30% → NOT_COMPUTED
+
 # ---- large_move 触发（原方案 §二）----
 large_move:
   large_move_threshold_abs_pct_24h: 10.0      # 绝对波动 ≥10%（24h）
