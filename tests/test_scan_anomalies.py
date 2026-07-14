@@ -89,6 +89,20 @@ class TestFundingGuard(unittest.TestCase):
                 normalize_funding(bad)
 
 
+class TestOpenInterestContract(unittest.TestCase):
+    def test_change_is_unit_independent_ratio_and_absolute_unit_undeclared(self):
+        contract = yaml.safe_load(
+            (PROJECT_ROOT / "config" / "data_contracts.yaml").read_text(encoding="utf-8")
+        )
+        oi = contract["validations"]["open_interest"]
+        change = oi["change_24h_pct"]
+        self.assertEqual(change["field"], "oi_change_pct_24h")
+        self.assertEqual(change["semantics"], "ratio_percent")
+        self.assertTrue(change["unit_independent"])
+        self.assertEqual(oi["absolute_value_status"], "NOT_DECLARED")
+        self.assertEqual(oi["absolute_value_unit"], "NOT_DECLARED")
+
+
 class TestTurnoverAndDerivativeStatus(unittest.TestCase):
     def test_partial_turnover_never_passes_valid_bar_gate(self):
         frame = pd.DataFrame({

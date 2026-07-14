@@ -64,6 +64,14 @@ validations:
     type: float
     min: 0
     allow_null: true
+    absolute_value_status: NOT_DECLARED
+    absolute_value_unit: NOT_DECLARED
+    change_24h_pct:
+      field: oi_change_pct_24h
+      semantics: ratio_percent
+      formula: "(current_open_interest / prior_open_interest - 1) * 100"
+      unit_independent: true
+      description: "OI变化%按前值归一化的比率使用；不把绝对 OI 推断为任何货币单位。"
 
 # ---- 时间戳对齐 ----
 timestamp:
