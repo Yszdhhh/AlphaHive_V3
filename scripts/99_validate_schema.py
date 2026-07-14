@@ -97,7 +97,7 @@ def check_funding_contract(run_id: str, anomaly: pd.DataFrame, results: list[dic
     try:
         rates = pd.to_numeric(anomaly["funding_rate_8h"], errors="coerce").dropna()
         if rates.empty:
-            add(results, "G4 funding contract", "WARN", "no funding samples in anomaly rows")
+            add(results, "G4 funding contract", "FAIL", "no funding samples in anomaly rows")
             return
         assert_normalized_funding(rates)
         add(results, "G4 funding contract", "PASS", f"{len(rates)} ledger samples are decimal-normalized")
