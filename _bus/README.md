@@ -6,14 +6,15 @@
 
 产物落在本目录，文件名格式为：
 
-`<from>**<to>**<topic>.md`
+`<from>__<to>__<topic>.md`
 
 其中 `<from>` 是产出角色，`<to>` 是接收角色，`<topic>` 是稳定、简短的主题名。例如：
 
-`codex**opus**acceptance.md`
+`codex__opus__acceptance.md`
 
 ## 约束
 
 - 文件内容必须可审计，必要时包含时间、输入引用、结论状态与 Owner 需要处理的事项。
 - 本约定不自动触发工作、不维护状态机、不替代项目 ledger 或 Owner 决策。
 - 未验证内容必须显式标记 `UNVERIFIED`，不得伪装成已批准结论。
+- 外部 agent 先把原始产物放在 Desktop 交付目录；由 codex 验收后原文复制进本目录。
