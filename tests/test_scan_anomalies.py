@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,6 +40,14 @@ from harness.lib.turnover import turnover_24h_effective  # noqa: E402
 
 
 class TestScannerCutoffAndInventory(unittest.TestCase):
+    def test_data_contract_declares_completed_bar_semantics(self):
+        contract = yaml.safe_load(
+            (PROJECT_ROOT / "config" / "data_contracts.yaml").read_text(encoding="utf-8")
+        )
+        semantics = contract["timestamp"]["completed_bar_semantics"]
+        self.assertEqual(semantics["resolution"], "1h")
+        self.assertEqual(semantics["rule"], "bar_open + 1h <= effective_cutoff")
+
     def test_completed_bar_excludes_forming_bar(self):
         hour = 60 * 60 * 1000
         frame = pd.DataFrame({"timestamp": [0, hour, 2 * hour], "close": [1.0, 2.0, 3.0]})

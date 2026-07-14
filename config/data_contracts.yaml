@@ -70,6 +70,10 @@ timestamp:
   format: unix_ms_or_iso        # 启动前确认
   timezone: UTC
   align_across_symbols: true    # BTC对冲价必须与标的同时间戳（硬约束4）
+  completed_bar_semantics:
+    resolution: 1h
+    rule: "bar_open + 1h <= effective_cutoff"
+    description: "只保留已完成的 1h bar；bar_open 是开盘时间，effective_cutoff 是有效数据截止时间。"
 
 # ---- 缺失数据策略 ----
 missing_data:
