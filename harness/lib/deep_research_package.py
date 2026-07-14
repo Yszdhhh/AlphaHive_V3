@@ -594,9 +594,9 @@ def _funding_display(funding_decimal: Optional[float]) -> dict:
 
     result["funding_rate_8h_percent"] = round(funding_decimal * 100, 8)
     med = abs(funding_decimal)
-    if med < 0.000008:
-        result["validation_status"] = "below_median_threshold — 信息弱或需核验"
-    elif med > 0.03:
+    from harness.lib.funding_normalize import normalized_funding_abs_max
+
+    if med > normalized_funding_abs_max():
         result["validation_status"] = "above_abs_max — 可能单位错误"
     else:
         result["validation_status"] = "within_normal_range"

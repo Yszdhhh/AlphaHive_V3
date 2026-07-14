@@ -2,14 +2,19 @@
 from __future__ import annotations
 
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 import yaml
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from harness.lib.funding_normalize import raw_funding_hard_bounds
+
+
 DB_ROOT = Path(r"C:\Users\10639\Desktop\加密\coinglass_db")
 RAW_1H = DB_ROOT / "raw_1h"
 
@@ -38,8 +43,7 @@ def read_symbols() -> list[str]:
 
 
 def funding_unit_report(symbols: list[str]) -> dict:
-    lower = 1e-5
-    upper = 1e-2
+    lower, upper = raw_funding_hard_bounds()
     rows = []
     for symbol in symbols[:20]:
         path = RAW_1H / "funding_ohlc" / f"{symbol}.parquet"

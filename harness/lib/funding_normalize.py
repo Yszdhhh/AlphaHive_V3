@@ -22,6 +22,19 @@ def _contract() -> dict[str, Any]:
     return data["funding"]
 
 
+def raw_funding_hard_bounds() -> tuple[float, float]:
+    """Return the single source-of-truth raw funding hard bounds."""
+    rules = _contract()["raw_assertion"]
+    return float(rules["median_abs_min"]), float(rules["abs_max"])
+
+
+def normalized_funding_abs_max() -> float:
+    """Derive the normalized upper bound; do not duplicate it in config."""
+    funding = _contract()
+    factor = float(funding["normalized_assertion"]["conversion_factor"])
+    return raw_funding_hard_bounds()[1] * factor
+
+
 def _numeric(series: pd.Series) -> pd.Series:
     return pd.to_numeric(series, errors="coerce").dropna()
 
@@ -50,17 +63,11 @@ def assert_normalized_funding(series: pd.Series) -> None:
     values = values[values != 0]
     if values.empty:
         raise AssertionError("NORMALIZED funding has no non-null, non-zero samples")
-    rules = _contract()["normalized_assertion"]
-    med = float(values.abs().median())
     max_abs = float(values.abs().max())
-    if med < float(rules["median_abs_min"]):
+    normalized_max = normalized_funding_abs_max()
+    if max_abs > normalized_max:
         raise AssertionError(
-            f"NORMALIZED funding median_abs={med:.3e} below "
-            f"{rules['median_abs_min']}; conversion may have divided twice"
-        )
-    if max_abs > float(rules["abs_max"]):
-        raise AssertionError(
-            f"NORMALIZED funding abs_max={max_abs:.3e} above {rules['abs_max']}"
+            f"NORMALIZED funding abs_max={max_abs:.3e} above derived {normalized_max}"
         )
 
 

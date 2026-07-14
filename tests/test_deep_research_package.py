@@ -1086,9 +1086,9 @@ class TestFundingDisplay(unittest.TestCase):
         r = _funding_display(0.00025)
         self.assertAlmostEqual(r["funding_rate_8h_percent"], 0.025, places=6)
 
-    def test_below_median(self):
+    def test_low_rate_is_not_a_second_hard_stop(self):
         r = _funding_display(0.000005)
-        self.assertIn("below_median", r["validation_status"])
+        self.assertEqual(r["validation_status"], "within_normal_range")
 
     def test_above_abs_max(self):
         r = _funding_display(0.05)

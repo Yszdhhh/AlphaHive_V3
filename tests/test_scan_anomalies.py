@@ -30,7 +30,11 @@ from harness.lib.deep_research_package import (  # noqa: E402
     _resolve_paper_eligibility,
 )
 from harness.lib.derivative_metrics import compute_metric_summary  # noqa: E402
-from harness.lib.funding_normalize import normalize_funding  # noqa: E402
+from harness.lib.funding_normalize import (  # noqa: E402
+    normalize_funding,
+    normalized_funding_abs_max,
+    raw_funding_hard_bounds,
+)
 from harness.lib.turnover import turnover_24h_effective  # noqa: E402
 
 
@@ -58,6 +62,10 @@ class TestScannerCutoffAndInventory(unittest.TestCase):
 
 
 class TestFundingGuard(unittest.TestCase):
+    def test_contract_has_one_hard_raw_bound_and_derived_normalized_max(self):
+        self.assertEqual(raw_funding_hard_bounds(), (0.0008, 3.0))
+        self.assertEqual(normalized_funding_abs_max(), 0.03)
+
     def test_normal_and_unit_error_fixtures(self):
         normal = pd.Series([0.005, -0.006, 0.004, -0.005, 0.003])
         normalized = normalize_funding(normal)

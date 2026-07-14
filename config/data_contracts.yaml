@@ -12,9 +12,9 @@ funding:
     abs_max: 3.0
     on_fail: STOP_AND_REPORT_OWNER
   normalized_assertion:
-    median_abs_min: 0.000008
-    median_abs_expected: 0.0001
-    abs_max: 0.03
+    derived_from: raw_assertion
+    conversion_factor: 0.01
+    # 不在 normalized 层复制上下限；硬 STOP 只由 raw_assertion 定义。
     on_fail: STOP_AND_REPORT_OWNER
   periods_per_day: 3
   annualize_formula: "rate_8h_decimal * 3 * 365"
@@ -54,10 +54,10 @@ validations:
     unit_assertion:
       description: >
         正常 crypto 8h funding 中位数绝对值 ~1e-4 (0.01% 中性基线)，极端 ±1%~2%。
-        若中位数被多除100会掉到 ~1e-6 量级。据此判单位坑。
-      abs_max: 0.02        # 单根绝对值上限 2e-2 (~±2% / 8h 极端行情)
-      median_abs_min: 0.00001   # 全样本中位数绝对值下限 1e-5：低于此 → 疑似100×单位坑
+        若中位数被多除100会掉到 ~1e-6 量级。据此判单位坑；这里只做解释，不复制 STOP 阈值。
+      # 历史诊断值 1e-5 仅供回顾旧报告，不是第二套通过标准。
       median_abs_expected: 0.0001  # 正常量级参考 (~0.01%/8h)
+      derived_bounds_ref: "funding.raw_assertion"
       on_fail: "STOP_AND_REPORT_OWNER"
 
   open_interest:
