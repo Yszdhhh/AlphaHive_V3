@@ -289,6 +289,52 @@ class TestBoundedGates(unittest.TestCase):
         self.assertEqual(identity["status"], "BLOCK")
         self.assertIn("missing_contract_identity", identity["blockers"])
 
+    def test_identity_or_liquidity_insufficiency_never_allows_paper(self):
+        low_turnover = self._candidate(turnover_24h_usd=9_000_000)
+        low_liquidity = _evaluate_liquidity_gate(
+            low_turnover,
+            self._meta(turnover_24h_usd_effective=9_000_000),
+            self.RULES,
+            self.MANIFEST,
+        )
+        known_identity = _evaluate_identity_gate(
+            low_turnover,
+            self._meta(),
+            known_symbols=["ETHUSDT"],
+        )
+        low_liquidity_paper = _resolve_paper_eligibility(
+            low_turnover,
+            known_identity,
+            low_liquidity,
+            [],
+            [],
+            [],
+        )
+        self.assertEqual(low_liquidity_paper["status"], "BLOCK")
+        self.assertNotEqual(low_liquidity_paper["status"], "ALLOW")
+
+        missing_identity = _evaluate_identity_gate(
+            self._candidate(),
+            self._meta(contract_identity=None),
+            known_symbols=["ETHUSDT"],
+        )
+        bounded_liquidity = _evaluate_liquidity_gate(
+            self._candidate(),
+            self._meta(),
+            self.RULES,
+            self.MANIFEST,
+        )
+        missing_identity_paper = _resolve_paper_eligibility(
+            self._candidate(),
+            missing_identity,
+            bounded_liquidity,
+            [],
+            [],
+            [],
+        )
+        self.assertEqual(missing_identity_paper["status"], "BLOCK")
+        self.assertNotEqual(missing_identity_paper["status"], "ALLOW")
+
 
 if __name__ == "__main__":
     unittest.main()
