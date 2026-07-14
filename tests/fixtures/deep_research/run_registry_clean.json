@@ -2,9 +2,13 @@
   "schema_version": "v1",
   "run_id": "20260511_1200_utc_replay",
   "status": "clean",
-  "reason": "historical replay infrastructure run; pool diversity ok, return_tape present, P0-DATA gates expected to pass",
+  "reason": "historical replay infrastructure run; pool diversity ok, return_tape present, P0-DATA gates expected to pass; no human direction decisions yet",
   "created_utc": "2026-05-11T12:00:00Z",
   "superseded_by": null,
   "eligible_for_dod": true,
-  "eligible_for_judgment": true
+  "eligible_for_judgment": true,
+  "hashes": {
+    "input_snapshot_sha256": "98a0b581ff813164ba10019fc8cb0858f4e3c9cae6468c4d92d37d828b3d3d6c",
+    "return_tape_sha256": "1969bd4a593bb24c8680ce5e1910225a564d0e9dd166fabbfab4489c67ff8c74"
+  }
 }

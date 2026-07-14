@@ -58,6 +58,8 @@ from harness.lib.deep_research_package import (  # noqa: E402
 # Fixtures（来自真实 contract + scan_rules + presets）
 # ---------------------------------------------------------------------------
 
+REAL_FIXTURE_DIR = PROJECT_ROOT / "tests" / "fixtures" / "deep_research"
+
 SCAN_RULES = {
     "triggers": {
         "vol_quantile_high": 0.90,
@@ -118,12 +120,7 @@ RISK_PRESETS = {
     },
 }
 
-CLEAN_RUN = {
-    "run_id": "20260511_1200_utc_replay",
-    "status": "clean",
-    "eligible_for_judgment": True,
-    "hashes": {},
-}
+CLEAN_RUN = json.loads((REAL_FIXTURE_DIR / "run_registry_clean.json").read_text(encoding="utf-8"))
 
 DIRTY_RUN = {
     "run_id": "20260707_0346_utc",
@@ -150,18 +147,7 @@ REAL_SCAN_MS = 1778500800000
 REAL_CUTOFF_MS = 1778497200000  # cutoff < scan
 REAL_SNAPSHOT_MAX_TS = 1778497200000
 
-CLEAN_MANIFEST = {
-    "run_id": "20260511_1200_utc_replay",
-    "scan_time_utc": REAL_SCAN_TIME_UTC,
-    "data_cutoff": REAL_CUTOFF_MS,
-    "snapshot_sha256": "98a0b581ff813164ba10019fc8cb0858f4e3c9cae6468c4d92d37d828b3d3d6c",
-    "symbol_meta_sha256": "test_meta",
-    "return_tape_sha256": "1969bd4a593bb24c8680ce5e1910225a564d0e9dd166fabbfab4489c67ff8c74",
-    "benchmark_symbol": "BTCUSDT",
-    "benchmark_frozen_in_snapshot": True,
-    "candidate_count": 19,
-    "integrity": {"no_lookahead_attested": True, "snapshot_is_90d_long_table": True},
-}
+CLEAN_MANIFEST = json.loads((REAL_FIXTURE_DIR / "run_manifest_clean.json").read_text(encoding="utf-8"))
 
 # cutoff > scan（未来数据嫌疑）
 MANIFEST_CUTOFF_AFTER_SCAN = {
