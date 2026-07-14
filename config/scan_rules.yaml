@@ -13,6 +13,12 @@ derivatives:
   coverage_status:
     computed_min: 0.60   # 90d 有效点覆盖率 >= 60% → COMPUTED
     partial_min: 0.30    # 30%-60% → PARTIAL；<30% → NOT_COMPUTED
+  historical_replay:
+    enabled: true
+    max_scan_time_utc: "2026-05-31T23:59:59Z"
+  live_use:
+    derivative_values: DISABLED
+    reason: "OI/funding 仅在显式历史回放中验证；实时数据刷新与点火等待 Owner"
 
 # ---- large_move 触发（原方案 §二）----
 large_move:

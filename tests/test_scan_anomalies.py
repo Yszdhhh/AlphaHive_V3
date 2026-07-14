@@ -71,6 +71,33 @@ class TestScannerCutoffAndInventory(unittest.TestCase):
         self.assertEqual(entry["median_time_step_ms"], 60 * 60 * 1000)
         self.assertEqual(entry["content_sha256"], hashlib.sha256(b"inventory-fixture").hexdigest())
 
+    def test_derivatives_are_live_disabled_and_replay_is_date_bounded(self):
+        rules = yaml.safe_load((PROJECT_ROOT / "config" / "scan_rules.yaml").read_text(encoding="utf-8"))
+        policy = rules["derivatives"]["historical_replay"]
+        self.assertEqual(scanner.derivative_use_mode(None, policy["max_scan_time_utc"]), "LIVE_DISABLED")
+        self.assertEqual(
+            scanner.derivative_use_mode("2026-05-11T12:00:00Z", policy["max_scan_time_utc"]),
+            "HISTORICAL_REPLAY",
+        )
+        with self.assertRaises(ValueError):
+            scanner.derivative_use_mode("2026-06-01T00:00:00Z", policy["max_scan_time_utc"])
+
+    def test_live_disabled_merge_keeps_inventory_but_blanks_derivative_values(self):
+        inventory = []
+        base = pd.DataFrame({"timestamp": [0], "close": [1.0]})
+        merged, summaries = scanner.merge_derivatives(
+            base,
+            "__NO_SUCH_SYMBOL__",
+            effective_cutoff_ms=60 * 60 * 1000,
+            lookback_hours=24,
+            input_inventory=inventory,
+            derivative_mode="LIVE_DISABLED",
+        )
+        self.assertEqual(summaries["oi"]["status"], "NOT_COMPUTED")
+        self.assertEqual(summaries["oi"]["reason"], "LIVE_DERIVATIVE_USE_DISABLED")
+        self.assertTrue(merged["oi_change_pct_24h"].isna().all())
+        self.assertEqual({item["input_type"] for item in inventory}, {"funding_ohlc", "oi_ohlc"})
+
 
 class TestFundingGuard(unittest.TestCase):
     def test_contract_has_one_hard_raw_bound_and_derived_normalized_max(self):

@@ -156,6 +156,38 @@ def _attach_latest_quantile(frame: pd.DataFrame, summary: dict, column: str) -> 
     return frame
 
 
+def derivative_use_mode(requested_scan_time_utc: str | None, max_scan_time_utc: str) -> str:
+    """Allow derivative values only for an explicit, bounded historical replay."""
+    if requested_scan_time_utc is None:
+        return "LIVE_DISABLED"
+    requested = pd.Timestamp(requested_scan_time_utc)
+    if requested.tzinfo is None:
+        requested = requested.tz_localize("UTC")
+    else:
+        requested = requested.tz_convert("UTC")
+    maximum = pd.Timestamp(max_scan_time_utc)
+    if maximum.tzinfo is None:
+        maximum = maximum.tz_localize("UTC")
+    else:
+        maximum = maximum.tz_convert("UTC")
+    if requested > maximum:
+        raise ValueError(
+            "OI/funding historical replay is bounded at "
+            f"{maximum.isoformat()}; live/prospective derivative use is disabled"
+        )
+    return "HISTORICAL_REPLAY"
+
+
+def _blank_derivative_columns(base: pd.DataFrame) -> pd.DataFrame:
+    for column in [
+        "funding_rate_8h_raw", "funding_rate_8h", "funding_metric_value",
+        "funding_self_quantile", "open_interest", "oi_change_pct_24h",
+        "oi_self_quantile",
+    ]:
+        base[column] = pd.NA
+    return base
+
+
 def merge_derivatives(
     base: pd.DataFrame,
     symbol: str,
@@ -163,11 +195,32 @@ def merge_derivatives(
     lookback_hours: int,
     input_inventory: list[dict] | None = None,
     coverage_policy: dict | None = None,
+    derivative_mode: str = "HISTORICAL_REPLAY",
 ) -> tuple[pd.DataFrame, dict[str, dict]]:
     summaries = {
         "oi": empty_metric_summary("oi", "MISSING_SOURCE"),
         "funding": empty_metric_summary("funding", "MISSING_SOURCE"),
     }
+    if derivative_mode != "HISTORICAL_REPLAY":
+        # Keep inventory evidence, but never expose stale derivative values on
+        # an unqualified live/prospective scan.
+        read_parquet_if_exists(
+            RAW_1H / "funding_ohlc" / f"{symbol}.parquet",
+            input_inventory=input_inventory,
+            input_type="funding_ohlc",
+            symbol=symbol,
+            time_column="time",
+        )
+        read_parquet_if_exists(
+            RAW_1H / "oi_ohlc" / f"{symbol}.parquet",
+            input_inventory=input_inventory,
+            input_type="oi_ohlc",
+            symbol=symbol,
+            time_column="time",
+        )
+        summaries["funding"] = empty_metric_summary("funding", "LIVE_DERIVATIVE_USE_DISABLED")
+        summaries["oi"] = empty_metric_summary("oi_change_24h", "LIVE_DERIVATIVE_USE_DISABLED")
+        return _blank_derivative_columns(base), summaries
     funding_path = RAW_1H / "funding_ohlc" / f"{symbol}.parquet"
     funding = read_parquet_if_exists(
         funding_path,
@@ -311,7 +364,7 @@ def build_symbol_meta(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_id", default=None)
-    parser.add_argument("--scan_time_utc", default=None, help="Historical replay scan time, e.g. 2026-06-30T00:00:00Z")
+    parser.add_argument("--scan_time_utc", default=None, help="Bounded historical replay scan time, no later than 2026-05-31T23:59:59Z")
     args = parser.parse_args()
 
     print_honesty()
@@ -321,6 +374,12 @@ def main() -> None:
 
     now = datetime.now(timezone.utc)
     scan_dt = pd.Timestamp(args.scan_time_utc).tz_convert("UTC") if args.scan_time_utc else pd.Timestamp(now)
+    historical_policy = scan_rules.get("derivatives", {}).get("historical_replay", {})
+    historical_max = str(historical_policy.get("max_scan_time_utc", "2026-05-31T23:59:59Z"))
+    try:
+        derivative_mode = derivative_use_mode(args.scan_time_utc, historical_max)
+    except ValueError as exc:
+        raise SystemExit(f"STOP_AND_REPORT_OWNER derivative mode failed: {exc}") from exc
     run_id = args.run_id or scan_dt.strftime("%Y%m%d_%H%M_utc")
     scan_time = scan_dt.isoformat()
     effective_cutoff_ms, cutoff_blockers = resolve_completed_bar_cutoff(scan_time)
@@ -375,6 +434,7 @@ def main() -> None:
             lookback_hours=lookback_hours,
             input_inventory=input_inventory,
             coverage_policy=coverage_policy,
+            derivative_mode=derivative_mode,
         )
         derivative_meta[symbol] = summaries
         frames.append(snap)
@@ -403,6 +463,7 @@ def main() -> None:
             lookback_hours=lookback_hours,
             input_inventory=input_inventory,
             coverage_policy=coverage_policy,
+            derivative_mode=derivative_mode,
         )
         derivative_meta[benchmark_symbol] = summaries
         benchmark_snap["is_benchmark"] = True
@@ -538,6 +599,8 @@ def main() -> None:
         "bar_resolution": KLINE_BAR_RESOLUTION,
         "data_cutoff": effective_cutoff_ms,
         "input_inventory_status": "RECORDED",
+        "derivative_use_mode": derivative_mode,
+        "derivative_historical_replay_max_scan_time_utc": historical_max,
         "derivative_inventory": {
             "funding_status": inventory_status(input_inventory, "funding_ohlc"),
             "oi_status": inventory_status(input_inventory, "oi_ohlc"),
