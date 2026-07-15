@@ -18,17 +18,18 @@
 - Each request has a 15-second timeout.  The Taker dimension retries a transient network error, 429/418 rate limit, or 5xx response once after a conservative backoff (using `Retry-After` when supplied, otherwise 30 seconds for rate limits).
 - Checkpoints advance only after successfully written data.  Consecutive failures are tracked; the checkpoint is not silently advanced.
 - Full runs write timestamped Markdown reports under `binance_free_db\reports`.
+- The report uses a 12-hour operational freshness budget for 8-hour funding and a 3-hour budget for the hourly dimensions.
 
 ## Verified run
 
 The 10:05 scheduled run on 2026-07-15 completed at 10:07:23 local time.  The lock was created during execution, released afterward, and Hermes recorded the job as `ok`.
 
 - Klines: 40/40 fresh after the run.
-- Funding: raw funding files and checkpoints present for 40/40.  The generic report's `Fresh (<3h)` counter is not meaningful for 8-hour settlement data and must not be interpreted as an outage.
+- Funding: raw funding files and checkpoints present for 40/40.
 - Open interest: 40/40 fresh after the run.
 - Taker buy/sell: the scheduled run initially refreshed 32/40.  A subsequent protected, Taker-only retry recovered six, leaving `1000PEPEUSDT` and `MUUSDT` pending after TLS/read-timeout failures.  Neither checkpoint was advanced; the 11:05 run will retry them.  A non-zero Taker result now propagates to Hermes rather than being shown as a false-green job.
 
-The authoritative reports are `C:\Users\10639\Desktop\加密\binance_free_db\reports\pull_report_20260715_020723.md` and the protected retry report `C:\Users\10639\Desktop\加密\binance_free_db\reports\pull_report_20260715_021340.md`.
+The authoritative reports are `C:\Users\10639\Desktop\加密\binance_free_db\reports\pull_report_20260715_020723.md`, the protected retry report `C:\Users\10639\Desktop\加密\binance_free_db\reports\pull_report_20260715_021340.md`, and the final freshness-format verification `C:\Users\10639\Desktop\加密\binance_free_db\reports\pull_report_20260715_021648.md`.
 
 ## Safe operator checks
 
