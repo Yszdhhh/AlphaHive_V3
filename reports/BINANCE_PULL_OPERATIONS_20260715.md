@@ -26,9 +26,9 @@ The 10:05 scheduled run on 2026-07-15 completed at 10:07:23 local time.  The loc
 - Klines: 40/40 fresh after the run.
 - Funding: raw funding files and checkpoints present for 40/40.  The generic report's `Fresh (<3h)` counter is not meaningful for 8-hour settlement data and must not be interpreted as an outage.
 - Open interest: 40/40 fresh after the run.
-- Taker buy/sell: 32/40 fresh.  Eight symbols had transient transport/empty-response failures and remain checkpoint-tracked for the next scheduled retry; no checkpoint was advanced for them.
+- Taker buy/sell: the scheduled run initially refreshed 32/40.  A subsequent protected, Taker-only retry recovered six, leaving `1000PEPEUSDT` and `MUUSDT` pending after TLS/read-timeout failures.  Neither checkpoint was advanced; the 11:05 run will retry them.  A non-zero Taker result now propagates to Hermes rather than being shown as a false-green job.
 
-The authoritative report for that run is `C:\Users\10639\Desktop\加密\binance_free_db\reports\pull_report_20260715_020723.md`.
+The authoritative reports are `C:\Users\10639\Desktop\加密\binance_free_db\reports\pull_report_20260715_020723.md` and the protected retry report `C:\Users\10639\Desktop\加密\binance_free_db\reports\pull_report_20260715_021340.md`.
 
 ## Safe operator checks
 
