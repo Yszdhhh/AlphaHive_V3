@@ -1,10 +1,8 @@
 # ARC-C-PREVIEW-001 — independent M-C2 offline cockpit pre-review
 
-> **Superseded before dispatch — 2026-07-15.** Do not execute this Gemini draft.  The identical independent-review role was reassigned to DeepSeek V4 to diversify the reviewer model; see `deepseek__codex__arc_c_cockpit_preview.md`.
-
-**agent:** Gemini 3.1 Pro  
+**agent:** DeepSeek V4  
 **tier:** T1 / read-only independent review  
-**output:** `C:\Users\10639\Desktop\AlphaHive_V3_C_M-C2_deliverables\agent_outputs\gemini_3_1_pro\ARC-C-PREVIEW-001_INDEPENDENT_REVIEW.md`
+**output:** `C:\Users\10639\Desktop\AlphaHive_V3_C_M-C2_deliverables\agent_outputs\deepseek\ARC-C-PREVIEW-001_INDEPENDENT_REVIEW.md`
 
 ## Required reading
 
@@ -14,7 +12,7 @@
 
 ## Objective
 
-Review M-C2 for safe packaging as a local, non-sending candidate cockpit.  The review must be independent: do not rely on Codex's summary or claim an uninspected output is safe.
+Review M-C2 for safe packaging as a local, non-sending candidate cockpit. The review must be independent: do not rely on Codex's summary or claim an uninspected output is safe.
 
 ## Required inputs
 
@@ -42,4 +40,4 @@ Review M-C2 for safe packaging as a local, non-sending candidate cockpit.  The r
 
 ## Deliverable format
 
-Header must contain `agent=gemini_3_1_pro`, `task_id=ARC-C-PREVIEW-001`, UTC timestamp, exact inputs read, verdict, and unresolved items.  Answer all five checks with file/line evidence.
+Header must contain `agent=deepseek_v4`, `task_id=ARC-C-PREVIEW-001`, UTC timestamp, exact inputs read, verdict, and unresolved items. Answer all five checks with file/line evidence.

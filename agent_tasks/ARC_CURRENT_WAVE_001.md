@@ -19,6 +19,6 @@
 |---|---|---|---|---|
 | `ARC-A-HEALTH-001` | Mimo | T1 read-only | Reconcile live Binance runtime health and coverage. | `agent_tasks/mimo__codex__arc_a_health.md` |
 | `ARC-A-MAP-AUDIT-001` | antigravity | T1 read-only | Independently audit contract-safe Binance mapping boundaries. | `agent_tasks/antigravity__codex__arc_a_mapping_audit.md` |
-| `ARC-C-PREVIEW-001` | Gemini 3.1 Pro | T1 read-only | Independently pre-review M-C2 for offline/safe packaging. | `agent_tasks/gemini__codex__arc_c_cockpit_preview.md` |
+| `ARC-C-PREVIEW-001` | DeepSeek V4 | T1 read-only | Independently pre-review M-C2 for offline/safe packaging. | `agent_tasks/deepseek__codex__arc_c_cockpit_preview.md` |
 
 Codex will not start M-C2 packaging until the preview raw report is received and accepted.  No task in this wave may change a trigger, paper status, data source/credential, trading path, or the Hermes schedule.
