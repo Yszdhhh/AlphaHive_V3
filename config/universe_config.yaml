@@ -1,6 +1,6 @@
 # AlphaHive V3.1.1 Phase 1 - Universe 配置
 # 版本锁：改任何值都要 Owner 签批 + version +1
-universe_config_version: v1
+universe_config_version: v2
 
 # 排名区间（基于 Binance 永续市值/成交额排名）
 rank:
@@ -18,8 +18,8 @@ exclude:
   delisted: true          # 已下架
   majors: [BTC, ETH, SOL] # 主导标的（作为 BTC 对冲基准另算，不进候选池）
 
-# BTC 对冲基准（收益基准化用，不进候选池）
-benchmark_symbol: BTCUSDT
+# 市场基准（参考数据拉取，不进候选池）
+benchmark_symbols: [BTCUSDT, ETHUSDT, SOLUSDT]
 
 # 新上市标的历史天数分级（对应硬约束1）
 history_tiers:

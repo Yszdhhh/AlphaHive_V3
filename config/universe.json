@@ -1,6 +1,6 @@
 {
   "schema_version": "v1",
-  "universe_config_version": "v1",
+  "universe_config_version": "v2",
   "known_list": {
     "version": "v1",
     "source": "existing_universe_symbols",
@@ -25,6 +25,23 @@
     "divided_by_100_risk": false,
     "multiplied_by_100_risk": false
   },
+  "benchmark_symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT"
+  ],
+  "disabled_pull_symbols": [
+    "XAUUSDT",
+    "XAGUSDT",
+    "BZUSDT",
+    "MUUSDT",
+    "SNDKUSDT",
+    "NVDAUSDT",
+    "INTCUSDT",
+    "CRCLUSDT",
+    "TSLAUSDT",
+    "SPCXUSDT"
+  ],
   "symbols": [
     {
       "symbol": "DOGEUSDT",
@@ -415,6 +432,195 @@
       "klines_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\SPCXUSDT.parquet",
       "funding_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\SPCXUSDT.parquet",
       "oi_path": "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\SPCXUSDT.parquet"
+    },
+    {
+      "symbol": "INJUSDT",
+      "rank": 21,
+      "turnover_24h_usd": 44749310.6077,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "RENDERUSDT",
+      "rank": 23,
+      "turnover_24h_usd": 10199688.251,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "TIAUSDT",
+      "rank": 28,
+      "turnover_24h_usd": 23402778.0136,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "ASTERUSDT",
+      "rank": 30,
+      "turnover_24h_usd": 26663974.0714,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "FILUSDT",
+      "rank": 32,
+      "turnover_24h_usd": 42272430.375257,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "UNIUSDT",
+      "rank": 36,
+      "turnover_24h_usd": 79745883.824,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "ARBUSDT",
+      "rank": 37,
+      "turnover_24h_usd": 39372728.421252,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "PAXGUSDT",
+      "rank": 39,
+      "turnover_24h_usd": 91451316.8782,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "ICPUSDT",
+      "rank": 41,
+      "turnover_24h_usd": 12941320.851,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "VIRTUALUSDT",
+      "rank": 42,
+      "turnover_24h_usd": 21741145.70749,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "PENGUUSDT",
+      "rank": 43,
+      "turnover_24h_usd": 28980077.226768,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "ATOMUSDT",
+      "rank": 44,
+      "turnover_24h_usd": 10512558.654,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "PUMPUSDT",
+      "rank": 45,
+      "turnover_24h_usd": 120121166.073444,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "PENDLEUSDT",
+      "rank": 47,
+      "turnover_24h_usd": 11925127.7602,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "WIFUSDT",
+      "rank": 49,
+      "turnover_24h_usd": 15108044.52024,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "ORDIUSDT",
+      "rank": 50,
+      "turnover_24h_usd": 10887382.2489,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "TRUMPUSDT",
+      "rank": 53,
+      "turnover_24h_usd": 29853514.84929,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "CRVUSDT",
+      "rank": 54,
+      "turnover_24h_usd": 28595935.56277,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "DASHUSDT",
+      "rank": 55,
+      "turnover_24h_usd": 19365414.24,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "OPUSDT",
+      "rank": 56,
+      "turnover_24h_usd": 14896767.57528,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "ETCUSDT",
+      "rank": 59,
+      "turnover_24h_usd": 22511111.076,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "HBARUSDT",
+      "rank": 62,
+      "turnover_24h_usd": 19822611.13895,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "WLFIUSDT",
+      "rank": 65,
+      "turnover_24h_usd": 12597363.88062,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "LDOUSDT",
+      "rank": 69,
+      "turnover_24h_usd": 28597997.9041,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "POLUSDT",
+      "rank": 71,
+      "turnover_24h_usd": 13795889.56712,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "MUSDT",
+      "rank": 76,
+      "turnover_24h_usd": 31395526.3275,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
+    },
+    {
+      "symbol": "KITEUSDT",
+      "rank": 77,
+      "turnover_24h_usd": 20160539.57122,
+      "history_tier": "Insufficient",
+      "eligible_for_paper": "No"
     }
   ]
 }
