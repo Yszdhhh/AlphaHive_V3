@@ -22,5 +22,6 @@
 | `ARC-C2-FINAL-AUDIT-001` | DeepSeek V4 | T1 read-only | Independently audit the final M-C2 package after Codex packaging. | `agent_tasks/deepseek__codex__arc_c2_final_audit.md` |
 | `ARC-A-HEALTH-003` | Mimo | T1 read-only | Reconcile the latest non-green Binance runtime and identify transport/checkpoint causes. | `agent_tasks/mimo__codex__arc_a_health_runtime_003.md` |
 | `ARC-DATA-CANONICAL-RESEARCH-001` | antigravity / Gemini 3.1 Pro | T1 read-only | Independently review a safe additive CoinGlass/Binance canonical integration boundary. | `agent_tasks/antigravity__codex__arc_data_canonical_research.md` |
+| `ARC-DATA-CANONICAL-FINAL-AUDIT-001` | DeepSeek V4 | T1 read-only | Final independent audit of the additive canonical adapters and runtime reliability hardening. | `agent_tasks/deepseek__codex__arc_data_canonical_final_audit.md` |
 
 M-C2 packaging and final audit are complete. The next wave is limited to runtime health reconciliation and an additive dual-source integration design; no task may change a trigger, paper status, data source/credential, trading path, or the Hermes schedule without the applicable Owner approval.

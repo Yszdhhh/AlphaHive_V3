@@ -40,6 +40,16 @@ The authoritative reports are `C:\Users\10639\Desktop\加密\binance_free_db\rep
 
 ## Safe operator checks
 
+## Reliability hardening applied after the 14:12 CST degraded run
+
+The Klines and OI engines now use the same bounded retry policy as the Taker
+engine for transport errors, invalid JSON, 418/429, and 5xx responses. The
+retry waits use the existing `HTTP_MAX_ATTEMPTS`, exponential base delay, and
+rate-limit `Retry-After` cap; normal request pacing is unchanged. Klines and OI
+also return a non-zero process exit when any symbol fails, so Hermes cannot
+record a false-green full run. Checkpoint advancement remains write-success
+only, and no manual pull was triggered by this change.
+
 Run the read-only freshness check:
 
 ```powershell
