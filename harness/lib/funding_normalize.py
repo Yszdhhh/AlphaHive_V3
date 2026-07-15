@@ -35,6 +35,38 @@ def normalized_funding_abs_max() -> float:
     return raw_funding_hard_bounds()[1] * factor
 
 
+def funding_sampling_policy() -> dict[str, Any]:
+    """Return the single contract-declared funding sampling policy."""
+    policy = _contract().get("sampling", {})
+    if policy.get("deduplication") != "last_observation_per_utc_settlement_window":
+        raise ValueError("Unsupported funding deduplication policy")
+    period_hours = int(policy.get("settlement_period_hours", 0))
+    if period_hours <= 0:
+        raise ValueError("funding settlement_period_hours must be positive")
+    if policy.get("timestamp_anchor") != "unix_epoch_utc":
+        raise ValueError("Unsupported funding timestamp anchor")
+    return policy
+
+
+def deduplicate_funding_8h(frame: pd.DataFrame, timestamp_col: str = "timestamp") -> pd.DataFrame:
+    """Keep the final source observation in each contract-defined UTC 8h window."""
+    if timestamp_col not in frame.columns:
+        raise ValueError(f"Funding frame missing timestamp column: {timestamp_col}")
+    policy = funding_sampling_policy()
+    timestamps = pd.to_numeric(frame[timestamp_col], errors="coerce")
+    if timestamps.isna().any():
+        raise ValueError("Funding frame contains invalid timestamps")
+    period_ms = int(policy["settlement_period_hours"]) * 60 * 60 * 1000
+    source = frame.copy()
+    source["_funding_timestamp_ms"] = timestamps.astype("int64")
+    source["_funding_settlement_window"] = source["_funding_timestamp_ms"] // period_ms
+    source = source.sort_values(["_funding_settlement_window", "_funding_timestamp_ms"])
+    source = source.groupby("_funding_settlement_window", sort=False, as_index=False).tail(1)
+    return source.sort_values("_funding_timestamp_ms").drop(
+        columns=["_funding_timestamp_ms", "_funding_settlement_window"]
+    ).reset_index(drop=True)
+
+
 def _numeric(series: pd.Series) -> pd.Series:
     return pd.to_numeric(series, errors="coerce").dropna()
 

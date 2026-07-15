@@ -34,6 +34,8 @@ from harness.lib.deep_research_package import (  # noqa: E402
 from harness.lib.derivative_metrics import compute_metric_summary  # noqa: E402
 from harness.lib.derivative_metrics import coverage_status  # noqa: E402
 from harness.lib.funding_normalize import (  # noqa: E402
+    deduplicate_funding_8h,
+    funding_sampling_policy,
     normalize_funding,
     normalized_funding_abs_max,
     raw_funding_hard_bounds,
@@ -116,6 +118,21 @@ class TestFundingGuard(unittest.TestCase):
         ):
             with self.assertRaises(AssertionError):
                 normalize_funding(bad)
+
+    def test_contract_declares_and_applies_8h_funding_deduplication(self):
+        policy = funding_sampling_policy()
+        self.assertEqual(policy["source_resolution"], "1h")
+        self.assertEqual(policy["settlement_period_hours"], 8)
+        self.assertEqual(policy["deduplication"], "last_observation_per_utc_settlement_window")
+
+        hour = 60 * 60 * 1000
+        frame = pd.DataFrame({
+            "timestamp": [index * hour for index in range(16)],
+            "funding_rate_8h_raw": [0.005 + index * 0.001 for index in range(16)],
+        })
+        deduplicated = deduplicate_funding_8h(frame)
+        self.assertEqual(deduplicated["timestamp"].tolist(), [7 * hour, 15 * hour])
+        self.assertEqual(deduplicated["funding_rate_8h_raw"].tolist(), [0.012, 0.02])
 
 
 class TestOpenInterestContract(unittest.TestCase):
@@ -271,6 +288,7 @@ class TestBoundedGates(unittest.TestCase):
         self.assertEqual(liquidity["spread_status"], "NOT_AVAILABLE")
         self.assertEqual(liquidity["depth_status"], "NOT_AVAILABLE")
         self.assertEqual(paper["status"], "REVIEW_REQUIRED")
+        self.assertIn("MISSING_SPREAD_OR_DEPTH_REVIEW_REQUIRED", paper["reason_codes"])
         self.assertFalse(paper["owner_override_allowed"])
 
     def test_low_turnover_and_unknown_symbol_block(self):

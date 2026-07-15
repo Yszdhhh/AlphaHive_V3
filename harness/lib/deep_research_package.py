@@ -835,6 +835,13 @@ def _resolve_paper_eligibility(
     reason_codes: list[str] = []
     warnings: list[str] = []
     if ep == "yes" and not blockers:
+        missing_microstructure = (
+            liquidity_gate.get("spread_status") != "AVAILABLE"
+            or liquidity_gate.get("depth_status") != "AVAILABLE"
+        )
+        if missing_microstructure:
+            reason_codes.append("MISSING_SPREAD_OR_DEPTH_REVIEW_REQUIRED")
+            warnings.append("missing real spread/depth forces REVIEW_REQUIRED; estimated friction is not a real check")
         reason_codes.append("PAPER_ALLOW_POLICY_PARKED")
         if identity_gate.get("warnings"):
             reason_codes.append("IDENTITY_WARN")

@@ -15,7 +15,7 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from harness.lib.funding_normalize import normalize_funding
+from harness.lib.funding_normalize import deduplicate_funding_8h, normalize_funding
 from harness.lib.cutoff import (
     KLINE_BAR_RESOLUTION,
     filter_completed_bars,
@@ -235,6 +235,7 @@ def merge_derivatives(
             funding["funding_rate_8h"] = normalize_funding(funding["funding_rate_8h_raw"])
         except AssertionError as exc:
             raise SystemExit(f"STOP_AND_REPORT_OWNER funding guard failed symbol={symbol}: {exc}") from exc
+        funding = deduplicate_funding_8h(funding)
         summaries["funding"], funding_metric = compute_metric_summary(
             funding,
             metric="funding",

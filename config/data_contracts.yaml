@@ -20,6 +20,11 @@ funding:
     conversion_factor: 0.01
     # 不在 normalized 层复制上下限；硬 STOP 只由 raw_assertion 定义。
     on_fail: STOP_AND_REPORT_OWNER
+  sampling:
+    source_resolution: 1h
+    settlement_period_hours: 8
+    deduplication: last_observation_per_utc_settlement_window
+    timestamp_anchor: unix_epoch_utc
   periods_per_day: 3
   annualize_formula: "rate_8h_decimal * 3 * 365"
 
@@ -89,8 +94,14 @@ timestamp:
 
 # ---- 缺失数据策略 ----
 missing_data:
-  spread: {available: false, action: "use_friction_config.spread_bps_fallback"}
-  depth:  {available: false, action: "disable_spread_filter"}
+  spread:
+    available: false
+    action: force_paper_review_required
+    estimated_value_is_real_check: false
+  depth:
+    available: false
+    action: force_paper_review_required
+    estimated_value_is_real_check: false
   funding_sign: {required: true, action: "force_extract_from_data"}
 
 # ---- 快照契约（洞2）----
