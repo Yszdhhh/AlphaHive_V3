@@ -25,3 +25,10 @@
 | `ARC-DATA-CANONICAL-FINAL-AUDIT-001` | DeepSeek V4 | T1 read-only | Final independent audit of the additive canonical adapters and runtime reliability hardening. | `agent_tasks/deepseek__codex__arc_data_canonical_final_audit.md` |
 
 M-C2 packaging and final audit are complete. The next wave is limited to runtime health reconciliation and an additive dual-source integration design; no task may change a trigger, paper status, data source/credential, trading path, or the Hermes schedule without the applicable Owner approval.
+
+## 2026-07-15 acceptance update
+
+- Latest Hermes pull is `ok`: 59/59 effective symbols are fresh across klines, funding, OI and taker; all four engines reported zero failures in `pull_report_20260715_090640.md`.
+- `ARC-DATA-CANONICAL-RESEARCH-001` is accepted for additive design only; physical canonical merge, contract source switch, splice policy and recent-source precedence remain `PARK / Owner decision`.
+- `ARC-A-HEALTH-003` was reported by Mimo as complete, but its required Desktop Markdown artifact is not present at the exact output path. Treat as `SUMMARY_ONLY / FORMAL_ARTIFACT_MISSING` until corrected.
+- Codex acceptance evidence is recorded in `reports/DATA_CANONICAL_RECON_ACCEPTANCE_20260715.md`.
