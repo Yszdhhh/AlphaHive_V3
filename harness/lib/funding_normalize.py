@@ -117,6 +117,18 @@ def normalize_funding(series: pd.Series) -> pd.Series:
     return out
 
 
+def raw_funding_from_normalized(series: pd.Series) -> pd.Series:
+    """Convert a decimal funding series back to the contract-defined raw unit."""
+    funding = _contract()
+    factor = float(funding["normalized_assertion"]["conversion_factor"])
+    if factor <= 0 or str(funding["raw_unit"]).lower() != "percent":
+        raise ValueError("Unsupported contract for raw funding conversion")
+    values = pd.to_numeric(series, errors="coerce")
+    raw = values / factor
+    assert_raw_funding(raw)
+    return raw
+
+
 def normalize_funding_value(value: object) -> float:
     if pd.isna(value):
         return float("nan")
