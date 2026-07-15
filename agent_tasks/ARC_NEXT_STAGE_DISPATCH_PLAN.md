@@ -1,5 +1,7 @@
 # Autonomous Arc Charter v1 — 下一阶段派单计划
 
+> **Historical dispatch baseline — 2026-07-14.** Preserve task IDs and evidence in this file, but do not treat its initial `T1_PREPARATION` state or its pre-approval data-refresh prohibition as the current operating state. Read `PROJECT_REQUIRED_READING.md`, `OWNER_APPROVALS.md`, and the actual task-specific dispatch before acting.
+
 **状态：** `T1_PREPARATION`（仅准备、只读侦察、隔离原型和独立审计）  
 **生效范围：** `G:\Quant test\AlphaHive_V3`  
 **单写者：** 只有 codex 可修改仓库、配置、测试、`_bus/` 或 git。所有外部 agent 只可读取输入，并向各自指定的 Desktop 目录写原始产物。

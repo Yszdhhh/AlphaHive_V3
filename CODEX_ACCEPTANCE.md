@@ -1,5 +1,7 @@
 # AlphaHive_V3 地基纠偏独立验收
 
+> **Historical snapshot — 2026-07-13.** This failed pre-remediation audit is retained as evidence only. Its statements about a missing Git repository, missing governance files, and unavailable pytest are no longer current; do not use it as the present acceptance status. Check later commits, regression evidence, and the current required-reading documents instead.
+
 - 验收角色：Codex（架构 / 验收；未修改建设代码、配置或执行层）
 - 验收时间：2026-07-13（Asia/Shanghai）
 - 验收范围：本轮所列 DoD；工作目录 `G:\Quant test\AlphaHive_V3`

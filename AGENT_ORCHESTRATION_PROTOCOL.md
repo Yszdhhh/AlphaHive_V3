@@ -1,12 +1,14 @@
 # AGENT_ORCHESTRATION_PROTOCOL v1
 
+> For the Autonomous Arc Charter v1 batch, the Owner confirmed on 2026-07-14 that this v1 file is the sole governance equivalent of the Charter's referenced v2 file. T3 still requires a separate Owner decision.
+
 ## 0. 目的
 
 把“谁执行、谁审、什么自主、什么卡门”写死，让 Owner 只需确认方向 + 签 T3 闸，不必每轮审。运动员/裁判分离不变。
 
 ## 1. 角色
 
-- **Opus（架构/终审，机外）**：定方向、写 handoff 并标 tier、定 T2、签 T3、握 GRAVEYARD、审 codex 打包的成果。是唯一独立裁判。
+- **独立审阅者（机外、provider/model 可替换）**：只读审计 codex 打包成果并保留原文 provenance；不写 repo，不替 Owner 签 T3。
 - **codex（PC 枢纽）**：编排、主执行、整合、回归、打包。拥有并唯一写 `AlphaHive_V3/`；按 `_bus` 派子任务给其它 agent；出单一 deliverable 发 Opus。
 - **antigravity/Gemini（研究区执行 + 隔离代码）**：深研实拨（provider 多样，产物 `UNVERIFIED`），或执行 codex 指派的隔离代码模块。不写 repo，产隔离产物交 codex 整合。
 - **mimo（杂活）**：数据盘点、跑脚本、覆盖报告、机械打包。只读或隔离。
@@ -44,8 +46,8 @@ codex 出单一 deliverable，必须包含：
 4. `SELF_CHECK` 对 DoD 逐条核验；
 5. `OWNER_DECISIONS_NEEDED`，包括所有 park 的 T3。
 
-T3 批次附 Sonnet PC 端预审报告。Opus 审一手证据，不审 codex 摘要。
+T3 相邻批次附独立预审原文（provider/model 可替换并在报告顶部标识）。独立审阅者审一手证据，不审 codex 摘要。
 
 ## 6. 红线（不变）
 
-不碰 token/secret；不 push；不碰执行层/下单；不假实现闸；不放宽阈值；删文件先问；研究区产物永远 `UNVERIFIED`，直到独立核验。
+不碰 token/secret；未经 Owner 明确授权不 push；不碰执行层/下单；不假实现闸；不放宽阈值；删文件先问；研究区产物永远 `UNVERIFIED`，直到独立核验。

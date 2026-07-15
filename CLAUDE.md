@@ -1,1 +1,4 @@
-开工前先读 PROJECT_CONSTITUTION.md 与 GRAVEYARD.md。
+# AlphaHive V3 agent entrypoint
+
+Before taking any repository action, read [`AGENTS.md`](AGENTS.md). It is the
+single project entrypoint for required reading and task boundaries.

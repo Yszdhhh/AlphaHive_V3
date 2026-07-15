@@ -24,9 +24,8 @@ F21 的历史派单状态、原文 provenance 和 `MISSING` 记录见 `agent_tas
 ## 共享必读
 
 - `G:\Quant test\AGENTS.md`
-- `G:\Quant test\AlphaHive_V3\AGENT_ORCHESTRATION_PROTOCOL.md`
-- `G:\Quant test\AlphaHive_V3\PROJECT_CONSTITUTION.md`
-- `G:\Quant test\AlphaHive_V3\GRAVEYARD.md`
+- `G:\Quant test\AlphaHive_V3\AGENTS.md`
+- `G:\Quant test\AlphaHive_V3\PROJECT_REQUIRED_READING.md`（按其顺序读完全部共享治理文件，含 Karpathy 与知识洁癖协议）
 
 ## 角色边界
 

@@ -3,11 +3,10 @@
 > 跨轨道统一的 LLM 编码行为守则，omx-r10 / alpha_pure_factor 已采用，Alpha Hive 同步纳入。
 > **正文与其它两轨道逐字一致**（守则是标准，不按项目改），仅头尾加 Alpha Hive 接入说明。
 >
-> **执行端接入方式（Claude Code，非 Cursor）**：把本文件放进仓库根
-> `G:\Quant test\alpha_hive\`，并在仓库根 `CLAUDE.md` 加一行引用
-> （没有 root CLAUDE.md 就建一个），使每次 Claude Code 会话自动加载 ——
-> 这是 Claude Code 对应 Cursor `alwaysApply: true` 的机制。每份 handoff
-> 的「前置必读」也会再点名本文件作为双保险。
+> **AlphaHive V3 接入方式**：本文件位于仓库根
+> `G:\Quant test\AlphaHive_V3\`，并由 `PROJECT_REQUIRED_READING.md`
+> 统一列入所有 agent 的前置必读；`CLAUDE.md` 只保留到 `AGENTS.md` 的兼容入口。
+> 每份 handoff 仍须先读共享必读与自身被点名的任务文件。
 
 ---
 
