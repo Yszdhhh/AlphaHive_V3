@@ -13,7 +13,7 @@
 | M-B1 / M-B2 / M-B3 | Packaged | Existing milestone commits and independent M-B3 preview |
 | M-A1 mapping | Packaged | Pure contract-safe Binance mappings; no source switch |
 | M-C1 | Packaged | Non-overwriting package helper |
-| M-C2 offline cockpit | Final audit passed | DeepSeek `ARC-C2-FINAL-AUDIT-001`: `PASS_FOR-M-C2_FINAL_AUDIT` |
+| M-C2 offline cockpit | Final audit previously reported passed; Desktop artifact gap | The prior accepted DeepSeek verdict was `PASS_FOR-M-C2_FINAL_AUDIT`, but the original Desktop final-audit Markdown is not present in the current Desktop scan. Source/tests/cockpit outputs remain available. |
 | Binance runtime | Healthy | Mimo `ARC-A-HEALTH-003`: 59/59 effective symbols fresh on all four dimensions, current fail counters zero |
 | Additive canonical adapters | Final audit passed | DeepSeek `ARC-DATA-CANONICAL-FINAL-AUDIT-001`: `PASS_FOR-DATA-CANONICAL-ADAPTER` |
 | Historical Binance archive research | Parked | DeepSeek `ARC-DATA-HISTORY-FINAL-AUDIT-001`: `PARK` |
@@ -65,3 +65,7 @@ It also verified that ETHUSDT, DOGEUSDT and SOLUSDT metrics begin at 2021-12-01 
 ## Package boundary
 
 This package intentionally excludes raw databases, Parquet stores, credentials, `.env` material, Hermes state, and the `.git` directory. It contains source/config/tests, audit reports, task specifications, and runtime evidence needed for external review.
+
+## Evidence caveat for external reviewers
+
+The M-C2 final-audit verdict is retained as a previously accepted project status, but its original Desktop report was not found during the 2026-07-16 consolidation scan. Reviewers should treat the source diff, offline cockpit output, and current repository tests as primary evidence and mark the missing historical report as a provenance gap rather than infer its contents.
