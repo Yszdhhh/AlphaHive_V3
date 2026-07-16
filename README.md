@@ -5,6 +5,7 @@ AlphaHive V3 is an auditable anomaly-research and paper-execution-discipline sys
 ## Start here
 
 - Agents: read [`PROJECT_REQUIRED_READING.md`](PROJECT_REQUIRED_READING.md) before any work.
+- New conversations: also read [`PROJECT_OPERATING_PLAYBOOK.md`](PROJECT_OPERATING_PLAYBOOK.md) for the persistent dispatch, collaboration and acceptance workflow.
 - Humans: see [`PROJECT_CONSTITUTION.md`](PROJECT_CONSTITUTION.md) for purpose and boundaries, then [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) for evidence gaps.
 - External-agent work: use [`agent_tasks/README.md`](agent_tasks/README.md); only Codex writes this repository.
 - Binance public-data operations: see [`reports/BINANCE_PULL_OPERATIONS_20260715.md`](reports/BINANCE_PULL_OPERATIONS_20260715.md).

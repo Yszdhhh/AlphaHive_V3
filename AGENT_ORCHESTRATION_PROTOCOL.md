@@ -51,3 +51,7 @@ T3 相邻批次附独立预审原文（provider/model 可替换并在报告顶�
 ## 6. 红线（不变）
 
 不碰 token/secret；未经 Owner 明确授权不 push；不碰执行层/下单；不假实现闸；不放宽阈值；删文件先问；研究区产物永远 `UNVERIFIED`，直到独立核验。
+
+## 7. 操作手册索引
+
+具体的任务分发模板、并行规则、报告验收、provenance 处理、桌面归档和新对话启动模板统一维护在 [`PROJECT_OPERATING_PLAYBOOK.md`](PROJECT_OPERATING_PLAYBOOK.md)。该手册是本协议的操作层补充，不放宽任何 T3 Owner 审批红线。
