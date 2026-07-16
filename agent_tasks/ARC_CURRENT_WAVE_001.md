@@ -23,8 +23,16 @@
 | `ARC-A-HEALTH-003` | Mimo | T1 read-only | Reconcile the latest non-green Binance runtime and identify transport/checkpoint causes. | `agent_tasks/mimo__codex__arc_a_health_runtime_003.md` |
 | `ARC-DATA-CANONICAL-RESEARCH-001` | antigravity / Gemini 3.1 Pro | T1 read-only | Independently review a safe additive CoinGlass/Binance canonical integration boundary. | `agent_tasks/antigravity__codex__arc_data_canonical_research.md` |
 | `ARC-DATA-CANONICAL-FINAL-AUDIT-001` | DeepSeek V4 | T1 read-only | Final independent audit of the additive canonical adapters and runtime reliability hardening. | `agent_tasks/deepseek__codex__arc_data_canonical_final_audit.md` |
+| `ARC-DATA-HISTORY-RESEARCH-002` | Sonnet | T1 read-only | Fill the missing public historical-data research input without modifying production systems. | `agent_tasks/sonnet__codex__arc_data_history_research_002.md` |
 
 M-C2 packaging and final audit are complete. The next wave is limited to runtime health reconciliation and an additive dual-source integration design; no task may change a trigger, paper status, data source/credential, trading path, or the Hermes schedule without the applicable Owner approval.
+
+## 2026-07-16 acceptance update
+
+- Mimo's formal report is now present and the core runtime result is accepted: 59/59 fresh, zero current failures, hashes match. Its claim that `0 0 1 * *` has day-of-month 0 is incorrect; the expression means day 1 and is valid. Treat this as a documentation correction only.
+- antigravity's canonical research is `UNVERIFIED` because the historical research input is missing; this does not block the additive adapter or its DeepSeek final audit.
+- DeepSeek final audit passed with `PASS_FOR-DATA-CANONICAL-ADAPTER`.
+- Sonnet's non-blocking history research task is ready for dispatch.
 
 ## 2026-07-15 acceptance update
 
