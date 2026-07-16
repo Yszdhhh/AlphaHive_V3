@@ -36,6 +36,7 @@ M-C2 packaging and final audit are complete. The next wave is limited to runtime
 - Sonnet's non-blocking history research task is ready for dispatch.
 - Sonnet's history report is present but held as `CONDITIONAL / PARK_FOR_DEEPSEEK_AUDIT` because provenance is mixed and the `2020-09-01` metrics claim lacks object-level evidence.
 - DeepSeek's history final-audit task is ready; no backfill or source switch is authorized.
+- DeepSeek completed `ARC-DATA-HISTORY-FINAL-AUDIT-001` with verdict `PARK`: BTC 2020-09-01 is verified, but the full universe is not; checksum is CRC64NVME, not SHA-256.
 
 ## 2026-07-15 acceptance update
 
