@@ -24,6 +24,7 @@
 | `ARC-DATA-CANONICAL-RESEARCH-001` | antigravity / Gemini 3.1 Pro | T1 read-only | Independently review a safe additive CoinGlass/Binance canonical integration boundary. | `agent_tasks/antigravity__codex__arc_data_canonical_research.md` |
 | `ARC-DATA-CANONICAL-FINAL-AUDIT-001` | DeepSeek V4 | T1 read-only | Final independent audit of the additive canonical adapters and runtime reliability hardening. | `agent_tasks/deepseek__codex__arc_data_canonical_final_audit.md` |
 | `ARC-DATA-HISTORY-RESEARCH-002` | Sonnet | T1 read-only | Fill the missing public historical-data research input without modifying production systems. | `agent_tasks/sonnet__codex__arc_data_history_research_002.md` |
+| `ARC-DATA-HISTORY-FINAL-AUDIT-001` | DeepSeek V4 | T1 read-only | Independently verify the historical Binance archive claims and provenance before any backfill decision. | `agent_tasks/deepseek__codex__arc_data_history_final_audit.md` |
 
 M-C2 packaging and final audit are complete. The next wave is limited to runtime health reconciliation and an additive dual-source integration design; no task may change a trigger, paper status, data source/credential, trading path, or the Hermes schedule without the applicable Owner approval.
 
@@ -33,6 +34,8 @@ M-C2 packaging and final audit are complete. The next wave is limited to runtime
 - antigravity's canonical research is `UNVERIFIED` because the historical research input is missing; this does not block the additive adapter or its DeepSeek final audit.
 - DeepSeek final audit passed with `PASS_FOR-DATA-CANONICAL-ADAPTER`.
 - Sonnet's non-blocking history research task is ready for dispatch.
+- Sonnet's history report is present but held as `CONDITIONAL / PARK_FOR_DEEPSEEK_AUDIT` because provenance is mixed and the `2020-09-01` metrics claim lacks object-level evidence.
+- DeepSeek's history final-audit task is ready; no backfill or source switch is authorized.
 
 ## 2026-07-15 acceptance update
 
