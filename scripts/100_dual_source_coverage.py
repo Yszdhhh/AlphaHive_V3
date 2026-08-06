@@ -70,6 +70,8 @@ def inspect_dimension(root: Path, source: str, dimension: str, symbols: list[str
     max_ms = None
     adapter_status = "NOT_RUN"
     adapter_error = ""
+    adapter_checked_files = 0
+    adapter_failures = []
     sample_schema = ""
     for path in files:
         try:
@@ -82,13 +84,17 @@ def inspect_dimension(root: Path, source: str, dimension: str, symbols: list[str
                 current_max = int(values.max())
                 min_ms = current_min if min_ms is None else min(min_ms, current_min)
                 max_ms = current_max if max_ms is None else max(max_ms, current_max)
-            if adapter_status == "NOT_RUN":
-                ADAPTERS[dimension](frame.head(2), source, symbol=path.stem)
-                adapter_status = "PASS"
+            # Validate every row of every parquet file. A head-only check can
+            # miss malformed rows after the first two records.
+            ADAPTERS[dimension](frame, source, symbol=path.stem)
+            adapter_checked_files += 1
         except (KeyError, ValueError, CanonicalSchemaError) as exc:
-            if adapter_status == "NOT_RUN":
-                adapter_status = "FAIL"
+            adapter_checked_files += 1
+            adapter_failures.append({"file": path.name, "error": str(exc)})
+            if not adapter_error:
                 adapter_error = str(exc)
+    if files:
+        adapter_status = "PASS" if not adapter_failures else "FAIL"
     to_date = lambda value: datetime.fromtimestamp(value / 1000, tz=timezone.utc).date().isoformat() if value is not None else "N/A"
     return {
         "files": len(files),
@@ -99,6 +105,8 @@ def inspect_dimension(root: Path, source: str, dimension: str, symbols: list[str
         "schema": sample_schema,
         "adapter": adapter_status,
         "adapter_error": adapter_error,
+        "adapter_checked_files": adapter_checked_files,
+        "adapter_failures": adapter_failures,
     }
 
 
@@ -117,8 +125,8 @@ def build_report(coinglass_root: Path, binance_root: Path, universe_path: Path) 
         "",
         "## Coverage and adapter checks",
         "",
-        "| Source | Dimension | Files | Live present | Date range UTC | Adapter | Sample schema |",
-        "|---|---|---:|---:|---|---|---|",
+        "| Source | Dimension | Files | Live present | Date range UTC | Adapter | Checked files | Failures | Sample schema |",
+        "|---|---|---:|---:|---|---|---:|---:|---|",
     ]
     for source, result in (("CoinGlass", cg), ("Binance", bn)):
         for dimension, item in result.items():
@@ -126,13 +134,14 @@ def build_report(coinglass_root: Path, binance_root: Path, universe_path: Path) 
             lines.append(
                 f"| {source} | {dimension} | {item['files']} | "
                 f"{item['live_present']}/{item['live_total']} | {item['start']} → {item['end']} | "
-                f"{item['adapter']} | {schema} |"
+                f"{item['adapter']} | {item['adapter_checked_files']} | {len(item['adapter_failures'])} | {schema} |"
             )
     lines += [
         "",
         "## Integration boundary",
         "",
         "- This is a read-only comparison report; no parquet data was merged or overwritten.",
+        "- Adapter status is based on the complete contents of every discovered parquet file, not a head-only sample.",
         "- The existing AlphaHive scanner still consumes the CoinGlass paths declared in `config/data_contracts.yaml` and `config/universe.json`.",
         "- Binance remains a separate live store. The canonical adapters preserve `source`, `source_schema`, and source-unit provenance.",
         "- Funding is exposed as decimal plus contract-compatible raw-percent view; OI absolute units remain `UNDECLARED` unless an authoritative contract declares them.",

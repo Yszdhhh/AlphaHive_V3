@@ -1,8 +1,8 @@
 ﻿# AlphaHive V3.1.1 Phase 1 - 原始输入数据契约
 # schema 定义 + 校验规则，供脚本读取前校验。是原始数据的【单一真理源】。
-schema_version: v2
+schema_version: v4
 compatibility:
-  previous_schema_versions: [v1]
+  previous_schema_versions: [v1, v2, v3]
   unknown_fields: ignore
   migration: additive_only
 funding:
@@ -31,18 +31,21 @@ funding:
 # ---- 数据源路径（PC端启动前务必人工核对真实路径，记忆可能过时）----
 sources:
   klines:
-    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\klines\\{SYMBOL}.parquet"
+    path_template: "G:\\Quant test\\AlphaHive_V3\\harness\\canonical_price_snapshots\\current.json"
+    publication_layout: "current.json -> vNNNN/manifest.json -> klines/{SYMBOL}.parquet"
+    source_precedence: "BINANCE_OVER_COINGLASS"
+    source_role: "canonical_price_snapshot"
     resolution: 1h
     start_expected: "2021-12"       # ~53mo
     required_columns: [timestamp, open, high, low, close, volume]
     timezone: UTC                   # ⚠️ 启动前确认时间戳时区
   funding:
-    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding\\{SYMBOL}.parquet"
+    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\{SYMBOL}.parquet"
     resolution: 1h                  # ⚠️ 确认真实分辨率(可能8h)
     start_expected: "2024-06"       # ~23.6mo
     required_columns: [time, close]
   oi:
-    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi\\{SYMBOL}.parquet"
+    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\{SYMBOL}.parquet"
     resolution: 1h
     start_expected: "2024-06"
     required_columns: [timestamp, open_interest]
@@ -108,8 +111,22 @@ missing_data:
 snapshot:
   format: long_table            # 每标的×每根K线，NOT 单行横截面
   lookback_days: 90
-  must_include: [ohlcv, funding, oi]
+  must_include: [ohlcv]
+  optional_dimensions: [funding, oi]
+  missing_optional_dimension_action: "mark_unavailable_and_disable_dependent_metrics"
   immutable: true               # 一次冻结永不改
+
+canonical_price_bridge:
+  publication_root: "G:\\Quant test\\AlphaHive_V3\\harness\\canonical_price_snapshots"
+  pointer_file: current.json
+  source_precedence: "BINANCE_OVER_COINGLASS"
+  no_interpolation: true
+  gap_policy:
+    fresh_guard_hours: 48
+    max_gap_bars_outside_guard: 4
+    max_missing_bars_90d: 6
+    lookback_days: 90
+  derivative_status: "NOT_INCLUDED"
 
 
 

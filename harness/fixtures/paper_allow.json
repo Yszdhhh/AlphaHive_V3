@@ -1,0 +1,51 @@
+{
+  "job": {
+    "job_id": "job_11111111-1111-4111-8111-111111111111",
+    "record_id": "prospective_synthetic_001",
+    "status": "RESEARCH_ASSESSMENT_READY",
+    "mode": "PROSPECTIVE_LIVE",
+    "performance_eligible": true,
+    "candidate_package_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "evidence_set_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "verification_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "assessment_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "capabilities": {"paper_plan_capability": "ALLOW"}
+  },
+  "preset": {
+    "schema_version": "paper_execution_presets_v1",
+    "preset_version": "v1.0.0-test",
+    "preset_id": "standard",
+    "status": "APPROVED",
+    "paper_risk_per_trade_pct": 1.0,
+    "max_open_portfolio_risk_pct": 2.0,
+    "friction_bps_roundtrip": 10.0,
+    "horizon_hours": 4,
+    "stop_distance_pct": 1.0,
+    "take_profit_targets": [
+      {"r_multiple": 1.0, "exit_weight_pct": 50},
+      {"r_multiple": 2.0, "exit_weight_pct": 50}
+    ]
+  },
+  "owner_decision": {
+    "job_id": "job_11111111-1111-4111-8111-111111111111",
+    "record_id": "prospective_synthetic_001",
+    "candidate_package_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "evidence_set_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "verification_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "assessment_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "decision": "APPROVE_PAPER",
+    "direction": "LONG",
+    "owner_id": "synthetic-owner",
+    "owner_authenticated": true,
+    "owner_confirmation": "SYNTHETIC_OWNER_CONFIRM_V1",
+    "confirmation_text_valid": true,
+    "confirmation_text_version": "SYNTHETIC_V1",
+    "decision_time_utc": "2026-06-30T23:00:00+00:00",
+    "selected_preset_version": "v1.0.0-test",
+    "selected_preset_hash": "793a19f6540fb18868594d068564373766468475a17f5de6b1ec8580005ac219"
+  },
+  "bars": [
+    {"timestamp": "2026-07-01T00:00:00Z", "open": 100.0, "high": 101.5, "low": 99.8, "close": 101.2},
+    {"timestamp": "2026-07-01T04:00:00Z", "open": 101.2, "high": 102.5, "low": 100.8, "close": 102.3}
+  ]
+}

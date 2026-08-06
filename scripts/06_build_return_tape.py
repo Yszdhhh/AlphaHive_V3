@@ -32,22 +32,28 @@ def sha256_file(path: Path) -> str:
 
 
 def normalize_kline(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
-    cols = ["open_time", "timestamp", "open", "high", "low", "close", "volume", "quote_volume", "volume_usd"]
+    cols = [
+        "open_time", "timestamp", "open", "high", "low", "close", "volume",
+        "quote_volume", "volume_usd", "turnover_usd",
+    ]
     out = df[[c for c in cols if c in df.columns]].copy()
     if "open_time" in out.columns:
         out = out.rename(columns={"open_time": "timestamp"})
     if "timestamp" not in out.columns:
         raise ValueError(f"{symbol} kline missing timestamp/open_time")
-    if "quote_volume" in out.columns and "volume_usd" in out.columns:
-        out["turnover_usd"] = pd.to_numeric(out["quote_volume"], errors="coerce").fillna(
-            pd.to_numeric(out["volume_usd"], errors="coerce")
-        )
-    elif "quote_volume" in out.columns:
-        out["turnover_usd"] = pd.to_numeric(out["quote_volume"], errors="coerce")
-    elif "volume_usd" in out.columns:
-        out["turnover_usd"] = pd.to_numeric(out["volume_usd"], errors="coerce")
-    else:
-        out["turnover_usd"] = pd.NA
+    turnover = pd.to_numeric(out["turnover_usd"], errors="coerce") if "turnover_usd" in out.columns else None
+    if turnover is None or not turnover.notna().any():
+        quote_volume = pd.to_numeric(out["quote_volume"], errors="coerce") if "quote_volume" in out.columns else None
+        volume_usd = pd.to_numeric(out["volume_usd"], errors="coerce") if "volume_usd" in out.columns else None
+        if quote_volume is not None and volume_usd is not None:
+            turnover = quote_volume.fillna(volume_usd)
+        elif quote_volume is not None:
+            turnover = quote_volume
+        elif volume_usd is not None:
+            turnover = volume_usd
+        else:
+            turnover = pd.Series(pd.NA, index=out.index, dtype="Float64")
+    out["turnover_usd"] = turnover
     out = out.drop(columns=[c for c in ["quote_volume", "volume_usd"] if c in out.columns])
     out["symbol"] = symbol
     return out

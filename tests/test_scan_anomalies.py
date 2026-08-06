@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,16 +15,21 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
-def _load_scanner_module():
-    path = PROJECT_ROOT / "scripts" / "02_scan_anomalies.py"
-    spec = importlib.util.spec_from_file_location("alpha_hive_scan_anomalies", path)
+def _load_script_module(module_name: str, filename: str):
+    path = PROJECT_ROOT / "scripts" / filename
+    spec = importlib.util.spec_from_file_location(module_name, path)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
+    sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
 
 
-scanner = _load_scanner_module()
+scanner = _load_script_module("alpha_hive_scan_anomalies", "02_scan_anomalies.py")
+return_tape_builder = _load_script_module("alpha_hive_return_tape", "06_build_return_tape.py")
+historical_replay_sampler = _load_script_module(
+    "alpha_hive_historical_replay_sampler", "07_historical_replay_sampler.py"
+)
 
 from harness.lib.cutoff import filter_completed_bars  # noqa: E402
 from harness.lib.deep_research_package import (  # noqa: E402
@@ -60,6 +66,13 @@ class TestScannerCutoffAndInventory(unittest.TestCase):
         self.assertEqual(audit["filtered_incomplete_or_future_rows"], 1)
         self.assertEqual(audit["completed_bar_violations"], 0)
         self.assertEqual(audit["max_kept_bar_end_ms"], 2 * hour)
+
+    def test_candidate_window_refuses_to_cross_a_price_gap(self):
+        hour = 60 * 60 * 1000
+        contiguous = pd.DataFrame({"timestamp": [0, hour, 2 * hour]})
+        gapped = pd.DataFrame({"timestamp": [0, hour, 3 * hour]})
+        self.assertTrue(scanner.has_contiguous_tail(contiguous, 3))
+        self.assertFalse(scanner.has_contiguous_tail(gapped, 3))
 
     def test_inventory_contains_hash_rows_range_and_step(self):
         frame = pd.DataFrame({"time": [0, 60 * 60 * 1000, 2 * 60 * 60 * 1000]})
@@ -149,14 +162,20 @@ class TestOpenInterestContract(unittest.TestCase):
         self.assertEqual(oi["absolute_value_unit"], "NOT_DECLARED")
 
 
-class TestSchemaV2Compatibility(unittest.TestCase):
-    def test_v2_contract_is_additive_and_accepts_v1_consumers(self):
+class TestSchemaV3Compatibility(unittest.TestCase):
+    def test_v3_contract_is_additive_and_accepts_v1_v2_consumers(self):
         contract = yaml.safe_load(
             (PROJECT_ROOT / "config" / "data_contracts.yaml").read_text(encoding="utf-8")
         )
-        self.assertEqual(contract["schema_version"], "v2")
-        self.assertEqual(contract["compatibility"]["previous_schema_versions"], ["v1"])
+        self.assertEqual(contract["schema_version"], "v4")
+        self.assertEqual(contract["compatibility"]["previous_schema_versions"], ["v1", "v2", "v3"])
         self.assertEqual(contract["compatibility"]["unknown_fields"], "ignore")
+        self.assertIn(r"canonical_price_snapshots\current.json", contract["sources"]["klines"]["path_template"])
+        self.assertEqual(contract["sources"]["klines"]["source_precedence"], "BINANCE_OVER_COINGLASS")
+        self.assertEqual(contract["snapshot"]["must_include"], ["ohlcv"])
+        self.assertEqual(contract["snapshot"]["optional_dimensions"], ["funding", "oi"])
+        self.assertIn(r"raw_1h\funding_ohlc", contract["sources"]["funding"]["path_template"])
+        self.assertIn(r"raw_1h\oi_ohlc", contract["sources"]["oi"]["path_template"])
 
         anomaly_schema = yaml.safe_load(
             (PROJECT_ROOT / "harness" / "schemas" / "anomaly_ledger_schema.yaml").read_text(encoding="utf-8")
@@ -181,6 +200,77 @@ class TestKnownListV1(unittest.TestCase):
 
 
 class TestTurnoverAndDerivativeStatus(unittest.TestCase):
+    def test_return_tape_and_replay_normalizers_preserve_canonical_turnover_usd(self):
+        frame = pd.DataFrame({
+            "timestamp": list(range(24)),
+            "close": [10.0] * 24,
+            "volume": [100_000.0] * 24,
+            "turnover_usd": [1_000_000.0] * 24,
+        })
+        for module in (return_tape_builder, historical_replay_sampler):
+            with self.subTest(module=module.__name__):
+                normalized = module.normalize_kline(frame, "BTCUSDT")
+                self.assertEqual(normalized["turnover_usd"].tolist(), [1_000_000.0] * 24)
+
+    def test_return_tape_and_replay_normalizers_keep_legacy_quote_volume(self):
+        frame = pd.DataFrame({
+            "open_time": list(range(24)),
+            "close": [10.0] * 24,
+            "volume": [100_000.0] * 24,
+            "quote_volume": [1_000_000.0] * 24,
+        })
+        for module in (return_tape_builder, historical_replay_sampler):
+            with self.subTest(module=module.__name__):
+                normalized = module.normalize_kline(frame, "ETHUSDT")
+                self.assertEqual(normalized["turnover_usd"].tolist(), [1_000_000.0] * 24)
+
+    def test_normalize_kline_preserves_canonical_turnover_usd(self):
+        frame = pd.DataFrame({
+            "timestamp": list(range(24)),
+            "open": [10.0] * 24,
+            "high": [11.0] * 24,
+            "low": [9.0] * 24,
+            "close": [10.0] * 24,
+            "volume": [100_000.0] * 24,
+            "turnover_usd": [1_000_000.0] * 24,
+        })
+        normalized = scanner.normalize_kline(frame, "BTCUSDT")
+        self.assertEqual(normalized["turnover_usd"].tolist(), [1_000_000.0] * 24)
+        result = turnover_24h_effective(
+            normalized, min_valid_bars=18, min_effective_turnover_usd=10_000_000
+        )
+        self.assertEqual(result.n_valid_bars, 24)
+        self.assertTrue(result.valid_bar_pass)
+        self.assertTrue(result.threshold_pass)
+
+    def test_normalize_kline_keeps_quote_volume_legacy_compatibility(self):
+        frame = pd.DataFrame({
+            "open_time": list(range(24)),
+            "close": [10.0] * 24,
+            "volume": [100_000.0] * 24,
+            "quote_volume": [1_000_000.0] * 24,
+        })
+        normalized = scanner.normalize_kline(frame, "ETHUSDT")
+        result = turnover_24h_effective(
+            normalized, min_valid_bars=18, min_effective_turnover_usd=10_000_000
+        )
+        self.assertEqual(result.n_valid_bars, 24)
+        self.assertTrue(result.threshold_pass)
+
+    def test_turnover_falls_back_when_present_turnover_column_is_empty(self):
+        frame = pd.DataFrame({
+            "timestamp": list(range(24)),
+            "close": [10.0] * 24,
+            "volume": [100_000.0] * 24,
+            "turnover_usd": [pd.NA] * 24,
+        })
+        result = turnover_24h_effective(
+            frame, min_valid_bars=18, min_effective_turnover_usd=10_000_000
+        )
+        self.assertEqual(result.n_valid_bars, 24)
+        self.assertTrue(result.valid_bar_pass)
+        self.assertTrue(result.threshold_pass)
+
     def test_partial_turnover_never_passes_valid_bar_gate(self):
         frame = pd.DataFrame({
             "timestamp": range(10),
@@ -352,6 +442,17 @@ class TestBoundedGates(unittest.TestCase):
         )
         self.assertEqual(missing_identity_paper["status"], "BLOCK")
         self.assertNotEqual(missing_identity_paper["status"], "ALLOW")
+
+
+class TestRunModeStamp(unittest.TestCase):
+    def test_wall_clock_scan_is_prospective_live(self):
+        self.assertEqual(scanner.resolve_run_mode(None), "PROSPECTIVE_LIVE")
+        self.assertEqual(scanner.resolve_run_mode(""), "PROSPECTIVE_LIVE")
+
+    def test_explicit_replay_time_is_historical_replay(self):
+        self.assertEqual(
+            scanner.resolve_run_mode("2026-04-08T00:00:00Z"), "HISTORICAL_REPLAY"
+        )
 
 
 if __name__ == "__main__":

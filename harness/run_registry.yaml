@@ -92,3 +92,14 @@ runs:
     hashes:
       input_snapshot_sha256: "65bd161ef30c3e9e78dca5252017b666e89011460d7c9abe2328c88d136db1c7"
       return_tape_sha256: "d333d642e8f10a013ef8d2ba31c7e3ea3b74e9b7a6165edc36f2e8f1886ff6a7"
+
+  - run_id: "20260726_0833_utc"
+    status: clean
+    reason: "first PROSPECTIVE_LIVE wall-clock run on canonical price snapshot v0002; snapshot hash matched, no_lookahead attested, derivatives dormant by design (LIVE_DISABLED, G4 dormant-pass); candidate_pool_random insufficient_pool (6 unique < 10 minimum, entropy 0.96) so DoD-ineligible; return tape pending by design for a fresh prospective run; Owner may revoke judgment eligibility by flipping the flag below"
+    created_utc: "2026-07-26T08:33:42Z"
+    superseded_by: null
+    eligible_for_dod: false
+    eligible_for_judgment: true
+    hashes:
+      input_snapshot_sha256: "e6847fb40f195d1940d553e3f38b62f5052cf5109e67157604ee5dd76319910c"
+      return_tape_sha256: null

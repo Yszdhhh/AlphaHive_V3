@@ -1,6 +1,6 @@
 schema_version: deep_research_prompt_package_v1
-contract_version: v1.0.0-draft
-status: draft
+contract_version: v1.0.0
+status: FROZEN_V1
 
 purpose: >
   Convert a frozen anomaly candidate into a deterministic, auditable research

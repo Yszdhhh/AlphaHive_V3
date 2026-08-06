@@ -17,12 +17,18 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from harness.lib.funding_normalize import deduplicate_funding_8h, normalize_funding
 from harness.lib.cutoff import (
+    KLINE_BAR_INTERVAL_MS,
     KLINE_BAR_RESOLUTION,
     filter_completed_bars,
     resolve_completed_bar_cutoff,
 )
 from harness.lib.derivative_metrics import compute_metric_summary, empty_metric_summary
 from harness.lib.turnover import turnover_map_from_snapshot
+from harness.lib.canonical_price_snapshot import (
+    DEFAULT_ROOT as CANONICAL_PRICE_ROOT,
+    CanonicalPriceSnapshotError,
+    load_current_price_snapshot,
+)
 
 DB_ROOT = Path(r"C:\Users\10639\Desktop\加密\coinglass_db")
 RAW_1H = DB_ROOT / "raw_1h"
@@ -115,23 +121,61 @@ def read_parquet_if_exists(
     return frame
 
 
+def read_published_price_if_present(
+    snapshot: pd.DataFrame,
+    publication_manifest: dict,
+    symbol: str,
+    input_inventory: list[dict],
+) -> pd.DataFrame:
+    """Read a verified in-memory canonical price view and record its provenance."""
+    details = publication_manifest.get("files", {}).get(symbol)
+    frame = snapshot.loc[snapshot["symbol"] == symbol].copy()
+    if not details or frame.empty:
+        input_inventory.append({
+            "input_type": "canonical_klines", "symbol": symbol, "exists": False,
+            "path": None, "content_sha256": None, "row_count": 0,
+            "time_column": "timestamp", "earliest_time_ms": None,
+            "earliest_time_utc": None, "latest_time_ms": None,
+            "latest_time_utc": None, "median_time_step_ms": None,
+            "min_time_step_ms": None, "max_time_step_ms": None,
+        })
+        return pd.DataFrame()
+    entry = _input_inventory_entry(
+        CANONICAL_PRICE_ROOT / publication_manifest["version"] / details["relative_path"],
+        frame,
+        "canonical_klines",
+        symbol,
+        "timestamp",
+    )
+    # The loader already checked this hash against the immutable manifest.
+    entry["content_sha256"] = details["sha256"]
+    input_inventory.append(entry)
+    return frame
+
+
 def normalize_kline(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
-    cols = ["open_time", "timestamp", "open", "high", "low", "close", "volume", "quote_volume", "volume_usd"]
+    cols = [
+        "open_time", "timestamp", "open", "high", "low", "close", "volume",
+        "quote_volume", "volume_usd", "turnover_usd",
+    ]
     out = df[[c for c in cols if c in df.columns]].copy()
     if "open_time" in out.columns:
         out = out.rename(columns={"open_time": "timestamp"})
     if "timestamp" not in out.columns:
         out["timestamp"] = pd.NA
-    if "quote_volume" in out.columns and "volume_usd" in out.columns:
-        out["turnover_usd"] = pd.to_numeric(out["quote_volume"], errors="coerce").fillna(
-            pd.to_numeric(out["volume_usd"], errors="coerce")
-        )
-    elif "quote_volume" in out.columns:
-        out["turnover_usd"] = pd.to_numeric(out["quote_volume"], errors="coerce")
-    elif "volume_usd" in out.columns:
-        out["turnover_usd"] = pd.to_numeric(out["volume_usd"], errors="coerce")
-    else:
-        out["turnover_usd"] = pd.NA
+    turnover = pd.to_numeric(out["turnover_usd"], errors="coerce") if "turnover_usd" in out.columns else None
+    if turnover is None or not turnover.notna().any():
+        quote_volume = pd.to_numeric(out["quote_volume"], errors="coerce") if "quote_volume" in out.columns else None
+        volume_usd = pd.to_numeric(out["volume_usd"], errors="coerce") if "volume_usd" in out.columns else None
+        if quote_volume is not None and volume_usd is not None:
+            turnover = quote_volume.fillna(volume_usd)
+        elif quote_volume is not None:
+            turnover = quote_volume
+        elif volume_usd is not None:
+            turnover = volume_usd
+        else:
+            turnover = pd.Series(pd.NA, index=out.index, dtype="Float64")
+    out["turnover_usd"] = turnover
     out = out.drop(columns=[c for c in ["quote_volume", "volume_usd"] if c in out.columns])
     out["symbol"] = symbol
     return out
@@ -176,6 +220,11 @@ def derivative_use_mode(requested_scan_time_utc: str | None, max_scan_time_utc: 
             f"{maximum.isoformat()}; live/prospective derivative use is disabled"
         )
     return "HISTORICAL_REPLAY"
+
+
+def resolve_run_mode(requested_scan_time_utc: str | None) -> str:
+    """A wall-clock scan is prospective; an explicit replay time is historical."""
+    return "HISTORICAL_REPLAY" if requested_scan_time_utc else "PROSPECTIVE_LIVE"
 
 
 def _blank_derivative_columns(base: pd.DataFrame) -> pd.DataFrame:
@@ -362,6 +411,14 @@ def build_symbol_meta(
     return pd.DataFrame(rows)
 
 
+def has_contiguous_tail(frame: pd.DataFrame, bars: int) -> bool:
+    """Require a complete hourly input window; never calculate across a gap."""
+    if len(frame) < bars:
+        return False
+    timestamps = pd.to_numeric(frame.sort_values("timestamp")["timestamp"].tail(bars), errors="coerce")
+    return bool(timestamps.notna().all() and timestamps.diff().dropna().eq(KLINE_BAR_INTERVAL_MS).all())
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_id", default=None)
@@ -371,7 +428,13 @@ def main() -> None:
     print_honesty()
     scan_rules = load_yaml(PROJECT_ROOT / "config" / "scan_rules.yaml")
     with (PROJECT_ROOT / "config" / "universe.json").open("r", encoding="utf-8") as f:
-        universe = json.load(f)["symbols"]
+        universe_document = json.load(f)
+    disabled = set(universe_document.get("disabled_pull_symbols", []))
+    universe = [item for item in universe_document["symbols"] if item["symbol"] not in disabled]
+    try:
+        published_prices, canonical_price_manifest = load_current_price_snapshot(root=CANONICAL_PRICE_ROOT)
+    except CanonicalPriceSnapshotError as exc:
+        raise SystemExit(f"STOP_AND_REPORT_OWNER canonical price snapshot unavailable: {exc}") from exc
 
     now = datetime.now(timezone.utc)
     scan_dt = pd.Timestamp(args.scan_time_utc).tz_convert("UTC") if args.scan_time_utc else pd.Timestamp(now)
@@ -410,13 +473,7 @@ def main() -> None:
 
     for item in universe:
         symbol = item["symbol"]
-        kline = read_parquet_if_exists(
-            RAW_1H / "klines" / f"{symbol}.parquet",
-            input_inventory=input_inventory,
-            input_type="klines",
-            symbol=symbol,
-            time_column="open_time",
-        )
+        kline = read_published_price_if_present(published_prices, canonical_price_manifest, symbol, input_inventory)
         if kline.empty:
             continue
         norm = normalize_kline(kline, symbol)
@@ -440,12 +497,8 @@ def main() -> None:
         derivative_meta[symbol] = summaries
         frames.append(snap)
 
-    benchmark_kline = read_parquet_if_exists(
-        RAW_1H / "klines" / f"{benchmark_symbol}.parquet",
-        input_inventory=input_inventory,
-        input_type="klines",
-        symbol=benchmark_symbol,
-        time_column="open_time",
+    benchmark_kline = read_published_price_if_present(
+        published_prices, canonical_price_manifest, benchmark_symbol, input_inventory
     )
     if not benchmark_kline.empty:
         benchmark_norm = normalize_kline(benchmark_kline, benchmark_symbol)
@@ -501,7 +554,7 @@ def main() -> None:
     if not snapshot.empty:
         btc = snapshot[snapshot["symbol"] == benchmark_symbol].sort_values("timestamp")
         btc_ret = 0.0
-        if len(btc) >= 25:
+        if has_contiguous_tail(btc, 25):
             btc_ret = (float(btc["close"].iloc[-1]) / float(btc["close"].iloc[-25]) - 1.0) * 100
         meta_lookup = symbol_meta.set_index("symbol").to_dict("index") if not symbol_meta.empty else {}
 
@@ -518,12 +571,14 @@ def main() -> None:
             ):
                 continue
             df = df.sort_values("timestamp")
-            if len(df) < 25:
+            if not has_contiguous_tail(df, 25):
                 continue
             close = pd.to_numeric(df["close"], errors="coerce")
             ret_24h = (float(close.iloc[-1]) / float(close.iloc[-25]) - 1.0) * 100
-            vol_24h = close.pct_change().rolling(24).std().dropna()
-            if vol_24h.empty:
+            contiguous_previous = pd.to_numeric(df["timestamp"], errors="coerce").diff().eq(KLINE_BAR_INTERVAL_MS)
+            returns = close.pct_change().where(contiguous_previous)
+            vol_24h = returns.rolling(24, min_periods=24).std().dropna()
+            if vol_24h.empty or vol_24h.index[-1] != df.index[-1]:
                 continue
             latest_vol = float(vol_24h.iloc[-1])
             vol_quantile = float((vol_24h <= latest_vol).mean())
@@ -588,6 +643,7 @@ def main() -> None:
     manifest = {
         "schema_version": ARTIFACT_SCHEMA_VERSION,
         "run_id": run_id,
+        "mode": resolve_run_mode(args.scan_time_utc),
         "scan_time_utc": scan_time,
         "requested_scan_time_utc": scan_time,
         "resolved_effective_cutoff_ms": effective_cutoff_ms,
@@ -600,6 +656,11 @@ def main() -> None:
         "bar_resolution": KLINE_BAR_RESOLUTION,
         "data_cutoff": effective_cutoff_ms,
         "input_inventory_status": "RECORDED",
+        "canonical_price_snapshot": {
+            "version": canonical_price_manifest["version"],
+            "published_at_utc": canonical_price_manifest["published_at_utc"],
+            "manifest_path": str(CANONICAL_PRICE_ROOT / canonical_price_manifest["version"] / "manifest.json"),
+        },
         "derivative_use_mode": derivative_mode,
         "derivative_historical_replay_max_scan_time_utc": historical_max,
         "derivative_inventory": {

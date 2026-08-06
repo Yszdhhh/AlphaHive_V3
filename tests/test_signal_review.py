@@ -45,6 +45,7 @@ from server.signal_review_repository import (
     get_signal_prompt,
     get_meta,
     health_check,
+    cockpit_snapshot,
 )
 
 
@@ -504,6 +505,26 @@ class TestRepository(TestExporterBase):
         self.assertEqual(result["status"], "ok")
         self.assertTrue(result["latest_exists"])
 
+    def test_cockpit_snapshot_is_read_only_and_has_funnel(self):
+        snapshot = cockpit_snapshot()
+        self.assertEqual(snapshot["status"], "OK")
+        self.assertTrue(snapshot["run"]["run_id"])
+        self.assertEqual(snapshot["run"]["candidate_count"], len(snapshot["candidate_explanations"]))
+        self.assertEqual([stage["id"] for stage in snapshot["funnel"]], [
+            "universe", "history", "valid_bars", "threshold", "trigger", "paper_ready",
+        ])
+        self.assertEqual(snapshot["thresholds"]["status"], "READ_ONLY")
+        threshold_keys = {item["key"] for item in snapshot["thresholds"]["thresholds"]}
+        self.assertTrue({"min_effective_turnover_usd", "min_valid_turnover_bars_24h"}.issubset(threshold_keys))
+        self.assertEqual(snapshot["scenario"]["status"], "LOCAL_ONLY")
+        self.assertTrue(snapshot["symbols"])
+        self.assertIn(snapshot["system_state"]["kind"], {"RESEARCH_QUEUE_READY", "NO_ANOMALY_OBSERVED", "WAITING_FOR_METRICS"})
+        self.assertEqual(snapshot["system_path"][-1]["state"], "LOCKED")
+        for candidate in snapshot["candidate_explanations"]:
+            self.assertEqual(candidate["state_label"], "待研究异常")
+        self.assertTrue(snapshot["symbols"][0]["explanation"]["history"]["label"])
+        self.assertTrue(snapshot["recent_runs"])
+
     def test_strip_denylist(self):
         data = {"a": 1, "exit_price_ref_4h": 999, "b": 2, "dir_excess_ret_24h": 888}
         result = _strip_denylist(data)
@@ -539,6 +560,18 @@ class TestAPI(TestExporterBase):
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
         self.assertEqual(data["status"], "ok")
+
+    def test_cockpit_endpoint(self):
+        self._skip_if_no_client()
+        resp = self.client.get("/api/signals/cockpit")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["status"], "OK")
+        self.assertEqual(data["run"]["candidate_count"], len(data["candidate_explanations"]))
+        self.assertEqual(data["thresholds"]["status"], "READ_ONLY")
+        self.assertEqual(data["scenario"]["status"], "LOCAL_ONLY")
+        self.assertIn(data["system_state"]["kind"], {"RESEARCH_QUEUE_READY", "NO_ANOMALY_OBSERVED", "WAITING_FOR_METRICS"})
+        self.assertEqual(data["system_path"][-1]["state"], "LOCKED")
 
     def test_list_endpoint(self):
         self._skip_if_no_client()

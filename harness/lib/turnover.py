@@ -17,15 +17,16 @@ class TurnoverResult:
 
 
 def bar_turnover_usd(df: pd.DataFrame) -> pd.Series:
-    if "quote_volume" in df.columns:
-        return pd.to_numeric(df["quote_volume"], errors="coerce")
-    if "volume_usd" in df.columns:
-        return pd.to_numeric(df["volume_usd"], errors="coerce")
-    if "turnover_usd" in df.columns:
-        return pd.to_numeric(df["turnover_usd"], errors="coerce")
+    result = pd.Series(float("nan"), index=df.index, dtype="float64")
+    for column in ("quote_volume", "volume_usd", "turnover_usd"):
+        if column not in df.columns:
+            continue
+        candidate = pd.to_numeric(df[column], errors="coerce")
+        result = result.where(result.notna() & (result > 0), candidate)
     close = pd.to_numeric(df.get("close"), errors="coerce")
     volume = pd.to_numeric(df.get("volume"), errors="coerce")
-    return close * volume
+    fallback = close * volume
+    return result.where(result.notna() & (result > 0), fallback)
 
 
 def turnover_24h_effective(

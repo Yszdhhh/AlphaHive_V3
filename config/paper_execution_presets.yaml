@@ -1,6 +1,6 @@
 schema_version: paper_execution_presets_v1
-preset_version: v0.1.0-draft
-status: DRAFT
+preset_version: v0.1.0
+status: APPROVED
 scope: PAPER_ONLY
 default_preset_id: standard
 auto_select_aggressive: false
@@ -117,4 +117,3 @@ block_instead_of_clamp:
   - liquidation_buffer_below_minimum
   - preset_version_stale
   - approval_ttl_expired
-

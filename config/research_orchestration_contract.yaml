@@ -1,5 +1,5 @@
 schema_version: research_orchestration_contract_v1
-status: P0_ACCEPTED_RESEARCHJOB_MVP_001A_READY
+status: P0_ACCEPTED_RESEARCHJOB_MVP_002_READY
 purpose: >
   Define a deterministic central orchestrator for AlphaHive research jobs.
   Runtime research agents exchange immutable JSON artifacts only. Agents
@@ -162,7 +162,7 @@ owner_gate:
   agent_cannot_sign_owner_decision: true
 
 current_priority:
-  active_slice: RESEARCHJOB-MVP-001A
+  active_slice: RESEARCHJOB-MVP-003_OWNER_DECISION
   sequence:
     - RESEARCHJOB-MVP-001A_STORE_AND_CREATE_GET
     - RESEARCHJOB-MVP-001B_EVIDENCE_IMPORT
@@ -170,4 +170,4 @@ current_priority:
     - RESEARCHJOB-MVP-003_OWNER_DECISION
     - RESEARCHJOB-MVP-004_PAPER_PLAN
     - RESEARCHJOB-MVP-005_OUTBOX_AND_FEISHU
-  current_slice_excludes: [evidence_import, automatic_provider_calls, owner_decision, paper_plan, notification_delivery]
+  current_slice_excludes: [automatic_provider_calls, paper_plan, notification_delivery]

@@ -6,6 +6,8 @@ comparable while preserving source and unit provenance.
 """
 from __future__ import annotations
 
+import math
+
 import pandas as pd
 
 
@@ -43,7 +45,8 @@ def _symbol_series(frame: pd.DataFrame, symbol: str | None) -> pd.Series:
 
 def _timestamp(frame: pd.DataFrame, column: str, label: str) -> pd.Series:
     values = pd.to_numeric(frame[column], errors="coerce")
-    if values.isna().any() or (values < 100_000_000_000).any():
+    finite = values.map(lambda value: math.isfinite(float(value)) if pd.notna(value) else False)
+    if values.isna().any() or not finite.all() or (values < 100_000_000_000).any():
         raise CanonicalSchemaError(f"{label} timestamps must be unix milliseconds")
     return values.astype("int64")
 
@@ -52,9 +55,32 @@ def _numeric(frame: pd.DataFrame, columns: list[str], label: str) -> pd.DataFram
     out = frame[columns].copy()
     for column in columns:
         out[column] = pd.to_numeric(out[column], errors="coerce")
-        if out[column].isna().any():
+        finite = out[column].map(lambda value: math.isfinite(float(value)) if pd.notna(value) else False)
+        if out[column].isna().any() or not finite.all():
             raise CanonicalSchemaError(f"{label} contains non-numeric values in {column}")
     return out
+
+
+def _validate_ohlcv(out: pd.DataFrame, label: str) -> None:
+    """Reject malformed complete OHLCV rows without selecting a data source.
+
+    This is intentionally structural only.  It does not fill timestamp gaps,
+    resolve source conflicts, or decide whether a source is current enough for
+    the scanner; those actions remain outside the adapter boundary.
+    """
+    prices = out[["open", "high", "low", "close"]]
+    if (prices < 0).any().any() or (out["volume"] < 0).any():
+        raise CanonicalSchemaError(f"{label} contains negative OHLCV values")
+    if (
+        (out["high"] < out["low"]).any()
+        or (out["high"] < out["open"]).any()
+        or (out["high"] < out["close"]).any()
+        or (out["low"] > out["open"]).any()
+        or (out["low"] > out["close"]).any()
+    ):
+        raise CanonicalSchemaError(f"{label} has inconsistent OHLC bounds")
+    if out.duplicated(["symbol", "timestamp_ms"]).any():
+        raise CanonicalSchemaError(f"{label} contains duplicate symbol/timestamp rows")
 
 
 def _base(frame: pd.DataFrame, source: str, timestamp: pd.Series, label: str, symbol: str | None) -> pd.DataFrame:
@@ -104,6 +130,7 @@ def canonicalize_klines(frame: pd.DataFrame, source: str, symbol: str | None = N
             out[output_name] = pd.to_numeric(frame[input_name], errors="coerce").to_numpy()
     if "turnover_usd" not in out and "quote_volume" in out:
         out["turnover_usd"] = out["quote_volume"]
+    _validate_ohlcv(out, f"{source} klines")
     return out
 
 

@@ -93,9 +93,22 @@ def check_hashes(run_id: str, results: list[dict]) -> None:
         add(results, "G5 return tape hash", "WARN", "return tape pending")
 
 
-def check_funding_contract(run_id: str, anomaly: pd.DataFrame, results: list[dict]) -> None:
+def check_funding_contract(
+    run_id: str,
+    anomaly: pd.DataFrame,
+    results: list[dict],
+    derivative_use_mode: str | None = None,
+) -> None:
     try:
         rates = pd.to_numeric(anomaly["funding_rate_8h"], errors="coerce").dropna()
+        if derivative_use_mode == "LIVE_DISABLED":
+            # Prospective runs keep derivatives dormant until the Owner ignites
+            # them; funding values appearing here would violate that boundary.
+            if rates.empty:
+                add(results, "G4 funding contract", "PASS", "funding dormant by design: derivative_use_mode=LIVE_DISABLED")
+            else:
+                add(results, "G4 funding contract", "FAIL", f"{len(rates)} funding samples present despite LIVE_DISABLED")
+            return
         if rates.empty:
             add(results, "G4 funding contract", "FAIL", "no funding samples in anomaly rows")
             return
@@ -228,10 +241,15 @@ def main() -> None:
     if baseline.empty:
         add(results, "DATA baseline rows", "FAIL", f"no baseline rows for {run_id}")
 
+    manifest_path = RUNS_DIR / run_id / "run_manifest.json"
+    derivative_use_mode = None
+    if manifest_path.exists():
+        derivative_use_mode = json.loads(manifest_path.read_text(encoding="utf-8")).get("derivative_use_mode")
+
     check_registry(run_id, results)
     check_hashes(run_id, results)
     if not anomaly.empty:
-        check_funding_contract(run_id, anomaly, results)
+        check_funding_contract(run_id, anomaly, results, derivative_use_mode)
         check_autoskip(anomaly, results)
     if not baseline.empty:
         check_baseline_friction(baseline, results)

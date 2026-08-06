@@ -1,0 +1,3184 @@
+{
+  "derivative_status": {
+    "funding": "NOT_INCLUDED",
+    "oi": "NOT_INCLUDED"
+  },
+  "files": {
+    "1000BONKUSDT": {
+      "relative_path": "klines/1000BONKUSDT.parquet",
+      "rows": 23245,
+      "sha256": "36f888e21e07fc61b240c0a1f8f7f11cb1eb2d5cfcb1b72a9c95486782bb0075"
+    },
+    "1000PEPEUSDT": {
+      "relative_path": "klines/1000PEPEUSDT.parquet",
+      "rows": 28063,
+      "sha256": "067f396cc13a53d41c75b5cda5fd95e802c46dd3a5776f8f4be8e65c1dd4154c"
+    },
+    "AAVEUSDT": {
+      "relative_path": "klines/AAVEUSDT.parquet",
+      "rows": 39827,
+      "sha256": "54f7414194c3ad8cbfe904389b1b030cfa21643097156c7c57a018d9dfe94d1a"
+    },
+    "ADAUSDT": {
+      "relative_path": "klines/ADAUSDT.parquet",
+      "rows": 39823,
+      "sha256": "7830dcaea742b0273dc62ca69355b712076655e4bfbe240c30c699ad56b4edc5"
+    },
+    "ARBUSDT": {
+      "relative_path": "klines/ARBUSDT.parquet",
+      "rows": 29100,
+      "sha256": "506bfd40a7cb1a99e100907c04c21e47610e9b78edf1e47afd884586dcfdc513"
+    },
+    "ASTERUSDT": {
+      "relative_path": "klines/ASTERUSDT.parquet",
+      "rows": 7239,
+      "sha256": "7b5066d290e2b7d37368cbd6e5754555c3e1eaf1c10241dfbd9f5e7c58b6cdc5"
+    },
+    "ATOMUSDT": {
+      "relative_path": "klines/ATOMUSDT.parquet",
+      "rows": 39827,
+      "sha256": "cce53abe2257d8e24bb5e5f5eb88274757a5264928d2d62519d4d1cadb87b863"
+    },
+    "AVAXUSDT": {
+      "relative_path": "klines/AVAXUSDT.parquet",
+      "rows": 39823,
+      "sha256": "a0879fdb6d44b6d544a466c5809bd90acee0dffdf264fa15bc03447c8839a125"
+    },
+    "BCHUSDT": {
+      "relative_path": "klines/BCHUSDT.parquet",
+      "rows": 39823,
+      "sha256": "310629d01dfb4c5f7eecce082253a1e52a5d85ebe19482899cbcf4bd67bdf441"
+    },
+    "BTCUSDT": {
+      "relative_path": "klines/BTCUSDT.parquet",
+      "rows": 39819,
+      "sha256": "449c904a72fde263ae3da51fdf46daf3f8b6bd58939b1cdf78274461c71c84a9"
+    },
+    "CRVUSDT": {
+      "relative_path": "klines/CRVUSDT.parquet",
+      "rows": 39827,
+      "sha256": "2c7d6e9a377abe029e09a243c5a975b51873f2d4b8bf151d7b99705475c4a5d1"
+    },
+    "DASHUSDT": {
+      "relative_path": "klines/DASHUSDT.parquet",
+      "rows": 39827,
+      "sha256": "bc96ad761f7c280395db2df846f33280bc6255c3a33c6a787abe5a44b6732c72"
+    },
+    "DOGEUSDT": {
+      "relative_path": "klines/DOGEUSDT.parquet",
+      "rows": 39823,
+      "sha256": "82dc06e90066d540cb324f77dc4ba467261f1d92b44ab50a5bd73a2b1c507cf1"
+    },
+    "ENAUSDT": {
+      "relative_path": "klines/ENAUSDT.parquet",
+      "rows": 20079,
+      "sha256": "6303e65615501fa246784dfa8fb3c878014061c94741d541e53d6b350e8d63ff"
+    },
+    "ESPORTSUSDT": {
+      "relative_path": "klines/ESPORTSUSDT.parquet",
+      "rows": 8485,
+      "sha256": "514ee88958aba427d22dd147900580b9a2a56cff73f717231fd1e394257319e1"
+    },
+    "ETCUSDT": {
+      "relative_path": "klines/ETCUSDT.parquet",
+      "rows": 39827,
+      "sha256": "852114968e383a9a1a0e1ed811b52ae8df6457efb8c12a6d70fb7a433dd27afe"
+    },
+    "ETHUSDT": {
+      "relative_path": "klines/ETHUSDT.parquet",
+      "rows": 41319,
+      "sha256": "c71f0d49118dbb75c744af5e678954f8a55808a34fe9cb806327eac5ef327532"
+    },
+    "FARTCOINUSDT": {
+      "relative_path": "klines/FARTCOINUSDT.parquet",
+      "rows": 13781,
+      "sha256": "360ebdf27fb1ec5ccb34923f6270d9588c4388226e4e866331e1dd33926c80b0"
+    },
+    "FFUSDT": {
+      "relative_path": "klines/FFUSDT.parquet",
+      "rows": 6994,
+      "sha256": "4aa56e989ad25cfc33ac37a6148e2703fe77d6ba3dbe3e41f0a2c6b918085935"
+    },
+    "FILUSDT": {
+      "relative_path": "klines/FILUSDT.parquet",
+      "rows": 39827,
+      "sha256": "82d00a4058283a9d8de312e1a6ad677f6085ddbdec7869f3e85cdd9213b6b959"
+    },
+    "GRASSUSDT": {
+      "relative_path": "klines/GRASSUSDT.parquet",
+      "rows": 14792,
+      "sha256": "0e8232f2cc9ea2b087e41ffbe3f77e2188133b23a1cc6ee558a6afb37478f94f"
+    },
+    "HBARUSDT": {
+      "relative_path": "klines/HBARUSDT.parquet",
+      "rows": 39827,
+      "sha256": "e28638c5f6ee1b5bfa81e5d36ac24e5c264af0ed93448248430df0cc6ecbdb6e"
+    },
+    "HUSDT": {
+      "relative_path": "klines/HUSDT.parquet",
+      "rows": 9302,
+      "sha256": "2a3916e379235ef1feb28d4099489e0a17a3616d0423abaa7517f737e8f98f43"
+    },
+    "ICPUSDT": {
+      "relative_path": "klines/ICPUSDT.parquet",
+      "rows": 33361,
+      "sha256": "064610e7515a1ac030f0a28070d1819bc8a4ebc99de801fe363a56240c558d6b"
+    },
+    "INJUSDT": {
+      "relative_path": "klines/INJUSDT.parquet",
+      "rows": 34345,
+      "sha256": "48a3717ead92bd05aca519f6e913751eb62e4c4ec26ca058fccd707f4f7291b5"
+    },
+    "KITEUSDT": {
+      "relative_path": "klines/KITEUSDT.parquet",
+      "rows": 6281,
+      "sha256": "d8a780e8f21b04d78413eba91d60bbded6abcc5cd4a1848c364ae4281b66bc2a"
+    },
+    "LABUSDT": {
+      "relative_path": "klines/LABUSDT.parquet",
+      "rows": 6561,
+      "sha256": "cf3928b351c1f0e35ff2cff8be998494e032051423d353607dc05c93e45351fb"
+    },
+    "LDOUSDT": {
+      "relative_path": "klines/LDOUSDT.parquet",
+      "rows": 33471,
+      "sha256": "5228b63fde8dd4a139d4b95ab3a626183df93bd2177c07e54d6bd3e25bcc87e5"
+    },
+    "LINKUSDT": {
+      "relative_path": "klines/LINKUSDT.parquet",
+      "rows": 39823,
+      "sha256": "c99346aeeb1a0d2083d57733404fd3ef7e226de70daca479c4916cca98d30962"
+    },
+    "LTCUSDT": {
+      "relative_path": "klines/LTCUSDT.parquet",
+      "rows": 39823,
+      "sha256": "5191e79501316ce489deecd587b06d442f55629d62e337ad78ca11c04a9065cc"
+    },
+    "MONUSDT": {
+      "relative_path": "klines/MONUSDT.parquet",
+      "rows": 6737,
+      "sha256": "c4e76280717ab37e5ef425c1a38b65c5da57390f9b010f9fc6fe332944fc060a"
+    },
+    "MUSDT": {
+      "relative_path": "klines/MUSDT.parquet",
+      "rows": 9018,
+      "sha256": "55187e9c2606a8486105735468dd91b24a68978f60f1a5a4b15cc51c4ba302a5"
+    },
+    "ONDOUSDT": {
+      "relative_path": "klines/ONDOUSDT.parquet",
+      "rows": 21826,
+      "sha256": "d234ce3f64334b260f0e3fddcf5970297a669af1d00fc84981ee48bc37b5ab22"
+    },
+    "OPUSDT": {
+      "relative_path": "klines/OPUSDT.parquet",
+      "rows": 36181,
+      "sha256": "c4d02f5e99a891e2028049e08b99904c32e556892a64b3894908a592dd812cfe"
+    },
+    "ORDIUSDT": {
+      "relative_path": "klines/ORDIUSDT.parquet",
+      "rows": 23607,
+      "sha256": "b2ebb6b57e3b03ae960705e2beaaea3a3603eb47efbec3b56e563964dfbb0a31"
+    },
+    "PAXGUSDT": {
+      "relative_path": "klines/PAXGUSDT.parquet",
+      "rows": 11465,
+      "sha256": "cb0c8474618e694af368b08a554ff7a838d6f4517445e286e719f7ae1e773a01"
+    },
+    "PENDLEUSDT": {
+      "relative_path": "klines/PENDLEUSDT.parquet",
+      "rows": 26065,
+      "sha256": "56bc65e7f832ac99ef705599595702065f41355bb6cb2ae16033552640abcb3d"
+    },
+    "PENGUUSDT": {
+      "relative_path": "klines/PENGUUSDT.parquet",
+      "rows": 13859,
+      "sha256": "ec89d53b8ea0d9caabea8cfe79f8d0b2a80aa63b0070d1c70b7fd5d621249566"
+    },
+    "POLUSDT": {
+      "relative_path": "klines/POLUSDT.parquet",
+      "rows": 16143,
+      "sha256": "726a8bd82789e420e478481c757428e6ea9277814d745f4a3e23b1c68a11c21b"
+    },
+    "PUMPUSDT": {
+      "relative_path": "klines/PUMPUSDT.parquet",
+      "rows": 8948,
+      "sha256": "13ba2218f1f5191b4b4e0bed33ad74c99ad4a36ace7d1b0ef80d3f621431800e"
+    },
+    "RAVEUSDT": {
+      "relative_path": "klines/RAVEUSDT.parquet",
+      "rows": 5172,
+      "sha256": "fa2d9507cb6928ec112ff92e80ac420c3ce0a44d63c02ca79a8f975cc825410c"
+    },
+    "RENDERUSDT": {
+      "relative_path": "klines/RENDERUSDT.parquet",
+      "rows": 17321,
+      "sha256": "751f6ed2d81371d0a68da2178866b651bc28202908dc5abcf1d81926149fc2db"
+    },
+    "RIVERUSDT": {
+      "relative_path": "klines/RIVERUSDT.parquet",
+      "rows": 6565,
+      "sha256": "be209ea1d9ff7b1db1c4e5763b9781353edd10eb9b7424ecdc210a94c3beb3c4"
+    },
+    "SKYAIUSDT": {
+      "relative_path": "klines/SKYAIUSDT.parquet",
+      "rows": 10334,
+      "sha256": "6f88d3f216999d818ae7e7fa0779afb7d04327f7fe4259556f6776234b358815"
+    },
+    "SOLUSDT": {
+      "relative_path": "klines/SOLUSDT.parquet",
+      "rows": 41327,
+      "sha256": "b855cfb885fce5cb4fa538430deac1399d95ee7e028055aa19e18dbef39bf0ac"
+    },
+    "SUIUSDT": {
+      "relative_path": "klines/SUIUSDT.parquet",
+      "rows": 28111,
+      "sha256": "321128359ae0a87201693ef1ecb31bc78a63549e5611c11cd646a4fa3d306910"
+    },
+    "TIAUSDT": {
+      "relative_path": "klines/TIAUSDT.parquet",
+      "rows": 23769,
+      "sha256": "8ca1e77d7775bb405bc4899450d0fad54071c4a81786d90f8e2c2b26b163626e"
+    },
+    "TRUMPUSDT": {
+      "relative_path": "klines/TRUMPUSDT.parquet",
+      "rows": 13094,
+      "sha256": "507836855b585c62658ab2ab706a6a71f8945a0162dc28517c65c5dd3d8b5cce"
+    },
+    "TRXUSDT": {
+      "relative_path": "klines/TRXUSDT.parquet",
+      "rows": 39823,
+      "sha256": "b15b4436c5b370b58b5e9427d866c2081092252eb88cb70202439ecb7ee3619d"
+    },
+    "UBUSDT": {
+      "relative_path": "klines/UBUSDT.parquet",
+      "rows": 7405,
+      "sha256": "5fd79ff20ca9e5a1e2aa619221a5630692171fb3345cd57c53ed2823aa8ec463"
+    },
+    "UNIUSDT": {
+      "relative_path": "klines/UNIUSDT.parquet",
+      "rows": 39827,
+      "sha256": "419495c5dcc2b08afc23d810505e3f6fb5a2b142209519c22cafc53510906b34"
+    },
+    "VIRTUALUSDT": {
+      "relative_path": "klines/VIRTUALUSDT.parquet",
+      "rows": 14031,
+      "sha256": "595bc5d92c4c40b0e5c30612ed1e7042a83b593bfd1c78a97664708af1f41178"
+    },
+    "VVVUSDT": {
+      "relative_path": "klines/VVVUSDT.parquet",
+      "rows": 12832,
+      "sha256": "8e56cc5257a5be1db2635cd2ca62baadba1ca0fbcb25fc7e08cc42d85a4c0758"
+    },
+    "WIFUSDT": {
+      "relative_path": "klines/WIFUSDT.parquet",
+      "rows": 21877,
+      "sha256": "ff957d1e29ef50b33eb96ba5f157f7be877b81d18890a25a69a3f49a5c1769d8"
+    },
+    "WLDUSDT": {
+      "relative_path": "klines/WLDUSDT.parquet",
+      "rows": 26147,
+      "sha256": "51eb1540622e093963cb0a991e826f9b95823edfcb35b55891917759f77fd1e5"
+    },
+    "WLFIUSDT": {
+      "relative_path": "klines/WLFIUSDT.parquet",
+      "rows": 7891,
+      "sha256": "b994d8b9031cbcdc2de81021b8dcf457b9ec7bf34be568be423e5edae45dbed4"
+    },
+    "XLMUSDT": {
+      "relative_path": "klines/XLMUSDT.parquet",
+      "rows": 39823,
+      "sha256": "8cbf389ec84b7468154002c4289a58324688c77902b75109c79c87e8750a34be"
+    },
+    "XMRUSDT": {
+      "relative_path": "klines/XMRUSDT.parquet",
+      "rows": 37290,
+      "sha256": "a4c4727078d42721d5e7155231852e3f4b769d647b3c49e97e8b9a15f17922c8"
+    },
+    "XPLUSDT": {
+      "relative_path": "klines/XPLUSDT.parquet",
+      "rows": 7910,
+      "sha256": "73afc4b20758ade0916423a2555be54599ea3bdb58bdfc4464a46cc2dd9544ff"
+    }
+  },
+  "price_precedence": "BINANCE_OVER_COINGLASS",
+  "published_at_utc": "2026-07-18T04:17:10Z",
+  "schema_version": "canonical_price_snapshot_v1",
+  "symbols": {
+    "1000BONKUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1700661600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 948,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 23245,
+        "rows_hash": "a43db9d8bcd437d06538f68d99983bf13c393007f67f6db8d07fc43f25a8c981",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "1000BONKUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "1000PEPEUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1683302400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 869,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 28063,
+        "rows_hash": "9957fde3cf27554aa0926f645dc92369d0ed227257923a57b0b3cf9f641cb8a2",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "1000PEPEUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "AAVEUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 792,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39827,
+        "rows_hash": "9aaaa03db597ac57b2067446adaadf6f9a42bac835a38b4869241a60ae3a81e8",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "AAVEUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "ADAUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 869,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39823,
+        "rows_hash": "485cf572fb2e569e22d911b9c3894ace9e34415dc6aeb6e4c5b7ca2029804d9f",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ADAUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "ARBUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1679583600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 29100,
+        "rows_hash": "5fd1eb91d7fe245d20e7856faf463010ddbf6c04744414c6bbbce485f5d51bcc",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ARBUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "ASTERUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1758283200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 796,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 7239,
+        "rows_hash": "d85e8d7c4d4dc10f617c0afcd0d078c8a1b61fc46789faf644c250aa8f6062ac",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ASTERUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "ATOMUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39827,
+        "rows_hash": "7bfb32f6a87ecf2a030fd0c4e69d7a96eda49af9a72c915a852716a7fe84a141",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ATOMUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "AVAXUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39823,
+        "rows_hash": "f4e0b3c71341fe6d7d88c6c8a92b008268430d973c249e1016c60149991623bc",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "AVAXUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "BCHUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39823,
+        "rows_hash": "82efb383f737af79a48483a38a521cf8ccfb938478f4e6ce25923c2fd106ab0a",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "BCHUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "BTCUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640995200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 523,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39819,
+        "rows_hash": "a403c2261ce5d4a645b657af6d0c7d8ee600e757c1169c99cff73344ba76ca5f",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "BTCUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "CRVUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39827,
+        "rows_hash": "e3c99c0eb2b630b08c8b789adeef1d56fec32774b704e1062da3923808fe8f90",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "CRVUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "DASHUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39827,
+        "rows_hash": "fd989cf21d6669289ef5b5ba3cb3abc793b880fa6c230882195b50fa98c3bfb7",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "DASHUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "DOGEUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 934,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39823,
+        "rows_hash": "5c207598e43556390fcb4434b77e030b0b85fc3bb5d391129e14d97b519eaf61",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "DOGEUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "ENAUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1712059200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 944,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 20079,
+        "rows_hash": "611de05045d0f3ac0fda677087137d5b5734712cafbca3e5680e214b88241f0e",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ENAUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "ESPORTSUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1753783200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 635,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 8485,
+        "rows_hash": "0e88671804f08ea621eedbcd1ce81b6529a94765c8266b6bda9a7886323769a0",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ESPORTSUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "ETCUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39827,
+        "rows_hash": "3fcf3dfa86420e2e8f269ddcf8da910b09b50aee97a4fee42d04647c09651151",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ETCUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "ETHUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1574838000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1580234400000,
+            "before_timestamp_ms": 1640995200000,
+            "missing_bars": 16877
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 355,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 41319,
+        "rows_hash": "43f5f960505310c299cda05d5e6c64fa5f7a6d05a8ad04cbdf7dadb304efbc21",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ETHUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "FARTCOINUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1734717600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 625,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 13781,
+        "rows_hash": "133c76dc8a9909d4354d139689acfbd2fde50e0b396a6b48b1e250beedb7ae6a",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "FARTCOINUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "FFUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1759150800000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 640,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 6994,
+        "rows_hash": "8949575fceb8149daaee1ba89c33e94af634c395a6158db5ec7f2a8b68e52828",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "FFUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "FILUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39827,
+        "rows_hash": "1b2ecb80b98e1126d72d65e8672ff43425f15845579876363b588af85d3dd0a2",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "FILUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "GRASSUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1731078000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 625,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 14792,
+        "rows_hash": "705b02238272aa68615475b297cb10c00edb0e2af01f78a065aaa199e0868ccf",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "GRASSUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "HBARUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 806,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39827,
+        "rows_hash": "c30adda7a213de78b886617bf734212a38fc450418cee74b9c2dab9b886c4cb0",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "HBARUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "HUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1750842000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 634,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 9302,
+        "rows_hash": "d97851f1ab468de7575952cac1795b5f5b9a6dcee47a021b1338e1521c76c5ee",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "HUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "ICPUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1664244000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 33361,
+        "rows_hash": "63dcf27303de4cf664a442778412a786c1de3e0e90bf94ae95a75192c25213c1",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ICPUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "INJUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1660701600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 34345,
+        "rows_hash": "9e6beaad1c4cbf20c33ec57ae33f129166ef15a313d80935e0bd4c92d3f510e0",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "INJUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "KITEUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1761732000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 625,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 6281,
+        "rows_hash": "7aae23c8af045f4288af3f704675b009fd42d8dca966364cec8b5babb4fd40dc",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "KITEUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "LABUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1760709600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 647,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 6561,
+        "rows_hash": "bb4a18e077d893d29ff46965203ed19b0c163af94fd5b0f4aea3d9577a90e99a",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "LABUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "LDOUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1663848000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 798,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 33471,
+        "rows_hash": "90ec0e41851958bf334bca93f3d172bf11c5bac5cb079c655eda798134d8c1d7",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "LDOUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "LINKUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39823,
+        "rows_hash": "b9bdbd455d0bdd0877c942cd1ae6af0f649acfa97fe69abe26539e86b73ccd7c",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "LINKUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "LTCUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39823,
+        "rows_hash": "c21390e46904c7b51a929aee8e861f335cec8f8d3f61292467e9810854d1a9d4",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "LTCUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "MONUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1760079600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783854000000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 3
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 3,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 740,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 6737,
+        "rows_hash": "701124c9d9815661633db4514e9071b79ad177f81ed8d5bc8e7214975bf3ca88",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "MONUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 3,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "MUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1751878800000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 625,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 9018,
+        "rows_hash": "fb8408f49d63d5c644c5efc03fc85d6a1ac879f01b7ffb34e073e92119d517b9",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "MUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "ONDOUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1705755600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 21826,
+        "rows_hash": "09cca1e579c4dccfe559d810b3cc0fa54f892343ecb12372d9c0135e87786688",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ONDOUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "OPUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1654092000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 36181,
+        "rows_hash": "2187be76e8f61c78567f096837c6b8f8ec2d5350fa811a335dbb5928e162839c",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "OPUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "ORDIUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1699358400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 23607,
+        "rows_hash": "68a4eb66bc08ebad315599c6601ed45ed5bedea904ac3146a27247ec48ee8381",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "ORDIUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "PAXGUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1743069600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 11465,
+        "rows_hash": "db4baf3ee6b67e28a38af0317c0ad44d41719b9aa75ff097f69aa48151e9495f",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "PAXGUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "PENDLEUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1690509600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 26065,
+        "rows_hash": "a192fffba64c3501943229d4b46c52db1d156f5dfc3b9d673a4bbe8ef7984f32",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "PENDLEUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "PENGUUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1734451200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 873,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 13859,
+        "rows_hash": "8136a1c9b5de731b66e5da9cb1f158b5ec0fb2e7ba8c2de2b40fcf147d99f40a",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "PENGUUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "POLUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1726228800000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 794,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 16143,
+        "rows_hash": "1e3cead5216219cbfb90644790b0e9d2c4b25b45c40ba95257004a6cb4299f88",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "POLUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "PUMPUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1752130800000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 878,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 8948,
+        "rows_hash": "5ea26481a284d97f0c64053bfc729ab7f2c6ff5a7eecc76b170157b341111a67",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "PUMPUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "RAVEUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1765724400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 645,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 5172,
+        "rows_hash": "c752ee86d691ba8316d87ac6d5690dc041ab8f47b63428ec125ff2d88cb6afd4",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "RAVEUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "RENDERUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1721988000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 17321,
+        "rows_hash": "b2c043b087a5c992dca229705929a978539f864c1027e184cf706221999822da",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "RENDERUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "RIVERUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1760709600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 625,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 6565,
+        "rows_hash": "9eae7d5098d23d5c98dd4d4af2a89c02485aa6cbf0674f77da59257d47c4a58a",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "RIVERUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "SKYAIUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1747126800000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 676,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 10334,
+        "rows_hash": "d32d75d63c77a0b989479ef93e23b75dab74bcdc2d1eba0daaa5970df19b58be",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "SKYAIUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "SOLUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1600066800000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1605463200000,
+            "before_timestamp_ms": 1640966400000,
+            "missing_bars": 9861
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 1134,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 41327,
+        "rows_hash": "0f7f23fdbdb923360a4ced7bc4ab952590aac2d18bd1b94edc28ddf15adaa5c4",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "SOLUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "SUIUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1683129600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 28111,
+        "rows_hash": "6ff42a79e0323d333d7d21ca507d8b1fd859ca45360f4f0ef8155f5c168a207e",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "SUIUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "TIAUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1698775200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 23769,
+        "rows_hash": "10a84a409f6ca5afaa1366f57cc2c342adc7559c37ad52f90a58f382f4dba88c",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "TIAUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "TRUMPUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1737205200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 13094,
+        "rows_hash": "2322d7269a15e74ba195286fffda9d8d00e480c2efa3dfafcde4ab282b3912be",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "TRUMPUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "TRXUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 795,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39823,
+        "rows_hash": "e2f6f770c7e1fa9a3ac14f3b5c5652eb0f1aabb971dbb9d23d56f3f1495495bb",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "TRXUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "UBUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1757671200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 707,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 7405,
+        "rows_hash": "2e55eef1ddc7c09cd55bb985fdf9077e89b67f317e40e9213ac74c11e1cd80d6",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "UBUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "UNIUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39827,
+        "rows_hash": "73100b7afb8bf9b59e826584a81aebb8d3ea43f13f68c731e61cb68bac3af3dc",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "UNIUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "VIRTUALUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1733832000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 14031,
+        "rows_hash": "eb295a942733674b0aa84b5d42266dcfa185070ad22e99b5c5aa0a373b8a83b1",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "VIRTUALUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "VVVUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1738137600000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783854000000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 3
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 3,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 625,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 12832,
+        "rows_hash": "d9ef1b8148abe08a29f6106944111d4b94c3f8a6621f6365bf03590335333286",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "VVVUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 3,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "WIFUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1705586400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 793,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 21877,
+        "rows_hash": "ef7aab27cde17f7bafc58578e47b06b91bf22c47f12652f35a60feae660ccfa2",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "WIFUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "WLDUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1690200000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 821,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 26147,
+        "rows_hash": "06c6e84462b9c1981c315058c69a78aa17940f366391aba6db2625a1881bdc5e",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "WLDUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "WLFIUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1755936000000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 0,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "CONTIGUOUS",
+          "recent_gap_count": 0,
+          "status": "PASS"
+        },
+        "gap_status": "CONTIGUOUS",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 881,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 7891,
+        "rows_hash": "697412474226a20c534a07f3f655f3f35995eb284a661b3e5725718617224e40",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "WLFIUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 0,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "CONTIGUOUS",
+        "recent_gap_count": 0,
+        "status": "PASS"
+      }
+    },
+    "XLMUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 801,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 39823,
+        "rows_hash": "5f34b42b814e54c66a732688c8aa6fdc379e20ebca9b465b21369bb07cb02981",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "XLMUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "XMRUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1640966400000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1708394400000,
+            "before_timestamp_ms": 1717516800000,
+            "missing_bars": 2533
+          },
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 625,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 37290,
+        "rows_hash": "14344dd6d5fcc541f9ccf3a5ca11f222b168e2d0a0d4565cfe4ccd7bc848e22f",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "XMRUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    },
+    "XPLUSDT": {
+      "bridge_manifest": {
+        "derivative_status": {
+          "funding": "NOT_INCLUDED",
+          "oi": "NOT_INCLUDED"
+        },
+        "earliest_timestamp_ms": 1755853200000,
+        "effective_cutoff_ms": 1784348216000,
+        "gap_intervals": [
+          {
+            "after_timestamp_ms": 1783850400000,
+            "before_timestamp_ms": 1783868400000,
+            "missing_bars": 4
+          }
+        ],
+        "gap_policy": {
+          "fresh_gap_count": 0,
+          "missing_bars_90d": 4,
+          "policy": {
+            "fresh_guard_hours": 48,
+            "lookback_days": 90,
+            "max_gap_bars_outside_guard": 4,
+            "max_missing_bars_90d": 6
+          },
+          "reason": "BOUNDED_HISTORICAL_GAP",
+          "recent_gap_count": 1,
+          "status": "HISTORICAL_GAP_WARNING"
+        },
+        "gap_status": "GAPS_PRESENT",
+        "latest_timestamp_ms": 1784340000000,
+        "overlap_conflict_count": 812,
+        "price_precedence": "BINANCE_OVER_COINGLASS",
+        "publication_status": "PREPARATION_ONLY_NO_ACTIVE_SCANNER_SWITCH",
+        "row_count": 7910,
+        "rows_hash": "0509d151fc4dcb7c8e9a80702fef2f3c9ff8f30072454779c30b06c1fab038bc",
+        "schema_version": "candidate_price_bridge_v1",
+        "symbol": "XPLUSDT"
+      },
+      "gap_policy": {
+        "fresh_gap_count": 0,
+        "missing_bars_90d": 4,
+        "policy": {
+          "fresh_guard_hours": 48,
+          "lookback_days": 90,
+          "max_gap_bars_outside_guard": 4,
+          "max_missing_bars_90d": 6
+        },
+        "reason": "BOUNDED_HISTORICAL_GAP",
+        "recent_gap_count": 1,
+        "status": "HISTORICAL_GAP_WARNING"
+      }
+    }
+  },
+  "version": "v0001"
+}

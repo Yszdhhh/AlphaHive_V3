@@ -34,3 +34,39 @@ def test_empty_funding_samples_fail_g4_contract() -> None:
         "status": "FAIL",
         "detail": "no funding samples in anomaly rows",
     }]
+
+
+def test_live_disabled_dormant_funding_passes_g4_contract() -> None:
+    validator = _load_validator()
+    results: list[dict] = []
+
+    validator.check_funding_contract(
+        "unused-run-id",
+        pd.DataFrame({"funding_rate_8h": [None, float("nan")]}),
+        results,
+        derivative_use_mode="LIVE_DISABLED",
+    )
+
+    assert results == [{
+        "gate": "G4 funding contract",
+        "status": "PASS",
+        "detail": "funding dormant by design: derivative_use_mode=LIVE_DISABLED",
+    }]
+
+
+def test_live_disabled_with_funding_values_fails_g4_contract() -> None:
+    validator = _load_validator()
+    results: list[dict] = []
+
+    validator.check_funding_contract(
+        "unused-run-id",
+        pd.DataFrame({"funding_rate_8h": [0.0001, None]}),
+        results,
+        derivative_use_mode="LIVE_DISABLED",
+    )
+
+    assert results == [{
+        "gate": "G4 funding contract",
+        "status": "FAIL",
+        "detail": "1 funding samples present despite LIVE_DISABLED",
+    }]

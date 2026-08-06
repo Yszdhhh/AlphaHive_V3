@@ -84,6 +84,20 @@ Acceptance labels:
 - `PARK`: missing input, provenance gap, unresolved evidence or T3 decision.
 - `FAIL`: boundary violation, unsupported claim, contradictory evidence or regression.
 
+### 6.1 Mandatory next-stage closure
+
+Every Codex acceptance record must end with a `Next stage and dispatch` section.
+It must state the next ordered slice, its tier and hard exclusions; name every
+external task with its stable `task_id`, exact task file and Desktop output
+path; distinguish tasks ready to dispatch now from tasks waiting for a named
+dependency; and list any Owner-only gates separately. The same acceptance
+must update the current-wave tracker and include copy-paste dispatch messages
+for external agents. In the user-facing acceptance reply, Codex must also
+print each ready-to-dispatch message together with its full task-file and exact
+Desktop-output paths; a link to a repository task file alone is not sufficient.
+A completed slice may not leave the next engineering step implicit or buried in
+a chat summary.
+
 ## 7. Provenance and audit separation
 
 - The implementer must not be the sole final auditor of its own change.
