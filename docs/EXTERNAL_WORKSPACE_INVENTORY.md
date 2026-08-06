@@ -50,3 +50,4 @@ This inventory is intentionally a map, not a bulk export. The public repository 
 - Treat sibling paths in this document as leads for targeted comparison, not as approved dependencies.
 - Do not infer a profitable strategy, a live-trading capability, or a completed quality gate from historical reports or legacy dashboards.
 - Do not assume that a missing raw Parquet file is an implementation defect: public review excludes raw data by design; the tracked manifests and hashes define what can be checked locally when the data is available.
+- The current tree retains four small, pre-existing `tmp/job_...` metadata files; they contain task pointers/events only and no credential-like material. The `tmp/` ignore rule prevents future scratch files from being added; these legacy metadata files were not removed because deletion was outside this review-push scope.
