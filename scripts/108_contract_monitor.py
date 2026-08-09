@@ -285,6 +285,72 @@ def score_vol_at(kl: pd.DataFrame | None, event_ts_ms: int, trigger: str,
         return None
 
 
+def load_e29_score(binance_root: Path, symbols: list[str], vix_path: Path) -> pd.Series:
+    """E29 本地冲击分（日度，asof）：z(alt 横截面 |24h ret| + 广度压力) − z(VIX 前收)。
+
+    只用截至扫描时点的 bar（无前视）；缺失 symbol 跳过；返回 index = 日起点 ms int UTC。
+    """
+    rv_list: list[pd.Series] = []
+    brd_list: list[pd.Series] = []
+    for sym in symbols:
+        p = binance_root / "klines" / f"{sym}.parquet"
+        if not p.exists():
+            continue
+        kl = pd.read_parquet(p)
+        if "close" not in kl.columns or "open_time" not in kl.columns:
+            continue
+        df = pd.DataFrame({
+            "ts": pd.to_numeric(kl["open_time"], errors="coerce"),
+            "close": pd.to_numeric(kl["close"], errors="coerce"),
+        }).dropna().sort_values("ts")
+        c = df["close"].to_numpy()
+        ret24 = np.full(len(c), np.nan)
+        ret24[24:] = c[24:] / c[:-24] - 1.0
+        df["ret"] = ret24 * 100.0
+        df["day"] = (df["ts"] / 86_400_000).astype("int64")
+        day_abs = df.groupby("day")["ret"].apply(lambda s: float(np.nanmean(np.abs(s))))
+        day_neg = df.groupby("day")["ret"].apply(lambda s: float(np.nanmean((s < -8.0))))
+        rv_list.append(day_abs)
+        brd_list.append(day_neg)
+    if not rv_list:
+        return pd.Series(dtype=float)
+    rv = pd.concat(rv_list, axis=1).median(axis=1).sort_index()
+    brd = pd.concat(brd_list, axis=1).mean(axis=1).sort_index()
+    rv_std = rv.rolling(30, min_periods=15).std().replace(0, np.nan)
+    local = rv / rv_std + 2.0 * brd
+    lz = ((local - local.rolling(30, min_periods=15).mean())
+          / local.rolling(30, min_periods=15).std().replace(0, np.nan))
+    # 日计数 → ms int（与 VIX 索引对齐后再减）
+    lz.index = lz.index.to_numpy(dtype=np.int64) * 86_400_000
+    vix = load_vix_state(vix_path)
+    if not vix.empty:
+        vz = ((vix - vix.rolling(30, min_periods=15).mean())
+              / vix.rolling(30, min_periods=15).std().replace(0, np.nan))
+        out = (lz - vz).dropna()
+    else:
+        out = lz.dropna()
+    return out
+
+
+def e29_gate_state(score: pd.Series, ts_ms: int, cfg: dict) -> dict:
+    """E29 环境标注（无前视，annotate-only）：候选时点 asof 前一日 score vs ±threshold。
+
+    返回 {status: high|normal|low|NA, score, e29_ok}；e29_ok = (status==high) 仅标注。
+    """
+    if score.empty or not cfg.get("enabled"):
+        return {"status": "NA", "score": np.nan, "e29_ok": None}
+    thr = float(cfg.get("threshold", 0.5))
+    back = int(cfg.get("asof_days_back", 1))
+    asof_ms = ts_ms - back * 86_400_000
+    idx = score.index.to_numpy(dtype=np.int64)
+    pos = int(np.searchsorted(idx, asof_ms, side="right")) - 1
+    if pos < 0:
+        return {"status": "NA", "score": np.nan, "e29_ok": None}
+    s = float(score.iloc[pos])
+    status = "high" if s > thr else ("low" if s < -thr else "normal")
+    return {"status": status, "score": s, "e29_ok": (status == "high")}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--symbols", default=None, help="逗号分隔子集（默认 universe 山寨池）")
@@ -325,6 +391,13 @@ def main() -> None:
         print(f"[108] WARNING VIX 门控状态加载失败（vix 标注将置 NA）: {exc}")
         vix_close = pd.Series(dtype=float)
     vix_cfg = rules.get("triggers", {}).get("wash_cvd", {}).get("vix_gate", {})
+    # E29 本地冲击环境标注（2026-08-09 Owner 签批，annotate-only 不改触发）
+    try:
+        e29_score = load_e29_score(BINANCE_ROOT, symbols, VIX_PATH)
+    except Exception as exc:  # noqa: BLE001
+        print(f"[108] WARNING E29 状态加载失败（e29 标注将置 NA）: {exc}")
+        e29_score = pd.Series(dtype=float)
+    e29_cfg = rules.get("triggers", {}).get("wash_cvd", {}).get("e29_gate", {})
     score_spec = load_score_spec()  # 2026-08-09 连续打分标注（未冻结→NA）
 
     rows = []
@@ -371,6 +444,13 @@ def main() -> None:
             vix_note = ""
             if vix_status == "high":
                 vix_note = " | vix_high 研究建议跳过（123 VIX 门控，Owner 签批 2026-08-07），影子保留观察"
+            # E29 环境标注（annotate-only）
+            eg = e29_gate_state(e29_score, int(hit["timestamp"]), e29_cfg)
+            e29_note = ""
+            if eg["status"] == "high":
+                e29_note = " | e29_high 本地冲击环境（211，研究标注）"
+            elif eg["status"] == "low":
+                e29_note = " | e29_low 全球风险环境（研究标注）"
             # 连续打分标注（score_vol，2026-08-09；纯标注不改触发/候选集；未冻结→NA）
             score_vol = score_vol_at(kl, int(hit["timestamp"]), tname, score_spec)
             rows.append({
@@ -394,8 +474,11 @@ def main() -> None:
                 "liquidity_ok": liq_ok,
                 "identity_gate_status": mc_res.mapping_status,
                 "score_vol": score_vol,
+                "e29_status": eg["status"],
+                "e29_score": eg["score"],
+                "e29_ok": eg["e29_ok"],
                 "source": "CVD_APPROX" if tname == "cvd_bear_divergence" else "COINGLASS_DIM",
-                "notes": ("前向影子（binance_free_db）；CVD 为 klines taker 近似" if tname == "cvd_bear_divergence" else "") + vix_note,
+                "notes": ("前向影子（binance_free_db）；CVD 为 klines taker 近似" if tname == "cvd_bear_divergence" else "") + vix_note + e29_note,
             })
 
     if rows:
