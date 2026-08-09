@@ -31,18 +31,21 @@ def _score_series(vals: list[float]) -> pd.Series:
 
 
 def test_status_buckets():
+    # asof 回看 1 天：事件 T0+2d+1h → 用 T0+1d 的 score（0.8 → high）
     s = _score_series([0.0, 0.8, -0.8, 0.2])
-    assert m108.e29_gate_state(s, T0 + 1 * DAY_MS + 3600_000, CFG)["status"] == "high"
-    assert m108.e29_gate_state(s, T0 + 2 * DAY_MS + 3600_000, CFG)["status"] == "low"
-    assert m108.e29_gate_state(s, T0 + 3 * DAY_MS + 3600_000, CFG)["status"] == "normal"
-    assert m108.e29_gate_state(s, T0 + 3 * DAY_MS + 3600_000, CFG)["e29_ok"] is False
-    assert m108.e29_gate_state(s, T0 + 1 * DAY_MS + 3600_000, CFG)["e29_ok"] is True
+    assert m108.e29_gate_state(s, T0 + 2 * DAY_MS + 3600_000, CFG)["status"] == "high"
+    assert m108.e29_gate_state(s, T0 + 3 * DAY_MS + 3600_000, CFG)["status"] == "low"
+    assert m108.e29_gate_state(s, T0 + 4 * DAY_MS + 3600_000, CFG)["status"] == "normal"
+    assert m108.e29_gate_state(s, T0 + 4 * DAY_MS + 3600_000, CFG)["e29_ok"] is False
+    assert m108.e29_gate_state(s, T0 + 2 * DAY_MS + 3600_000, CFG)["e29_ok"] is True
 
 
 def test_asof_no_lookahead():
     s = _score_series([0.0, 0.8])
     # 事件在 T0+1d 后 1h → asof 前一日 = T0+0d → normal(0.0)，不能用 T0+1d 的 0.8
     assert m108.e29_gate_state(s, T0 + 1 * DAY_MS + 3600_000, CFG)["status"] == "normal"
+    # 事件在 T0+2d 后 1h → asof = T0+1d → high(0.8)
+    assert m108.e29_gate_state(s, T0 + 2 * DAY_MS + 3600_000, CFG)["status"] == "high"
 
 
 def test_disabled_or_empty_na():
