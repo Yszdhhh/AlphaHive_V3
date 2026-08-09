@@ -1,0 +1,9 @@
+BTC.D 代理（成交额占比）1618 天 | 中位 174.82% | 近期 186.44%
+G:\Quant test\AlphaHive_V3\scripts\192_p5_btcd_rotation.py:101: RuntimeWarning: invalid value encountered in scalar divide
+  r = daily.iloc[i1] / daily.iloc[i0] - 1
+BTC.D 高位事件 93（篮子 93）| 低位事件 81（篮子 81）
+[192] BTC.D 高位（主导率飙升后）: n=93 篮子7d +103.84% 中位 +18.13%
+[192] BTC.D 低位（主导率回落）: n=81 篮子7d +98.22% 中位 +56.87%
+[192] 低位−高位: +5.62%
+wrote G:\Quant test\AlphaHive_V3\reports\p5_btcd_rotation.md
+192 EXIT=0

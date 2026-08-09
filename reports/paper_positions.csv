@@ -1,0 +1,6 @@
+alert_id,symbol,timestamp_ms,account_a_status,account_a_entry,account_a_exit,account_a_reason,account_a_pnl,account_a_hold_h,account_b_status,account_b_entry,account_b_exit,account_b_reason,account_b_pnl,account_b_hold_h,account_c_status,account_c_entry,account_c_exit,account_c_reason,account_c_pnl,account_c_hold_h,size
+cvd_bear_divergence_ONDOUSDT_1786010400000,ONDOUSDT,1786010400000,SETTLED,0.3702,0.3522,TIME,-51.18516857210599,24.0,PENDING,,,PENDING,0.0,,PENDING,,,PENDING,0.0,,1.0
+cvd_bear_divergence_ADAUSDT_1786010400000,ADAUSDT,1786010400000,SETTLED,0.189,0.2014,TIME,62.73855981914392,24.0,PENDING,,,PENDING,0.0,,PENDING,,,PENDING,0.0,,1.0
+cvd_bear_divergence_ONDOUSDT_1786053600000,ONDOUSDT,1786053600000,SETTLED,0.36,0.3477,TIME,-36.76836670097389,24.0,PENDING,,,PENDING,0.0,,PENDING,,,PENDING,0.0,,1.0
+cvd_bear_divergence_ONDOUSDT_1786064400000,ONDOUSDT,1786064400000,SETTLED,0.3561,0.3497,TIME,-20.617775712096822,24.0,PENDING,,,PENDING,0.0,,PENDING,,,PENDING,0.0,,1.0
+cvd_bear_divergence_ONDOUSDT_1786096800000,ONDOUSDT,1786096800000,SETTLED,0.3503,0.3538,TIME,7.270856236549647,23.0,PENDING,,,PENDING,0.0,,PENDING,,,PENDING,0.0,,1.0

@@ -1,0 +1,140 @@
+[
+ {
+  "method": "M1_read_html",
+  "url": "https://farside.co.uk/btc/",
+  "ts": "2026-08-07 05:39:50 UTC",
+  "outcome": "OK",
+  "rc": 0,
+  "stdout": "READHTML_OK tables=3\r\nTBL 0 (18, 14)\r\nTBL 1 (1, 1)\r\nTBL 2 (1, 1)",
+  "stderr": ""
+ },
+ {
+  "method": "M2_requests_lxml",
+  "url": "https://farside.co.uk/bitcoin-etf-flow-all-data/",
+  "ts": "2026-08-07 05:39:53 UTC",
+  "outcome": "OK",
+  "status": 200,
+  "rows": 660,
+  "start": "2024-01-11",
+  "end": "2026-08-06"
+ },
+ {
+  "method": "M3_sosovalue_www",
+  "url": "https://www.sosovalue.com/",
+  "status": 403,
+  "len": 5663,
+  "ctype": "text/html; charset=UTF-8"
+ },
+ {
+  "method": "M3_sosovalue_api",
+  "url": "https://api.sosovalue.com/",
+  "status": "FAIL SSLError",
+  "err": "HTTPSConnectionPool(host='api.sosovalue.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLEOFErro"
+ },
+ {
+  "method": "M4_theblock_cat",
+  "url": "https://www.theblock.co/data/crypto-markets/bitcoin-etf",
+  "status": 200,
+  "len": 664215,
+  "ctype": "text/html;charset=utf-8"
+ },
+ {
+  "method": "M4_theblock_flows",
+  "url": "https://www.theblock.co/data/crypto-markets/bitcoin-etf/bitcoin-etf-flows",
+  "status": 404,
+  "len": 11764,
+  "ctype": "text/html;charset=utf-8"
+ },
+ {
+  "method": "M1_read_html",
+  "url": "https://farside.co.uk/btc/",
+  "ts": "2026-08-07 05:40:39 UTC",
+  "outcome": "OK",
+  "rc": 0,
+  "stdout": "READHTML_OK tables=3\r\nTBL 0 (18, 14)\r\nTBL 1 (1, 1)\r\nTBL 2 (1, 1)",
+  "stderr": ""
+ },
+ {
+  "method": "M2_requests_lxml",
+  "url": "https://farside.co.uk/bitcoin-etf-flow-all-data/",
+  "ts": "2026-08-07 05:40:42 UTC",
+  "outcome": "OK",
+  "status": 200,
+  "rows": 660,
+  "start": "2024-01-11",
+  "end": "2026-08-06"
+ },
+ {
+  "method": "M3_sosovalue_www",
+  "url": "https://www.sosovalue.com/",
+  "status": 403,
+  "len": 5706,
+  "ctype": "text/html; charset=UTF-8"
+ },
+ {
+  "method": "M3_sosovalue_api",
+  "url": "https://api.sosovalue.com/",
+  "status": "FAIL SSLError",
+  "err": "HTTPSConnectionPool(host='api.sosovalue.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLEOFErro"
+ },
+ {
+  "method": "M4_theblock_cat",
+  "url": "https://www.theblock.co/data/crypto-markets/bitcoin-etf",
+  "status": 200,
+  "len": 664209,
+  "ctype": "text/html;charset=utf-8"
+ },
+ {
+  "method": "M4_theblock_flows",
+  "url": "https://www.theblock.co/data/crypto-markets/bitcoin-etf/bitcoin-etf-flows",
+  "status": 404,
+  "len": 11764,
+  "ctype": "text/html;charset=utf-8"
+ },
+ {
+  "method": "M1_read_html",
+  "url": "https://farside.co.uk/btc/",
+  "ts": "2026-08-07 05:41:19 UTC",
+  "outcome": "OK",
+  "rc": 0,
+  "stdout": "READHTML_OK tables=3\r\nTBL 0 (18, 14)\r\nTBL 1 (1, 1)\r\nTBL 2 (1, 1)",
+  "stderr": ""
+ },
+ {
+  "method": "M2_requests_lxml",
+  "url": "https://farside.co.uk/bitcoin-etf-flow-all-data/",
+  "ts": "2026-08-07 05:41:22 UTC",
+  "outcome": "OK",
+  "status": 200,
+  "rows": 660,
+  "start": "2024-01-11",
+  "end": "2026-08-06"
+ },
+ {
+  "method": "M3_sosovalue_www",
+  "url": "https://www.sosovalue.com/",
+  "status": 403,
+  "len": 5706,
+  "ctype": "text/html; charset=UTF-8"
+ },
+ {
+  "method": "M3_sosovalue_api",
+  "url": "https://api.sosovalue.com/",
+  "status": "FAIL SSLError",
+  "err": "HTTPSConnectionPool(host='api.sosovalue.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLEOFErro"
+ },
+ {
+  "method": "M4_theblock_cat",
+  "url": "https://www.theblock.co/data/crypto-markets/bitcoin-etf",
+  "status": 200,
+  "len": 664212,
+  "ctype": "text/html;charset=utf-8"
+ },
+ {
+  "method": "M4_theblock_flows",
+  "url": "https://www.theblock.co/data/crypto-markets/bitcoin-etf/bitcoin-etf-flows",
+  "status": 404,
+  "len": 11764,
+  "ctype": "text/html;charset=utf-8"
+ }
+]

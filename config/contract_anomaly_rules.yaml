@@ -1,0 +1,89 @@
+# AlphaHive V3 - 合约异动触发规则（Phase 2 事件研究）
+# 版本锁：改任何阈值都要 Owner 签批 + version +1
+# 这是【事件型】edge 的触发定义，正交于 scan_rules.yaml 的 vol/large_move 状态型触发。
+# 全部只用于历史回放 + 前向影子研究，不点火 live 触发（见 scan_rules.yaml derivatives.live_use）。
+contract_anomaly_rules_version: v3
+
+# 通用参数
+study:
+  # 事件 ts 需保证 max_horizon 前向数据完整（表尾自动剔除）
+  max_forward_hours: 168
+  # 基线对照：随机事件数 = min(事件数, 该上限)，从全池均匀采样
+  baseline_max_draws: 100000
+  # bootstrap 显著性判定
+  bootstrap:
+    n_boot: 1000
+    alpha: 0.05
+    min_events: 30          # 事件数 < 30 不判定 Go/No-Go
+    min_events_bucketed: 10 # 分桶/分月最小样本
+
+# 触发定义。feature 名对齐 harness/lib/contract_anomaly_features.py 输出的列。
+# direction: above = feature >= threshold；below = feature <= threshold
+# price_filter: 可选，限制事件时的价格状态（防追高/追跌）
+# cooldown_hours: 同 symbol 两次事件最小间隔
+triggers:
+  liq_cascade_short:
+    description: "空头强平级联（轧空燃料候选，偏做多）"
+    feature: liq_short_z
+    threshold: 2.0
+    direction: above
+    price_filter: {feature: ret_24h, threshold: 5.0, direction: below}  # 24h 未大涨（未跑飞）
+    cooldown_hours: 48
+
+  liq_cascade_long:
+    description: "多头强平级联（下跌燃料候选，偏做空）"
+    feature: liq_long_z
+    threshold: 2.0
+    direction: above
+    price_filter: {feature: ret_24h, threshold: -5.0, direction: above}  # 24h 未暴跌（非崩盘段）
+    cooldown_hours: 48
+
+  cvd_bull_divergence:
+    description: "价格拉升但 CVD 未跟上（上涨量能衰竭候选）"
+    feature: cvd_divergence
+    threshold: -2.0
+    direction: below
+    price_filter: {feature: ret_24h, threshold: 3.0, direction: above}
+    cooldown_hours: 48
+
+  cvd_bear_divergence:
+    description: "价格新低但 CVD 未跟随（下跌量能衰竭候选）"
+    feature: cvd_divergence
+    threshold: 2.0
+    direction: above
+    price_filter: {feature: ret_24h, threshold: -3.0, direction: below}
+    cooldown_hours: 48
+
+  wash_cvd:
+    description: "washout 出清 + CVD 卖压枯竭确认（A 线最优，115 组合研究 3/4 episode GO_LONG）"
+    feature: washout
+    threshold: 0.5
+    direction: above
+    price_filter: {feature: cvd_divergence, threshold: 2.0, direction: above}
+    signal_direction: Long
+    cooldown_hours: 72
+    vix_gate:
+      # VIX 门控（研究 123，Owner 签批 2026-08-07，版本锁 v3）：
+      #   vix_high（VIX > 1y 滚动 75 分位）事件 24h 超额 -0.29% NO_GO（n=222，胜率 39%，
+      #   168h -2.31），门控后 vix_low 组 +1.37 CI[0.82,1.94]；阈值扫描最优 q75。
+      #   behavior=annotate：影子模式只标注 vix_gate_ok=False，不硬跳过候选
+      #   （保留前向验证样本，109 可回填收益检验门控建议在前向是否成立）。
+      enabled: true
+      quantile_window_days: 365
+      quantile: 0.75
+      asof_days_back: 1       # 候选时点日-1 的 VIX 值（无前视，同 123 口径）
+      behavior: annotate
+
+  top_trader_short_extreme:
+    description: "top trader 空头极值（拥挤空头，轧空候选）"
+    feature: top_ratio_rank
+    threshold: 0.05
+    direction: below
+    cooldown_hours: 48
+
+  top_trader_long_extreme:
+    description: "top trader 多头极值（拥挤多头，回落候选）"
+    feature: top_ratio_rank
+    threshold: 0.95
+    direction: above
+    cooldown_hours: 48

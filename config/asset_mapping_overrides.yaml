@@ -1,0 +1,27 @@
+# asset_mapping_overrides.yaml — 人工映射覆写入口（Phase 3）
+#
+# 用途：当自动解析（asset_identity_registry.parse_contract_symbol）对某合约符号
+# 给出错误/不完整的 base_asset 时，在这里人工覆写。典型场景：
+#   1. 倍率币补 coingecko_id（备源价格降级按 id 查）：
+#      1000BONKUSDT 自动解析 base=BONK，但备源需要 coingecko_id=bonk。
+#   2. 同名币消歧：不同资产共用同一个 base_asset 名（如两个 BIT）→ base_asset 换成
+#      可区分的标识 + 显式 coingecko_id。
+#   3. 换合约/历史名：合约升级后 symbol 不变但底层资产换了 → 显式锁 base_asset。
+#
+# 门控语义（asset_identity_registry.resolve）：
+#   - override 且 symbol 在 universe 内 → mapping_status=VERIFIED（人工审核过的确认，
+#     通过 OI/MC 计算门控）
+#   - override 但不在 universe → OVERRIDE（人工指定，未入 universe，不进 OI/MC 计算）
+# 覆写是唯一可让 symbol 通过门控而绕过 universe 的路径；改这里需 Owner 审。
+asset_mapping_overrides_version: v1
+
+overrides:
+  # 倍率币：自动解析已给对 base_asset，这里补 coingecko_id 供备源按 id 查价格
+  1000BONKUSDT:
+    base_asset: BONK
+    multiplier: 1000
+    coingecko_id: bonk
+  1000PEPEUSDT:
+    base_asset: PEPE
+    multiplier: 1000
+    coingecko_id: pepe

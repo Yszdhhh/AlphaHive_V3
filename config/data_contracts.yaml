@@ -6,7 +6,7 @@ compatibility:
   unknown_fields: ignore
   migration: additive_only
 funding:
-  source_path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\{SYMBOL}.parquet"
+  source_path_template: "C:\\Users\\10639\\Desktop\\🔒 加密资产\\coinglass_db\\raw_1h\\funding_ohlc\\{SYMBOL}.parquet"
   raw_unit: percent
   ohlc_field_used: close
   normalized_unit: decimal
@@ -40,12 +40,12 @@ sources:
     required_columns: [timestamp, open, high, low, close, volume]
     timezone: UTC                   # ⚠️ 启动前确认时间戳时区
   funding:
-    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\funding_ohlc\\{SYMBOL}.parquet"
+    path_template: "C:\\Users\\10639\\Desktop\\🔒 加密资产\\coinglass_db\\raw_1h\\funding_ohlc\\{SYMBOL}.parquet"
     resolution: 1h                  # ⚠️ 确认真实分辨率(可能8h)
     start_expected: "2024-06"       # ~23.6mo
     required_columns: [time, close]
   oi:
-    path_template: "C:\\Users\\10639\\Desktop\\加密\\coinglass_db\\raw_1h\\oi_ohlc\\{SYMBOL}.parquet"
+    path_template: "C:\\Users\\10639\\Desktop\\🔒 加密资产\\coinglass_db\\raw_1h\\oi_ohlc\\{SYMBOL}.parquet"
     resolution: 1h
     start_expected: "2024-06"
     required_columns: [timestamp, open_interest]

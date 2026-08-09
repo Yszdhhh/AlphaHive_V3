@@ -1,0 +1,41 @@
+# Funding 测量语义（研究用）— 不是方向信号配置
+# 版本锁：改 cap / 周期假设需 Owner 签批 + version +1
+# 来源：交易所文档 + 外部调研（StepOneAi 数据口径系列 2026-08）+ 本地序列审计
+funding_measurement_version: v1
+
+# 默认：币安 U 本位永续（binance_free_db/history/funding 已是 decimal 8h）
+exchanges:
+  binance_usdm:
+    rate_unit: decimal_per_settlement
+    # 历史接口常不返回周期；默认 8h，但必须允许 per-symbol 覆盖
+    default_settlement_hours: 8
+    # 溢价指数：Impact Bid/Ask（吃固定名义后均价），非 mid
+    premium_index: impact_notional
+    imn_mode: exchange_config_or_derived_from_leverage  # 需合约规格确认
+    # 常见硬边界（删失）：触及则真实压力未知
+    # 注意：不同合约/时期 cap 不同；下列为审计用候选集合，非唯一真相
+    candidate_cap_levels_decimal:
+      - 0.0075   # 0.75% 常见历史 cap
+      - 0.02     # 2% 部分合约/时期
+      - 0.01
+      - 0.005
+      - 0.003
+    # 中性利率分量常出现的「挤点」（不是 cap，但是硬结构）
+    structure_modes_decimal:
+      - 0.0001   # 常见 clamp 中性点
+      - 0.00005
+    # 判定删失：|rate| 落在 candidate_cap 的相对容差内
+    cap_match_rel_tol: 0.02
+    cap_match_abs_tol: 1.0e-6
+
+# 研究红线
+rules:
+  never_use_capped_as_true_pressure: true
+  never_cross_section_zscore_without_same_settlement_and_imn: true
+  direction_from_funding_sign_alone: forbidden  # 与 deep_research_contract 一致
+  market_neutral_carry_ok: true
+
+# 参数变更日志（人工追加；无日志则假设常数并在报告标注）
+parameter_change_log: []
+# 示例：
+# - {date: "2024-01-01", symbol: "*", field: settlement_hours, from: 8, to: 4, source: "manual"}

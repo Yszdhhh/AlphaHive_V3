@@ -1,0 +1,37 @@
+# AlphaHive V3.2 - Contract_Metric schema
+# 合约逐小时特征指标行 schema：data/processed/contract_metrics_hourly/ 每行
+# 对应 contract_anomaly_features.build_feature_table 的输出列（Phase 1 特征层）
+schema_version: v1
+
+compatibility:
+  accepted_versions: [v1]
+  unknown_fields: ignore
+
+fields:
+  schema_version: {type: str, required: true, allowed: [v1]}
+  symbol: {type: str, required: true}
+  timestamp_ms: {type: int, required: true}                 # 统一 ms 时间戳（索引约定）
+  close: {type: float, required: true, min: 0}              # 已 sanitize（假 bar 置空）
+  ret_24h: {type: float, required: false}
+  liq_short_z: {type: float, required: false}               # 30d 自序列 z（std=0 → NaN）
+  liq_long_z: {type: float, required: false}
+  liq_short_share: {type: float, required: false, min: 0, max: 1}
+  price_z: {type: float, required: false}
+  cvd_z: {type: float, required: false}
+  cvd_divergence: {type: float, required: false}            # price_z − cvd_z（量价背离）
+  top_ratio_rank: {type: float, required: false, min: 0, max: 1}
+  top_ratio_chg_24h: {type: float, required: false}
+  net_pos_chg_24h: {type: float, required: false}
+  vol_72h_ratio: {type: float, required: false, min: 0}
+  funding_streak: {type: float, required: false}
+  # Phase 3：MC 相关（前向积累）
+  market_cap_usd: {type: float, required: false, min: 0}
+  oi_usd: {type: float, required: false, min: 0}
+  oi_to_mc_ratio: {type: float, required: false, min: 0}
+  identity_gate_status: {type: str, required: false, allowed: [VERIFIED, UNVERIFIED, OVERRIDE, UNRESOLVED, GATE_NOT_IMPLEMENTED]}
+
+# ---- 跨字段一致性规则 ----
+cross_field_rules:
+  - "oi_usd 非空 → identity_gate_status=VERIFIED（宪法：未 VERIFIED 不进 OI/MC 计算）"
+  - "market_cap_usd 非空且 identity_gate_status=VERIFIED → oi_to_mc_ratio 可计算"
+  - "identity_gate_status=GATE_NOT_IMPLEMENTED → oi_usd 与 market_cap_usd 必须为空"

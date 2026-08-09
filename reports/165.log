@@ -1,0 +1,8 @@
+事件 1348 | 有 cycle_z 1310
+[165] cycle_z<−0.75: n=232 ex168=+2.53% med=+1.54% NO_GO
+[165] cycle_z<−1.0（164 原口径）: n=145 ex168=+3.17% med=+2.09% NO_GO
+[165] cycle_z<−1.25: n=17 ex168=+2.45% med=+0.53% 样本不足
+[165]   × Mayer<1.0（双超卖一致）: n=115 ex168=+1.91% med=-0.72% NO_GO
+[165]   × Mayer≥1.0（趋势超卖）: n=30 ex168=+7.98% med=+6.63% GO_LONG
+wrote G:\Quant test\AlphaHive_V3\reports\cyclez_review.md
+EXIT=0

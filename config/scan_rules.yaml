@@ -1,6 +1,6 @@
-﻿# AlphaHive V3.1.1 Phase 1 - 扫描规则
+﻿# AlphaHive V3.2 Phase 1 - 扫描规则
 # 版本锁：改任何值都要 Owner 签批 + version +1
-scan_rules_version: v1
+scan_rules_version: v2
 
 # ---- 分位数口径（硬约束1）----
 quantile:
@@ -19,6 +19,31 @@ derivatives:
   live_use:
     derivative_values: DISABLED
     reason: "OI/funding 仅在显式历史回放中验证；实时数据刷新与点火等待 Owner"
+    reason_cvd: "CVD 同 OI/funding，仅历史回放，live DISABLED"
+
+# ---- 合约异动触发（Phase 2 验证接入，Owner 签批 2026-08-06）----
+# 事件研究唯一通过 bootstrap 验证的 trigger：cvd_bear_divergence（GO_LONG，
+# 24h 超额+0.84% CI[0.36,1.32]；168h +2.43% CI[1.14,3.88]）。
+# 硬约束：
+#   - 只在 historical_replay 模式计算（live 保持 DISABLED）
+#   - shadow_only=true：候选默认 Watch，不自动进 Paper Trade（需前向影子再验证）
+contract_anomaly_triggers:
+  enabled: true
+  shadow_only: true
+  rules_version_ref: contract_anomaly_rules.v1
+  triggers:
+    cvd_bear_divergence:
+      feature: cvd_divergence
+      threshold: 2.0
+      direction: above
+      price_filter: {feature: ret_24h, threshold: -3.0, direction: below}
+      signal_direction: Long
+      cooldown_hours: 48
+      evidence: "event_study 2024-06→2026-05 GO_LONG 24h CI[0.36,1.32] 72h CI[0.24,2.05] 168h CI[1.14,3.88]"
+  approval:
+    owner: "Owner（用户按 Claude 推荐签批）"
+    date_utc: "2026-08-06"
+    scope: "historical_replay + forward shadow only；live derivative use 保持 DISABLED"
 
 # ---- large_move 触发（原方案 §二）----
 large_move:

@@ -1,0 +1,23 @@
+# AlphaHive V3 - 市场 regime 预注册（Phase 2 门控）
+# 版本锁：改任何条件都要 Owner 签批 + version +1
+# 只用于历史回放 + 前向影子研究，不点火 live（同 scan_rules derivatives.live_use）。
+# macro 只用 SP500/Treasury + BTC 状态（DXY/VIX 为合成数据，诚实排除）。
+market_regimes_version: v1
+
+# 判定优先级：btc_recovery > risk_off > default
+regimes:
+  btc_recovery:
+    description: "BTC 深回撤后收复 5 日均线（外部建议的'大饼见底'核心窗口）"
+    conditions:
+      btc_drawdown_20d_below: -15.0   # BTC 20d(480h) 滚动最低相对当前 close 的回撤 >15%
+      btc_close_above_5d_ma: true     # close > 5d(120h) 简单均线（收复）
+    # 山寨广度修复(v2)：超过 60% 山寨 5d 收益为正 —— 数据量级大，MVP 先不做，作为决策点
+
+  risk_off:
+    description: "SP500 收于 50 日均线下方（宏观风险收缩）"
+    conditions:
+      sp500_below_50d_ma: true        # SP500 收盘 < 50 交易日均线
+
+  default:
+    description: "其余（RISK_ON 或无法判定）"
+    conditions: {}

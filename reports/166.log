@@ -1,0 +1,7 @@
+新币×确认 282 | 有周期 236
+[166] 新币×确认 全部（157 对照）: n=236 ex168=+6.37% med=+2.43% GO_LONG
+[166] 熊市（Mayer<0.8）: n=35 ex168=+7.40% med=+4.90% GO_LONG
+[166] 中部（0.8-1.5）: n=187 ex168=+4.57% med=-0.16% NO_GO
+[166] 牛市插针（Mayer>1.5）: n=14 ex168=+27.72% med=+24.86% 样本不足
+wrote G:\Quant test\AlphaHive_V3\reports\newcoin_cycle.md
+EXIT=0

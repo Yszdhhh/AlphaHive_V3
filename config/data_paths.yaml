@@ -1,0 +1,23 @@
+# 数据路径注册表（2026-08-08 建立，单一真理源）
+# 用途：所有脚本从 data_registry.py 取路径，禁止再硬编码绝对路径。
+# ⚠️ 历史教训（记忆明确记载）：
+#   - coinglass_db 在带 emoji 的 🔒 加密资产 目录（历史主源）
+#   - binance_free_db 在【无 emoji】的 加密 目录（binance_data_puller 实际写入处，
+#     曾因指向带 emoji 路径导致 108 读到停更 5 天的旧库）
+# 相对子路径以 / 分隔，registry 负责拼 Path。
+coinglass:
+  root: "C:\\Users\\10639\\Desktop\\🔒 加密资产\\coinglass_db"
+  raw_1h: "raw_1h"          # klines / liquidation / oi_ohlc / ls_top_trader ...
+  macro: "macro"            # SP500 / VIX / TREASURY / cme_bitcoin / stablecoin_supply ...
+binance_free:
+  root: "C:\\Users\\10639\\Desktop\\加密\\binance_free_db"
+  raw_1h: "raw_1h"          # klines / oi / funding / taker（前向区 2026-05-31 起）
+  history: "history"        # funding 回填历史
+project:
+  data: "G:\\Quant test\\AlphaHive_V3\\data"   # pyth_raw / newlisting_raw / delisted_raw / coinalyze_liquidation / market_caps / otc_premium ...
+  reports: "G:\\Quant test\\AlphaHive_V3\\reports"
+  config: "G:\\Quant test\\AlphaHive_V3\\config"
+  scripts: "G:\\Quant test\\AlphaHive_V3\\scripts"
+external:
+  openbb_venv: "G:\\openbb\\.venv\\Lib\\site-packages"
+  agy_bin: "C:\\Users\\10639\\AppData\\Local\\agy\\bin"

@@ -1,0 +1,6 @@
+新币×确认 282 | 有 EASING 282 | 降息期占比 30%
+[191] 新币×确认 全（s009 对照）: n=282 ex168=+5.82% med=+1.97% GO_LONG
+[191]   降息期（EASING=1）: n=86 ex168=+2.66% med=+0.37% NO_GO
+[191]   非降息期（EASING=0）: n=196 ex168=+7.21% med=+2.75% GO_LONG
+wrote G:\Quant test\AlphaHive_V3\reports\p3_easing_newcoin.md
+191 EXIT=0

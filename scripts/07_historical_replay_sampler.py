@@ -15,7 +15,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from harness.lib.turnover import turnover_24h_effective
 
-RAW_1H = Path(r"C:\Users\10639\Desktop\加密\coinglass_db\raw_1h")
+RAW_1H = Path(r"C:\Users\10639\Desktop\🔒 加密资产\coinglass_db\raw_1h")
 REPORTS_DIR = PROJECT_ROOT / "reports"
 
 

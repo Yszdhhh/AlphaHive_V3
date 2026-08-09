@@ -1,0 +1,33 @@
+# AlphaHive V3 — 宏观数据源定义（Phase 2 扩展，2026-08-06 Owner 提供 FRED key）
+# 主源 FRED 官方 API（免费，需 key，key 在 gitignored config/local_secrets.yaml 或环境变量 FRED_API_KEY）。
+# 黄金补源 yfinance GC=F（FRED 已停发日频伦敦金定盘价 GOLDPMGBD228NLBM，实测 400）。
+# 只读宏观数据，无订单路径（符合宪法）。写入 Desktop\🔒 加密资产\coinglass_db\macro\。
+macro_sources_version: v1
+
+fred:
+  base_url: "https://api.stlouisfed.org/fred"
+  note: "key 不在本文件（gitignored），避免提交"
+
+# 每系列存 macro/<key>.parquet（index=日期，close 列；treasury 为组合多列）。
+series:
+  SP500:    {id: SP500,       name: "标普500",        freq: daily,    unit: "Index"}
+  CPI:      {id: CPIAUCSL,    name: "美国CPI",        freq: monthly,  unit: "Index 1982-84=100"}
+  GDP:      {id: GDPC1,       name: "美国真实GDP",    freq: quarterly, unit: "Billions 2017$"}
+  WTI:      {id: DCOILWTICO,  name: "WTI原油",        freq: daily,    unit: "USD/bbl"}
+  DOLLAR:   {id: DTWEXBGS,    name: "美元广义指数",    freq: daily,    unit: "Index Jan2006=100"}
+  FEDFUNDS: {id: DFF,         name: "联邦基金有效利率", freq: daily,   unit: "Percent"}
+  VIX:      {id: VIXCLS,      name: "VIX",            freq: daily,    unit: "Index"}
+
+# 国债收益率：组合存 TREASURY.parquet（us_2y/us_5y/us_10y/us_30y + us_10y_2y_spread），
+# 同时各自存单列 parquet 保持一致。
+treasury:
+  US2Y:  {id: DGS2,  name: "美债2Y",  unit: "Percent"}
+  US5Y:  {id: DGS5,  name: "美债5Y",  unit: "Percent"}
+  US10Y: {id: DGS10, name: "美债10Y", unit: "Percent"}
+  US30Y: {id: DGS30, name: "美债30Y", unit: "Percent"}
+
+gold:
+  source: yfinance
+  symbol: "GC=F"
+  name: "COMEX黄金期货"
+  note: "FRED 无日频金价，用 yfinance 期货补"

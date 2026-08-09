@@ -1,0 +1,63 @@
+# API 注册表（2026-08-09 建立，单一真理源）
+# 记录：key 位置 / 免费额度 / 用途 / 用量可见性。用量实时查询见 scripts/203_api_usage.py。
+apis:
+  fred:
+    key: local_secrets.yaml -> fred.api_key
+    free_limit: "120 req/min（无月度硬上限，远未触及）"
+    usage_visible: false   # 无用量 API；本地估计
+    purpose: "宏观序列（SP500/VIX/利率/黄金等 118）"
+    status: active
+  coinalyze:
+    key: local_secrets.yaml -> coinalyze.api_key
+    free_limit: "40 calls/min（每 symbol 计 1 call）"
+    usage_visible: false   # 服务端无用量 API；196 本地计数
+    purpose: "清算历史前向（196，E21）"
+    status: active
+  dune:
+    key: local_secrets.yaml -> dune.api_key
+    free_limit: "community 2500 credits/月（billing 2026-07-24~08-24）"
+    usage_visible: true    # getUsage（MCP）实时可见
+    purpose: "链上历史回填（201-202，P7）+ 横截面链上特征（204+）"
+    status: active
+  binance_public:
+    key: none（公开 REST/WS）
+    free_limit: "IP weight 2400/min（klines limit=1000 → weight 5）"
+    usage_visible: false
+    purpose: "klines/OI/funding/taker 前向 + 历史回填（hermes 每小时 + 研究脚本）"
+    status: active
+  yfinance:
+    key: none
+    free_limit: "软限流（429 需退避）"
+    usage_visible: false
+    purpose: "USDCNH（197）/ GOLD（118）/ ES=F（137）/ ETF 代理"
+    status: active
+  p2p_binance_okx:
+    key: none（公开端点）
+    free_limit: "未文档化；低频日快照"
+    usage_visible: false
+    purpose: "场外溢价（197，P7）"
+    status: active
+  pyth:
+    key: none
+    free_limit: "限流 30-60s 退避（144 实测）"
+    usage_visible: false
+    purpose: "链上价格（144 六资产 washout）"
+    status: active
+  uniswap_rpc:
+    key: none（公共 RPC ethereum.publicnode.com）
+    free_limit: "软限流；每小时 1 次快照（173）"
+    usage_visible: false
+    purpose: "CEX-DEX 价差（173）/ 稳定币 DEX 价"
+    status: active
+  akshare:
+    key: none
+    free_limit: "免费；接口停更风险（125 CME 已评估）"
+    usage_visible: false
+    purpose: "CME 机构持仓（125）"
+    status: active
+  openbb:
+    key: 复用 fred
+    free_limit: "随底层（FRED）"
+    usage_visible: false
+    purpose: "FRED 双源对照（174）"
+    status: active

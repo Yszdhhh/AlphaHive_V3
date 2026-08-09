@@ -1,0 +1,11 @@
+BTC 日线 1643 | 平静日占比 28.5%
+平静段（≥3 天）结束事件: 24
+Traceback (most recent call last):
+  File "G:\Quant test\AlphaHive_V3\scripts\188_vol_calm_breakout.py", line 123, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "G:\Quant test\AlphaHive_V3\scripts\188_vol_calm_breakout.py", line 75, in main
+    rows.append({"t": int(t_end.timestamp() * 1000), "len": run_len,
+                          ^^^^^^^^^^^^^^^
+AttributeError: 'numpy.datetime64' object has no attribute 'timestamp'
+188 EXIT=1

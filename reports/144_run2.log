@@ -1,0 +1,12 @@
+[144] 黄金 XAU: n=40 ex24=-0.31% NO_GO
+[144] 白银 XAG: n=43 ex24=-0.38% NO_GO
+[144] 英镑 GBP: n=62 ex24=+0.03% NO_GO
+[144] 标普 SPY: n=27 ex24=+0.56% 样本不足
+[144] 纳指 QQQ: n=23 ex24=+0.59% 样本不足
+[144] 英伟达 NVDA: n=45 ex24=+1.90% GO_LONG
+[144] 特斯拉 TSLA: n=98 ex24=+0.67% NO_GO
+[144] 微策略 MSTR: n=102 ex24=-1.08% NO_GO
+[144] Coinbase COIN: n=106 ex24=+0.74% NO_GO
+[144] AMD: n=28 ex24=-0.12% 样本不足
+wrote G:\Quant test\AlphaHive_V3\reports\chain_assets_washout.md
+EXIT=0

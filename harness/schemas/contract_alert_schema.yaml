@@ -1,0 +1,29 @@
+# AlphaHive V3.2 - Contract_Alert schema
+# 前向合约监控 alert 行 schema：108_contract_monitor.py 输出的候选
+schema_version: v1
+
+compatibility:
+  accepted_versions: [v1]
+  unknown_fields: ignore
+
+fields:
+  schema_version: {type: str, required: true, allowed: [v1]}
+  alert_id: {type: str, required: true, unique: true}
+  trigger: {type: str, required: true}                      # 对应 contract_anomaly_rules.yaml 的 trigger 名
+  symbol: {type: str, required: true}
+  timestamp_ms: {type: int, required: true}                 # 触发时点（无前视）
+  feature_value: {type: float, required: true}              # 触发特征值
+  direction: {type: str, required: true, allowed: [Long, Short]}  # 事件研究验证的方向
+  # Phase 3：MC 上下文
+  market_cap_usd: {type: float, required: false, min: 0}
+  mc_suspicious: {type: bool, required: false}              # 时间漂移标记 → 跳过
+  oi_to_mc_ratio: {type: float, required: false, min: 0}
+  # 验证引用
+  verdict_ref: {type: str, required: false}                 # 指向 event_study_report.md 的 trigger
+  notes: {type: str, required: false}
+
+# ---- 跨字段一致性规则 ----
+cross_field_rules:
+  - "trigger 必须存在于 config/contract_anomaly_rules.yaml（版本锁）"
+  - "mc_suspicious=true → 该 alert 不得进入纸面候选"
+  - "direction 必须与 event_study 报告的 Go 方向一致（Go/No-Go 门控）"

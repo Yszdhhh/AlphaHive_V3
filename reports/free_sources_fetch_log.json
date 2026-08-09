@@ -1,0 +1,38 @@
+[
+ {
+  "source": "gtrends_weekly",
+  "outcome": "cache",
+  "ts": "2026-08-07 05:29:15 UTC"
+ },
+ {
+  "source": "gtrends_daily",
+  "outcome": "cache",
+  "ts": "2026-08-07 05:29:15 UTC"
+ },
+ {
+  "kw": "bitcoin",
+  "attempt": 1,
+  "ts": "2026-08-07 05:29:40 UTC",
+  "outcome": "HTTP 429",
+  "wait_s": 60.0
+ },
+ {
+  "kw": "bitcoin",
+  "attempt": 2,
+  "ts": "2026-08-07 05:30:52 UTC",
+  "outcome": "HTTP 429",
+  "wait_s": 120.0
+ },
+ {
+  "kw": "bitcoin",
+  "attempt": 3,
+  "ts": "2026-08-07 05:33:08 UTC",
+  "outcome": "ok"
+ },
+ {
+  "kw": "crypto",
+  "attempt": 1,
+  "ts": "2026-08-07 05:33:55 UTC",
+  "outcome": "ok"
+ }
+]

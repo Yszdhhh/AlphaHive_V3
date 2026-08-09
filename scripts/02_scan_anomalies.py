@@ -29,8 +29,9 @@ from harness.lib.canonical_price_snapshot import (
     CanonicalPriceSnapshotError,
     load_current_price_snapshot,
 )
+from harness.lib.contract_anomaly_features import compute_symbol_features
 
-DB_ROOT = Path(r"C:\Users\10639\Desktop\加密\coinglass_db")
+DB_ROOT = Path(r"C:\Users\10639\Desktop\🔒 加密资产\coinglass_db")
 RAW_1H = DB_ROOT / "raw_1h"
 LEDGER_PATH = PROJECT_ROOT / "ledger" / "Anomaly_Ledger.csv"
 ARTIFACT_SCHEMA_VERSION = "v2"
@@ -419,6 +420,51 @@ def has_contiguous_tail(frame: pd.DataFrame, bars: int) -> bool:
     return bool(timestamps.notna().all() and timestamps.diff().dropna().eq(KLINE_BAR_INTERVAL_MS).all())
 
 
+def _latest_cvd_signal(symbol: str, cutoff_ms: int) -> tuple[float | None, float | None]:
+    """在 effective_cutoff 处取该 symbol 最新已完成 bar 的 cvd_divergence 与 ret_24h。
+
+    复用 contract_anomaly_features（30d 自序列 z 差，无前视）。cvd 维度缺失或
+    bar 尚未在 cutoff 前完成 → 返回 (None, None)，候选不点火。
+    """
+    feat = compute_symbol_features(symbol, RAW_1H)
+    if feat is None or feat.empty:
+        return None, None
+    sub = feat[feat.index.to_numpy() <= int(cutoff_ms)]
+    if sub.empty:
+        return None, None
+    last = sub.iloc[-1]
+    v = last.get("cvd_divergence")
+    r = last.get("ret_24h")
+    v = float(v) if pd.notna(v) else None
+    r = float(r) if pd.notna(r) else None
+    return v, r
+
+
+def _in_cooldown(symbol: str, scan_time: str, cooldown_hours: float) -> bool:
+    """同一 symbol 的 cvd 候选间隔须 ≥ cooldown_hours（scan_rules 48h）。"""
+    if not LEDGER_PATH.exists():
+        return False
+    try:
+        latest = None
+        with LEDGER_PATH.open("r", encoding="utf-8-sig", newline="") as f:
+            for row in csv.DictReader(f):
+                if row.get("symbol") != symbol:
+                    continue
+                if "cvd_bear_divergence" not in str(row.get("trigger_reason", "")):
+                    continue
+                if row.get("scan_time_utc"):
+                    latest = row["scan_time_utc"]
+        if not latest:
+            return False
+        last_dt = pd.Timestamp(latest)
+        scan_dt = pd.Timestamp(scan_time)
+        hours_since = (scan_dt - last_dt).total_seconds() / 3600.0
+        # 只对晚于（或等于）已记录时点的扫描计冷却；回拨更早的历史查询不受未来记录约束
+        return 0.0 <= hours_since < float(cooldown_hours)
+    except (OSError, ValueError):
+        return False
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_id", default=None)
@@ -427,6 +473,8 @@ def main() -> None:
 
     print_honesty()
     scan_rules = load_yaml(PROJECT_ROOT / "config" / "scan_rules.yaml")
+    contract_triggers = scan_rules.get("contract_anomaly_triggers", {})
+    cvd_shadow_only = contract_triggers.get("shadow_only", True)
     with (PROJECT_ROOT / "config" / "universe.json").open("r", encoding="utf-8") as f:
         universe_document = json.load(f)
     disabled = set(universe_document.get("disabled_pull_symbols", []))
@@ -588,6 +636,25 @@ def main() -> None:
             oi_change = pd.to_numeric(df.get("oi_change_pct_24h"), errors="coerce").dropna()
             latest_oi_change = float(oi_change.iloc[-1]) if not oi_change.empty else ""
             triggers = []
+            cvd_trigger_hit = False
+            cvd_val: float | None = None
+            if (
+                derivative_mode == "HISTORICAL_REPLAY"
+                and contract_triggers.get("enabled") is True
+                and (RAW_1H / "cvd" / f"{symbol}.parquet").exists()
+            ):
+                cvd_val, cvd_ret24 = _latest_cvd_signal(symbol, effective_cutoff_ms)
+                cvd_cfg = contract_triggers.get("triggers", {}).get("cvd_bear_divergence")
+                if cvd_cfg and cvd_val is not None:
+                    hit = float(cvd_val) > float(cvd_cfg["threshold"])
+                    pf = cvd_cfg.get("price_filter", {})
+                    if pf and pf.get("direction") == "below" and cvd_ret24 is not None:
+                        hit = hit and float(cvd_ret24) < float(pf["threshold"])
+                    if hit and not _in_cooldown(
+                        symbol, scan_time, float(cvd_cfg.get("cooldown_hours", 48))
+                    ):
+                        cvd_trigger_hit = True
+                        triggers.append("cvd_bear_divergence")
             if vol_quantile >= float(scan_rules["triggers"]["vol_quantile_high"]):
                 triggers.append("vol_quantile_high")
             if abs(ret_24h) >= float(scan_rules["large_move"]["large_move_threshold_abs_pct_24h"]):
@@ -606,10 +673,10 @@ def main() -> None:
                 "rank": meta["rank"],
                 "turnover_24h_usd": round(float(effective_turnover), 2),
                 "history_tier": meta["history_tier"],
-                "eligible_for_paper": meta["eligible_for_paper"],
+                "eligible_for_paper": "No" if (cvd_trigger_hit and cvd_shadow_only) else meta["eligible_for_paper"],
                 "trigger_reason": "|".join(triggers),
-                "trigger_metric": "vol_24h",
-                "trigger_value": latest_vol,
+                "trigger_metric": "cvd_divergence" if cvd_trigger_hit else "vol_24h",
+                "trigger_value": cvd_val if cvd_trigger_hit else latest_vol,
                 "trigger_quantile": vol_quantile,
                 "large_move_flag_24h": str("large_move_abs" in triggers or "large_move_excess" in triggers),
                 "abs_move_pct_24h": ret_24h,
