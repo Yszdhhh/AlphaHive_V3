@@ -42,10 +42,10 @@ def test_tier_boundaries():
 def test_turnover_asof_no_lookahead():
     kl = pd.DataFrame({"open_time": [T0 + i * HOUR_MS for i in range(10)],
                        "quote_volume": [100.0] * 10})
-    # ts=T0+5h：只用 T0+4h 及之前的 24h
+    # ts=T0+5h：asof 含事件当根（T0..T0+5h = 6 根），不含未来
     v = m216.turnover_at(kl, T0 + 5 * HOUR_MS, 24)
-    assert v == 500.0
-    # 只用前 2h
+    assert v == 600.0
+    # 只用前 2h（T0+4h, T0+5h）
     v2 = m216.turnover_at(kl, T0 + 5 * HOUR_MS, 2)
     assert v2 == 200.0
 
