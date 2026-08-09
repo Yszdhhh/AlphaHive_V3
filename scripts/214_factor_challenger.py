@@ -49,7 +49,7 @@ m213 = importlib.util.module_from_spec(_spec3)
 sys.modules["m213"] = m213
 _spec3.loader.exec_module(m213)
 
-REPORT = PROJECT_ROOT / "reports" / "challenger_volume_v1.md"
+REPORT = PROJECT_ROOT / "reports" / f"challenger_{__import__('sys').argv[1].split('=')[-1]}.md" if False else PROJECT_ROOT / "reports" / "challenger_family.md"
 HORIZON = 24
 TRAIN_FRAC = 0.8
 MIN_HOLDOUT = 30
@@ -72,9 +72,16 @@ def cluster_ci(diff_samples: np.ndarray, ev_ts: np.ndarray, n_boot: int = 1000,
 
 
 def main() -> int:
-    # 事件 + 原始放量 ratio（复用 213 口径，确保与 S0/部署一致）
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--family", default="volume_participation")
+    args = ap.parse_args()
+    if args.family not in m213.CONCEPTS:
+        print(f"未知概念 {args.family}；可选: {list(m213.CONCEPTS)}")
+        return 1
+    # 事件 + 原始特征（复用 213 口径，确保与 S0/部署一致）
     events, ctxs = m213.load_events()
-    raw = m213.feature_vol_ratio(events)
+    raw = m213.CONCEPTS[args.family][0](events, ctxs)
     fwd = []
     for sym, g in events.groupby("symbol", sort=False):
         fwd.append(forward_stats(ctxs[sym], g.copy(), horizons=(HORIZON,)))
@@ -126,8 +133,8 @@ def main() -> int:
     print(f"  holdout {chosen}: IC {ic_h:+.3f} uplift {uplift:+.2f}% "
           f"聚类CI [{lo:+.2f}, {hi:+.2f}] n={n_h} → {verdict}")
 
-    lines = ["# S1 挑战者：FAM-001 冻结（214，一次时间 holdout）\n",
-             f"- 生成：{datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}",
+    lines = [f"# S1 挑战者：{args.family} 冻结（214，一次时间 holdout）\n",
+             f"- family：{args.family} | 生成：{datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}",
              f"- 切分：前 {TRAIN_FRAC:.0%} train / 后 {1 - TRAIN_FRAC:.0%} holdout（按事件时间，非打乱）",
              f"- 标签：{HORIZON}h 成本后净收益；holdout 只评估选中形态一次\n",
              "## train 形态选择\n",
@@ -140,7 +147,7 @@ def main() -> int:
               "|---|---|---:|---:|---:|---|",
               f"| {chosen} | {ic_h:+.3f} | {uplift:+.2f}% | [{lo:+.2f}, {hi:+.2f}] | {n_h} | **{verdict}** |",
               "\n## 冻结提案\n",
-              f"- 形态：{'capped_hinge(lo=1.0, hi=2.0)' if chosen.startswith('capped') else 'log_ratio'}",
+              f"- family：{args.family} | 形态：{chosen}",
               f"- forward_start：{'待 Owner 签批激活时取部署后首个完整 1h bar' if verdict == 'FROZEN_CANDIDATE' else '不适用'}",
               "- 激活动作（Owner 签批后）：config/factor_funnel.yaml score_vol.status → FROZEN + 填 forward_start",
               "- 激活后：108/109 自动开始标注与分桶前向积累（纯标注，不改触发/verdict/纸面）",

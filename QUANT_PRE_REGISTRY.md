@@ -96,11 +96,13 @@
 | family_id | 概念 | 形态（试过） | stage | spec_id | 状态 |
 |---|---|---|---|---|---|
 | FAM-001 | 放量参与（E03 深化） | log_ratio / capped_hinge | **S1（214）：holdout IC +0.053、uplift +0.30% CI[-1.82,+5.83] 含 0 → NO_GO/UNDERPOWERED** | 未冻结 | **不激活**（最近 20% 事件 2025-26 弱化期未确认）；重开条件=新数据/新机制/新独立前向段 |
-| FAM-002 | 3d 成交变化 | log_ratio / rank | S0 待跑 | 未冻结 | 排队 |
-| FAM-003 | washout 深度 | rank / binary_diag | S0 待跑 | 未冻结 | 排队 |
-| FAM-004 | CVD 背离强度 | rank / log_ratio | S0 待跑 | 未冻结 | 排队 |
+| FAM-002 | 3d 成交变化 | log_ratio / rank | **S1（214）：holdout CI[-0.30,+4.97] 含 0 → NO_GO/UNDERPOWERED** | 未冻结 | 关闭（重开=新数据/新机制） |
+| FAM-003 | washout 深度 | rank / binary_diag | **S1（214）：holdout IC -0.126 转负、CI 含 0 → NO_GO/UNDERPOWERED** | 未冻结 | 关闭（重开=新数据/新机制） |
+| FAM-004 | CVD 背离强度 | rank / log_ratio | **S1（214）：holdout IC -0.248 转负、CI 含 0 → NO_GO/UNDERPOWERED** | 未冻结 | 关闭（重开=新数据/新机制） |
 | FAM-C1 | 单特征极值 | 16 形态 | 关闭（153） | — | 禁换皮 |
 | FAM-C2 | funding 家族 | 裸反转/OI 交叉 | 关闭（112/146/147/162） | — | 禁换皮 |
 | FAM-C3 | 资金面（稳定币/ETF/交易所流） | 聚合+分解 | 关闭（128/139/140/210） | — | 禁换皮 |
 | FAM-C4 | CVD 衰减斜率 | slope 三分位 | 关闭（207，被 E18 覆盖） | — | 禁换皮 |
 | FAM-C5 | 注意力-情绪背离 | attention_resid×F&G | 关闭（211，无 marginal） | — | 禁换皮 |
+
+| 2026-08-09 VIX 冲突核对 | FRED VIX z>0.5 vs <-0.5：高 VIX 日 wash_cvd 24h -0.36% vs +1.99%，高−低 **-2.36% CI[-3.50,-1.12] 显著负** → **支持 108 vix_gate 注释（高 VIX 回避）**；E24b 的"高波动更强"是 VIX_SYNTH 合成构造（不同源），不冲突，无需改规则，仅需在台账注明不同源 |

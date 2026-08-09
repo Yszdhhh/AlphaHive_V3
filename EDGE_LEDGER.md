@@ -35,7 +35,7 @@
 | E23 | GMM/HMM regime 过滤（服务 s001） | **candidate** | exploratory | primary | `regime_gmm` 2 态 EM smoke（171）；未接事件研究 | 只过滤/缩放，不作交易信号 |
 | E26 | 选举周期门控（s016） | **candidate** | historical | primary | 选举前 6 月 wash_cvd -3.18% GO_SHORT vs 选举后 6 月 +5.89% GO_LONG（185，n=206/321）；SPX 中期后 12 月 19/19 上涨 +17.3%（1928-2026） | 2026-11-03 中期临近：当前=选举前窗口，wash_cvd 前向保守；11/3 后转强 |
 | E27 | 宏观状态联合（184） | **candidate** | exploratory | primary | 降息×BTC低波动 = wash_cvd 最差环境（-4.81% GO_SHORT）；SPX 新高期强（+2.66%）；EASING 单状态弱 | 与 182 VIX_SYNTH 高波动发现一致（低波动弱） |
-| E24b | VIX_SYNTH 高门控（182 复核） | **candidate** | historical | re-slice | 高波动环境 wash_cvd +4.26% CI[+2.04,+6.50] 中位数 +1.67% 转正、独立窗口同向（182） | s001 环境门控增强候选 |
+| E24b | VIX_SYNTH 高门控（182 复核） | **candidate** | historical | re-slice | 高波动环境 wash_cvd +4.26% CI[+2.04,+6.50] 中位数 +1.67% 转正、独立窗口同向（182） | ⚠️ 与 108 vix_gate（FRED VIX 真实值）**不同源**：FRED VIX 高 → wash_cvd 更弱（2026-08-09 核对 -2.36% CI[-3.50,-1.12]），VIX_SYNTH 是山寨合成波动构造 → 高波动更强。两者不冲突，勿混用 |
 | E24 | funding 市场中性 carry（s014） | **candidate** | exploratory | primary | alpha_card 预注册 2026-08-08 | 强制中性；与 s005 方向假设分离 |
 | E25 | 新币微观结构增强（s015） | **candidate** | exploratory | primary | alpha_card 预注册；叠加 E19/E20 | 代理点差/冲击；池漂移约束 |
 | E28 | U 场外溢价 × BTC 抄底（P7） | **candidate**（前向积累中） | exploratory | primary | 197 日快照已建（Binance/OKX P2P + USDCNH；首值 -92.6bps）；198 事件框架；**Dune 历史版（202）**：Curve 3pool USDT/DAI 1830 天（2020-09→今，仅耗 4.4/2500 credits）——**3pool 脱锚与 BTC 大跌日几乎不重叠（56 大跌日中仅 1 深脱锚），大跌日 7d 超额 -3.99% CI[-6.83,-0.92] 显著负（大跌不反弹，与 164 一致）→ 链上 USDT 折价不是 BTC 抄底同日信号**；P2P 场外溢价（资金流 gauge）前向继续积累 | 信用风险 vs 资金流双 gauge 互补；n=1 深脱锚样本（2020-09-17 V 底 +13.3%/7d） |
