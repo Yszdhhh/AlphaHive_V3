@@ -51,7 +51,7 @@ allowed_forms:
 forward_scores:
   score_vol:
     spec_id: FAM-001
-    status: PARK            # 待 S1 冻结（214 一次 holdout）后改 FROZEN + 填 forward_start
+    status: PARK            # 2026-08-09 S1（214）holdout 未确认（CI 含 0）→ 保持关闭，不激活
     applicable_triggers: [wash_cvd]
     forward_start: null     # 冻结时填精确 UTC（部署后首个完整 1h bar），禁止倒填
     form: capped_hinge

@@ -95,7 +95,7 @@
 
 | family_id | 概念 | 形态（试过） | stage | spec_id | 状态 |
 |---|---|---|---|---|---|
-| FAM-001 | 放量参与（E03 深化） | log_ratio / capped_hinge | S0（213 已跑：IC +0.107~0.127、单调、两段同号） | 未冻结 | 合格进 S1 |
+| FAM-001 | 放量参与（E03 深化） | log_ratio / capped_hinge | **S1（214）：holdout IC +0.053、uplift +0.30% CI[-1.82,+5.83] 含 0 → NO_GO/UNDERPOWERED** | 未冻结 | **不激活**（最近 20% 事件 2025-26 弱化期未确认）；重开条件=新数据/新机制/新独立前向段 |
 | FAM-002 | 3d 成交变化 | log_ratio / rank | S0 待跑 | 未冻结 | 排队 |
 | FAM-003 | washout 深度 | rank / binary_diag | S0 待跑 | 未冻结 | 排队 |
 | FAM-004 | CVD 背离强度 | rank / log_ratio | S0 待跑 | 未冻结 | 排队 |
