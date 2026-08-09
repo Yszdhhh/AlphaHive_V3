@@ -22,7 +22,8 @@ WorldQuant 模式轻量版：自动生成"特征×阈值"候选事件，gauntlet
 
 输出：reports/operator_search.md（全候选表 + 通过 gauntlet 的幸存者）
 用法：python scripts/153_operator_search.py
-"""
+
+状态：HISTORICAL_EXPLORATORY（2026-08-09 标注）。"""
 from __future__ import annotations
 
 import importlib.util

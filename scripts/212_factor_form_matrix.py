@@ -12,7 +12,8 @@ r"""212_factor_form_matrix.py — 因子概念 × 数学形态枚举矩阵（问
 
 输出：reports/factor_form_matrix.md
 用法：python scripts/212_factor_form_matrix.py
-"""
+
+状态：SUPERSEDED_BY_213（2026-08-09 标注）。"""
 from __future__ import annotations
 
 import importlib.util

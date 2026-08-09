@@ -31,6 +31,34 @@
 9. **前向影子**：事件计数窗口（30 预警 / 60-100 正式），与虚拟交易双账户并行。
 10. **晋级决策**：仅前向独立通过 + Owner 签批 → shadow 转 live。
 
+### 2a. 三级研究漏斗（2026-08-09 增补，codex 审查 + grok 独立分析合成）
+
+历史数据（2026-08-09 之前所有 wash_cvd 条件研究）**统一标为 development**，
+不再称"独立确认"；最终确认只认前向影子（109/143 事件块）。研究消耗分三级：
+
+| 层 | 内容 | 消耗 | 产出 |
+|---|---|---|---|
+| **S0 沙盒** | 廉价筛选概念（≤8 概念/季 × ≤2 预声明形态），只出条件 IC/分桶单调性/覆盖率/两段同向/与保留调制器相关 | 不占正式槽（强制 exploratory） | 描述性短名单，不宣布 GO |
+| **S1 挑战者** | 冻结唯一规格：一次时间 holdout（前 80% 选形态，后 20% 只评一次；不用嵌套 WF） | 仍 exploratory | 冻结的 family_id + spec_id |
+| **S2 确认** | 只跑冻结规格 + 预写 GO/NO_GO；通过只到 historical_pass | 占季度正式槽（1 主 + 2 次，单位=冻结族） | 升级候选，前向才是唯一法庭 |
+
+- 调制（强度/环境）默认**连续打分**（capped_hinge/rank）；事件触发、4h 确认、风险否决保持**二元**。
+- 多重检验单位 = **概念族**（一个概念的所有预声明形态），族内变体数记账；已关闭族禁止换皮
+  （config/factor_funnel.yaml closed_families），除非新数据/新机制/Owner 明示。
+- 工具：`harness/lib/factor_funnel.py`（形态/分桶/条件 IC）+ `scripts/213_factor_sandbox.py`（S0）
+  + `data/research/wash_cvd_events_master.parquet`（事件宽表）。
+
+### 2b. Alpha Card 报酬来源论证（2026-08-09 增补）
+
+每个 alpha_card 的 mechanism 字段必须回答（对应行业 alpha 五来源：Risk/Liquidity/
+Funding Constraints/Predictable Flows/Informational Advantage）：
+- **谁在付这笔钱**（对手方是谁、他为什么被迫交易）；
+- **为什么他不会立刻消失**（机制/限制/摩擦的持续性）；
+- **容量**（可承载资金量级，参考 E20 低流动性成本锚）；
+- **成本后还剩多少**（27bps 单边基准）。
+回答不了这四个问题的候选，按"资料探勘"处理（详见 reports/external_intel/
+codex56sol_factor_mining_practice_20260809.md 与 grok 独立审查）。
+
 **每条线消耗检验预算**：季度 1 主问题 + 2 预注册次假设（`QUANT_PRE_REGISTRY.md` 记账）。
 
 ## 3. 统计纪律
