@@ -63,8 +63,28 @@ def cex_mid(sym: str) -> tuple[float, float, float] | None:
     return bid, ask, (bid + ask) / 2
 
 
+def cex_triangle_imbalance() -> float | None:
+    """CEX 合成三角失衡（TDI，gemini 建议）：ETHUSDT/(BTCUSDT×ETHBTC) − 1。
+
+    理论为 0；显著偏离 = 结构性定价失衡（充提暂停/流动性枯竭/洗盘）。
+    前向积累作 wash_cvd 环境信号（无历史，不事后补造）。
+    """
+    try:
+        eth = cex_mid("ETHUSDT")
+        btc = cex_mid("BTCUSDT")
+        ethbtc = cex_mid("ETHBTC")
+        if None in (eth, btc, ethbtc):
+            return None
+        implied = btc[2] * ethbtc[2]
+        return (eth[2] / implied - 1.0) * 1e4 if implied > 0 else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def main() -> int:
     now = datetime.now(timezone.utc)
+    tdi = cex_triangle_imbalance()
+    print(f"[173] CEX 三角失衡(ETHUSDT/(BTCUSDT×ETHBTC)−1): {tdi:+.2f}bps" if tdi is not None else "[173] TDI 不可得")
     rows = []
     for p in POOLS:
         try:
@@ -81,8 +101,10 @@ def main() -> int:
             "ts": now.isoformat(), "pool": p["name"],
             "dex_price": round(dp, 6), "cex_bid": bid, "cex_ask": ask, "cex_mid": round(mid, 6),
             "spread_bps": round(spread_bps, 2),
+            "cex_triangle_bps": round(tdi, 2) if tdi is not None else None,
         })
-        print(f"[173] {p['name']}: DEX {dp:.4f} vs CEX {mid:.4f} → 价差 {spread_bps:+.2f}bps")
+        print(f"[173] {p['name']}: DEX {dp:.4f} vs CEX {mid:.4f} → 价差 {spread_bps:+.2f}bps | TDI {tdi:+.2f}bps" if tdi is not None
+              else f"[173] {p['name']}: DEX {dp:.4f} vs CEX {mid:.4f} → 价差 {spread_bps:+.2f}bps")
     if not rows:
         return 1
     df = pd.DataFrame(rows)
