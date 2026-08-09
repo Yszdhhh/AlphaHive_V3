@@ -90,4 +90,4 @@
 
 | spec_id | family_id | 冻结公式 | forward_start | 状态 |
 |---|---|---|---|---|
-| （待 S1 产出） | FAM-001 | score_vol = clip((log(qv24_ratio)-log(1))/(log(2)-log(1)), 0, 1) | 待定 | 未冻结（S0 合格） |
+| FAM-001 | FAM-001 | score_vol = clip((log(qv24_ratio)-log(1))/(log(2)-log(1)), 0, 1) | 待 S1 冻结后填 | 管道已部署（108/109 标注，NA 门控，2026-08-09） |

@@ -27,6 +27,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -225,6 +226,65 @@ def vix_gate_state(vix_close: pd.Series, ts_ms: int, cfg: dict) -> dict:
     return {"status": status, "close": close_at, "q75": q75}
 
 
+def load_score_spec() -> dict | None:
+    """读取 factor_funnel.yaml 的 forward_scores.score_vol 规格（2026-08-09 新增）。
+
+    返回 None → 无规格（score 全 NA，候选链照常）。异常只打印 WARNING 不中断。
+    """
+    try:
+        with (PROJECT_ROOT / "config" / "factor_funnel.yaml").open("r", encoding="utf-8") as f:
+            cfg = yaml.safe_load(f)
+        return cfg.get("forward_scores", {}).get("score_vol")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[108] WARNING score 规格读取失败（score_vol 将置 NA）: {exc}")
+        return None
+
+
+def score_vol_at(kl: pd.DataFrame | None, event_ts_ms: int, trigger: str,
+                 spec: dict | None) -> float | None:
+    """事件时点 asof 的放量分数（纯标注，不改触发/候选集）。
+
+    口径（grok 硬条件：与 scripts/213 feature_vol_ratio 完全一致）：
+      qv24 = quote_volume.rolling(24).sum()
+      ratio = qv24 / qv24.rolling(720, min_periods=24).median()
+      score = capped_hinge(ratio, 1.0, 2.0)
+    门控：spec 存在 且 status=FROZEN 且 trigger∈applicable_triggers
+          且 event_ts >= forward_start；否则返回 None（NA）。
+    任何异常 → None（绝不改变候选集）。
+    """
+    if spec is None or kl is None:
+        return None
+    try:
+        if spec.get("status") != "FROZEN":
+            return None
+        fs = spec.get("forward_start")
+        if not fs or event_ts_ms < int(pd.Timestamp(fs).timestamp() * 1000):
+            return None
+        if trigger not in spec.get("applicable_triggers", []):
+            return None
+        if "timestamp" in kl.columns and "quote_volume" in kl.columns:
+            ts = pd.to_numeric(kl["timestamp"], errors="coerce")
+            qv = pd.to_numeric(kl["quote_volume"], errors="coerce")
+        else:
+            return None
+        mask = ts <= event_ts_ms  # asof：只用事件时点及之前的 bar
+        qv = qv[mask]
+        if len(qv) < spec.get("baseline_min_periods", 24):
+            return None
+        qv24 = qv.rolling(spec.get("qv_window_hours", 24)).sum()
+        base = qv24.rolling(spec.get("baseline_window_hours", 720),
+                            min_periods=spec.get("baseline_min_periods", 24)).median()
+        ratio = (qv24 / base.replace(0, np.nan)).iloc[-1]
+        if not np.isfinite(ratio) or ratio <= 0:
+            return None
+        from harness.lib.factor_funnel import capped_hinge
+        score = float(capped_hinge(pd.Series([ratio]),
+                                   lo=spec.get("lo", 1.0), hi=spec.get("hi", 2.0)).iloc[0])
+        return None if not np.isfinite(score) else score
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--symbols", default=None, help="逗号分隔子集（默认 universe 山寨池）")
@@ -265,6 +325,7 @@ def main() -> None:
         print(f"[108] WARNING VIX 门控状态加载失败（vix 标注将置 NA）: {exc}")
         vix_close = pd.Series(dtype=float)
     vix_cfg = rules.get("triggers", {}).get("wash_cvd", {}).get("vix_gate", {})
+    score_spec = load_score_spec()  # 2026-08-09 连续打分标注（未冻结→NA）
 
     rows = []
     skipped_dims = set()
@@ -310,6 +371,8 @@ def main() -> None:
             vix_note = ""
             if vix_status == "high":
                 vix_note = " | vix_high 研究建议跳过（123 VIX 门控，Owner 签批 2026-08-07），影子保留观察"
+            # 连续打分标注（score_vol，2026-08-09；纯标注不改触发/候选集；未冻结→NA）
+            score_vol = score_vol_at(kl, int(hit["timestamp"]), tname, score_spec)
             rows.append({
                 "schema_version": "v1",
                 "alert_id": f"{tname}_{sym}_{hit['timestamp']}",
@@ -330,6 +393,7 @@ def main() -> None:
                 "liquidity_24h_usd": liq_24h,
                 "liquidity_ok": liq_ok,
                 "identity_gate_status": mc_res.mapping_status,
+                "score_vol": score_vol,
                 "source": "CVD_APPROX" if tname == "cvd_bear_divergence" else "COINGLASS_DIM",
                 "notes": ("前向影子（binance_free_db）；CVD 为 klines taker 近似" if tname == "cvd_bear_divergence" else "") + vix_note,
             })
@@ -341,7 +405,7 @@ def main() -> None:
         for r in rows:
             print(f"  {r['trigger']:24s} {r['symbol']:14s} ts={pd.Timestamp(r['timestamp_ms'], unit='ms', tz='UTC'):%m-%d %H:%M} "
                   f"regime={r['regime']:12s} feat={r['feature_value']:.2f} OI/MC={r['oi_to_mc_ratio']:.3f} "
-                  f"MC=${r['market_cap_usd']:,.0f} 24hVol=${r['liquidity_24h_usd']:,.0f} liq_ok={r['liquidity_ok']}")
+                  f"MC=${r['market_cap_usd']:,.0f} 24hVol=${r['liquidity_24h_usd']:,.0f} liq_ok={r['liquidity_ok']} score_vol={r['score_vol'] if r['score_vol'] is not None else 'NA'}")
     else:
         print(f"[108] 当前无触发候选（扫描 {len(symbols)} symbols）")
 

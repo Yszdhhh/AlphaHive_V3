@@ -96,3 +96,9 @@ ds=opencode 本地算力 / gemini=agy.exe 外部调研 / grok=grok.exe 独立审
 - **两个任务已签批创建**：`AlphaHiveV3_OTC_Premium`（每日 09:00，197+198 链式）→ P7 溢价序列开始每日积累；`AlphaHiveV3_DataHealth_Drawdown`（每日 09:15，199+200 链式）→ 数据健康监控 + 回撤图进每日链。任务链现为 11 个：07:00 宏观/07:35 扫描/08:05 CME/08:30 Coinalyze/08:35 前向+新币/08:40 纸面/08:50 cyclez/09:00 OTC/09:10 看板/09:15 健康+回撤/每小时 CEX-DEX+MC
 - **Coinglass 付费 API：不接入（决策）**——维度盘点：klines（coinglass 历史+binance 前向=全史）、funding（110 回填全史）、OI（coinglass+binance 30d+vision 深史）、清算（coinglass 历史+Coinalyze 前向=全史）、CVD 近似（179 证明与真 CVD 事件层面等价 93% 重叠）、np_z 前向缺口（binance topLongShortPositionRatio 30d 弱代理可替代，重测阈值）。付费恢复的只是近似等价/负向过滤器，边际价值低
 - **Dune API 已接入（Owner 提供 key）**：`harness/lib/dune_mcp.py`（MCP JSON-RPC 客户端）+ 201 回填 Curve 3pool USDT/DAI 1830 天（2020-09→今）+ 202 恐慌日回测——**结论：3pool 脱锚与 BTC 大跌日几乎不重叠（56 日仅 1 深脱锚）、大跌日 7d 超额 -3.99% CI[-6.83,-0.92] 显著负 → 链上 USDT 折价非 BTC 抄底同日信号**（与 164 认知一致）；v3 USDT/USDC 0.01% 池全史钉 1.0 弃用（负结果记录）；耗 4.4/2500 credits。扩展候选：链上大户储备
+
+## 12. 交接点追加（2026-08-09 深夜，因子漏斗落地）
+- **框架落地**：三级漏斗（S0 沙盒 213 / S1 挑战者待建 / S2 前向确认）+ 事件宽表 + 族级记账 + 历史=development 声明（QUANT_METHODOLOGY 2a/2b）。两份外部审查（codex 仓库级 + grok 独立）已归档 external_intel/（codex56sol_factor_mining_practice / codex_upgrade_framework / grok_upgrade_review）。
+- **FAM-001 放量 S0 合格**（IC +0.127、单调、两段同号）→ S1 冻结 score_vol 待做（214 脚本）。
+- **待办**：VIX 语义冲突核对（108 vs E24b）；S1 挑战者；108/109 score annotation；FAM-002/003/004 沙盒。
+- git：d07f4fd（checkpoint）+ d2f94b7（漏斗），工作树干净；push 待 Owner。

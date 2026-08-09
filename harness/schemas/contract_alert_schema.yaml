@@ -21,6 +21,8 @@ fields:
   # 验证引用
   verdict_ref: {type: str, required: false}                 # 指向 event_study_report.md 的 trigger
   notes: {type: str, required: false}
+  # 2026-08-09 连续打分标注（纯标注，不参与触发/verdict；未冻结或冻结前为 NA）
+  score_vol: {type: float, required: false, min: 0, max: 1}
 
 # ---- 跨字段一致性规则 ----
 cross_field_rules:

@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import yaml
 from pathlib import Path
 
 import numpy as np
@@ -187,6 +188,68 @@ def decay_monitor(cand_fwd: pd.DataFrame, base_ret: np.ndarray,
     return out
 
 
+def apply_score_gate(df: pd.DataFrame) -> pd.DataFrame:
+    """冻结门控（2026-08-09）：status!=FROZEN 或 ts<forward_start → score_vol=NA。
+
+    0 是有效低分，NA 是"不适用/不可用"，绝不混用；异常 → 全 NA 但流程继续。
+    """
+    try:
+        with (PROJECT_ROOT / "config" / "factor_funnel.yaml").open("r", encoding="utf-8") as f:
+            spec = yaml.safe_load(f).get("forward_scores", {}).get("score_vol")
+        if spec is None or spec.get("status") != "FROZEN":
+            df["score_vol"] = np.nan
+            return df
+        fs = spec.get("forward_start")
+        if not fs:
+            df["score_vol"] = np.nan
+            return df
+        fs_ms = int(pd.Timestamp(fs).timestamp() * 1000)
+        ts = pd.to_numeric(df["timestamp_ms"], errors="coerce")
+        df.loc[ts < fs_ms, "score_vol"] = np.nan
+    except Exception:  # noqa: BLE001
+        df["score_vol"] = np.nan
+    return df
+
+
+def score_vol_report(cand_fwd: pd.DataFrame, seed: int = 0) -> list[str]:
+    """连续分数前向验证段（2026-08-09）：描述性，显式不参与 verdict。
+
+    只对非 NA 分数分桶（high−low uplift）；n<30 或分值无变化 → 明确标注不展示。
+    方向化：Long→ret，Short→−ret（只用于本报告，不覆盖 CSV 收益）。
+    """
+    out = ["\n## 连续分数前向验证（描述性，不参与 verdict）\n"]
+    sv = pd.to_numeric(cand_fwd["score_vol"], errors="coerce")
+    n_valid = int(sv.notna().sum())
+    n_unique = int(sv.dropna().nunique())
+    if n_unique < 2 or n_valid < 30:
+        out.append(f"- 有效分数样本不足（n={n_valid}，唯一值 {n_unique}）"
+                   f"→ **INSUFFICIENT_VARIATION / NOT_ENOUGH_DATA**\n")
+        return out
+    out.append(f"- 有效分数样本 n={int(sv.notna().sum())}（覆盖率 {sv.notna().mean():.0%}）")
+    dirv = cand_fwd["direction"].fillna("Long")
+    ret = pd.to_numeric(cand_fwd["ret_24h"], errors="coerce")
+    directed = np.where(dirv.astype(str).str.upper().str.startswith("SHORT"), -ret, ret)
+    valid = pd.DataFrame({"score": sv, "y": directed}).dropna()
+    try:
+        valid["bucket"] = pd.qcut(valid["score"], 5, labels=False, duplicates="drop")
+    except ValueError:
+        valid["bucket"] = 0
+    out.append("| 桶 | n | 方向化 24h 均值% | 中位% | 胜率% |")
+    out.append("|---|---|---:|---:|---:|")
+    rows = []
+    for b, g in valid.groupby("bucket"):
+        rows.append({"bucket": int(b), "n": len(g), "mean": float(g["y"].mean()),
+                     "median": float(g["y"].median()), "win": float((g["y"] > 0).mean())})
+    bdf = pd.DataFrame(rows).sort_values("bucket")
+    for _, r in bdf.iterrows():
+        out.append(f"| {int(r['bucket']) + 1} | {int(r['n'])} | {r['mean']:+.2f} | {r['median']:+.2f} | "
+                   f"{100 * r['win']:.0f} |")
+    if len(bdf) >= 2:
+        out.append(f"\n最高−最低桶 uplift = {bdf.iloc[-1]['mean'] - bdf.iloc[0]['mean']:+.2f}%"
+                   f"（样本小，不作显著性叙事）")
+    return out
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--n-baseline", type=int, default=300, help="每候选时点的基线采样数")
@@ -267,6 +330,15 @@ def main() -> None:
     cand_fwd = fwd_all.merge(
         verdict_events.assign(_v=True)[["symbol", "timestamp", "_v"]],
         on=["symbol", "timestamp"], how="inner").drop(columns=["_v"])
+    # 连续打分标注（2026-08-09）：把候选的 score_vol 附到事件行（无列则 NA）
+    if "score_vol" in cand.columns:
+        cand_fwd = cand_fwd.merge(
+            cand[["symbol", "timestamp_ms", "score_vol"]],
+            left_on=["symbol", "timestamp"], right_on=["symbol", "timestamp_ms"],
+            how="left").drop(columns=["timestamp_ms_y"])
+        cand_fwd["score_vol"] = pd.to_numeric(cand_fwd["score_vol"], errors="coerce")
+    else:
+        cand_fwd["score_vol"] = np.nan
     if cand_fwd.empty:
         print("[109] 候选在 binance_free_db 无价格数据。")
         return
@@ -290,6 +362,9 @@ def main() -> None:
         else:
             merged = accum
         merged = merged.drop_duplicates(subset=["symbol", "timestamp_ms"], keep="last")
+        # 冻结门控（2026-08-09）：未冻结或 < forward_start 的分数清 NA（109 绝不回算历史分）
+        if "score_vol" in merged.columns:
+            merged = apply_score_gate(merged)
         merged.to_csv(OUT_CSV, index=False)
         print(f"[109] 收益累计写入 {OUT_CSV}（累计 {len(merged)} 行）")
 
@@ -346,6 +421,9 @@ def main() -> None:
             lines.append(f"\n> ⚠️ 样本不足（事件 n={n_e}，基线 n={len(b)}）→ PENDING，继续积累前向影子。")
 
     lines.append(f"\n## Verdict 汇总\n\n{' | '.join(verdicts)}\n")
+
+    # 连续分数前向验证段（2026-08-09，描述性不参与 verdict）
+    lines.extend(score_vol_report(cand_fwd, seed=args.seed))
 
     # Decay 监测（EDGE_LEDGER 配套；--all 全量时才有统计意义，默认模式也输出观察段）
     lines.extend(decay_monitor(cand_fwd, base_fwd["ret_24h"].to_numpy() if not base_fwd.empty else np.array([]),
