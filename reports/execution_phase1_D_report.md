@@ -1,6 +1,6 @@
 # 执行层 Phase 1：D 账户离线执行复盘（216，PROXY_ONLY）
 
-- 生成：2026-08-09 15:06 UTC
+- 生成：2026-08-10 00:45 UTC
 - 模型：friction_config v1（taker 5.5bps + 分档滑点 + 点差 fallback，只读，悲观口径）
 - **PROXY_ONLY**：容量/冲击为代理估计，不可相加当真实成本；不参与任何仓位/eligibility 决策
 - 样本：251 笔可复盘 / 251 总

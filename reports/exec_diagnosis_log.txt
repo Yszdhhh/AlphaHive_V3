@@ -1,0 +1,5 @@
+wrote G:\Quant test\AlphaHive_V3\reports\execution_phase1_D_detail.csv（251 行）
+wrote G:\Quant test\AlphaHive_V3\reports\execution_phase1_D_report.md
+config 单边中位 131.0bps | gap +77.0bps | ILLIQUID 192 | funding 覆盖 0
+真实双边成本中位 16.2bps | P90 39.0bps | α 重估 $2,580（原 $1,686）| 缺失 0
+wrote G:\Quant test\AlphaHive_V3\reports\execution_phase1_D_real.csv + G:\Quant test\AlphaHive_V3\reports\execution_phase1_D_real.md

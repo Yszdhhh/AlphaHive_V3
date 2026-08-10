@@ -1,6 +1,6 @@
 # 执行层 Phase 1：真实执行成本校准（217，aggTrades Realized Spread）
 
-- 生成：2026-08-09 15:28 UTC
+- 生成：2026-08-10 00:46 UTC
 - 数据：data.binance.vision aggTrades（全标的，is_buyer_maker → 真实吃单方向）
 - 真实双边成本 = 0.5×(入场日 spread + 出场日 spread) + 2×taker(5.5bps)
 - 样本：251 笔可校准 / 251 总（缺失 0，NaN 不补）
