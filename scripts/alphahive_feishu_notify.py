@@ -11,6 +11,7 @@ import csv
 import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -160,9 +161,27 @@ def _paper_payload() -> tuple[str, dict | None]:
 
 
 def _error_payload(kind: str, exit_code: int, stderr: str) -> tuple[str, dict]:
-    summary = [f"任务 **{kind}** 退出码 **{exit_code}**",
-               f"{datetime.now(timezone.utc):%m-%d %H:%M UTC}"]
-    details = [stderr[-1500:]] if stderr.strip() else ["无 stderr"]
+    """简洁清晰版错误卡片：一句话原因 + 位置，不再裸贴 traceback。"""
+    lines = [ln.rstrip() for ln in stderr.splitlines() if ln.strip()]
+    err_pat = re.compile(
+        r"^(KeyError|ValueError|TypeError|IndexError|FileNotFoundError|AttributeError|"
+        r"RuntimeError|OSError|Exception|AssertionError|NameError|ModuleNotFoundError|"
+        r"ImportError|MemoryError|OverflowError|RecursionError|pandas\.errors\.\w+)\b")
+    err_line = next((ln for ln in reversed(lines) if err_pat.match(ln)), "")
+    cause = err_line.split(":", 1)[1].strip() if ":" in err_line else err_line
+    file_lines = [ln.strip() for ln in reversed(lines) if ln.strip().startswith("File ")]
+    loc = next((ln for ln in file_lines if "AlphaHive_V3" in ln or "scripts\\" in ln), file_lines[0] if file_lines else "")
+    summary = [
+        f"任务 **{kind}** 执行失败 · 退出码 **{exit_code}**",
+        f"{datetime.now(timezone.utc):%m-%d %H:%M UTC}",
+    ]
+    details: list[str] = []
+    if cause:
+        details.append(f"**原因**：`{cause[:200]}`")
+    if loc:
+        details.append(f"**位置**：`{loc[:180]}`")
+    if not details:
+        details = [f"```\n{stderr[-500:]}\n```"] if stderr.strip() else ["无 stderr"]
     key = f"error:{kind}:{exit_code}:{hashlib.sha256(stderr.encode()).hexdigest()[:12]}"
     return key, _build_card("error", summary, details, "")
 

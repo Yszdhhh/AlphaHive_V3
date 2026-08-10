@@ -333,9 +333,8 @@ def main() -> None:
     # 连续打分标注（2026-08-09）：把候选的 score_vol 附到事件行（无列则 NA）
     if "score_vol" in cand.columns:
         cand_fwd = cand_fwd.merge(
-            cand[["symbol", "timestamp_ms", "score_vol"]],
-            left_on=["symbol", "timestamp"], right_on=["symbol", "timestamp_ms"],
-            how="left").drop(columns=["timestamp_ms_y"])
+            cand[["symbol", "timestamp_ms", "score_vol"]].rename(columns={"timestamp_ms": "timestamp"}),
+            on=["symbol", "timestamp"], how="left")
         cand_fwd["score_vol"] = pd.to_numeric(cand_fwd["score_vol"], errors="coerce")
     else:
         cand_fwd["score_vol"] = np.nan
