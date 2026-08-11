@@ -79,6 +79,21 @@ def load_price_paths(symbols: set[str]) -> dict[str, pd.DataFrame]:
     return out
 
 
+def _latest_close(sym: str) -> float:
+    """最新收盘价：新币主源 newlisting_raw，binance_free 兜底。"""
+    for root in (NL_RAW, BINANCE_ROOT / "klines"):
+        p = root / f"{sym}.parquet"
+        if p.exists():
+            try:
+                kl = pd.read_parquet(p)
+                c = pd.to_numeric(kl["close"], errors="coerce").dropna()
+                if len(c):
+                    return float(c.iloc[-1])
+            except Exception:
+                pass
+    return np.nan
+
+
 def simulate_confirm(event: pd.Series, prices: pd.DataFrame, size: float) -> dict:
     """账户 C（V_confirm，148 验证口径）：事件后 4h 收盘确认反弹才入场。
 
@@ -353,7 +368,15 @@ def run() -> int:
              f"- 生成：{datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}",
              f"- 事件源：{EVENTS_CSV.name}；入场=事件后下一 bar open；成本={COST_BPS}bps 单边",
              f"- A=固定持有 {HOLD_H_A}h 时间退出；B=止损 {STOP_LOSS_B:.0%}/trailing {TRAIL_B:.0%}/上限 {MAX_HOLD_B}h",
-             f"- MDD 断路器：-15% 减半 / -25% 停新仓；仓位 ${ENTRY_NOMINAL:.0f}/事件；初始 ${INIT_EQUITY:.0f}\n"]
+             f"- MDD 断路器：-15% 减半 / -25% 停新仓；仓位 ${ENTRY_NOMINAL:.0f}/事件；初始 ${INIT_EQUITY:.0f}\n",
+             "## 账户口径（A/B/C 同事件源 wash_cvd，三种执行对照；D 独立策略新币×确认）",
+             "| 账户 | 事件源 | 入场 | 退出 |",
+             "|---|---|---|---|",
+             "| A | wash_cvd/cvd_bear | 事件后下一 bar open | 固定 24h 时间退出（统计锚，无止损） |",
+             "| B | wash_cvd/cvd_bear | 同 A | 止损 -20% / trailing 50% / 上限 168h / MDD 断路器 |",
+             "| C | wash_cvd/cvd_bear | 4h 反弹确认后入场（V_confirm，148 口径） | 固定 163h |",
+             "| D | 新币×确认（s009） | 候选确认后下一 bar open | 固定 163h |",
+             ""]
     if pos.empty:
         lines.append("尚无结算仓位。")
     else:
@@ -386,35 +409,83 @@ def run() -> int:
             lines.append(f"- 胜率 {100 * (pnl_d2 > 0).mean():.1f}%；最大回撤 {mdd_d:.1%}")
             lines.append(f"- 退出分布：{df_d2['reason'].value_counts().to_dict()}")
             lines.append("")
-    # 当前持仓（未结算）：A/B/C PENDING + D 未到 168h 结算窗
-    open_lines: list[str] = []
+    # 当前持仓明细：A/B/C PENDING + D 未到 168h 结算窗（含现价浮盈、持仓时长）
+    now_ms = int(pd.Timestamp.now(tz="UTC").timestamp() * 1000)
+    pend_rows: list[tuple[str, str, float | None, float, float, float]] = []
     if POSITIONS_CSV.exists():
         pos_all = pd.read_csv(POSITIONS_CSV)
+        ev_by_aid = {str(e["alert_id"]): e for _, e in events.iterrows()}
         for acct, st_col in [("A", "account_a_status"), ("B", "account_b_status"),
                              ("C", "account_c_status")]:
-            if st_col in pos_all.columns:
-                pend = pos_all[pos_all[st_col].fillna("PENDING") == "PENDING"]
-                if len(pend):
-                    syms = ", ".join(pend["symbol"].astype(str).head(6))
-                    if len(pend) > 6:
-                        syms += " ..."
-                    open_lines.append(f"- {acct}：{len(pend)} 笔持仓中（{syms}）")
+            pend = pos_all[pos_all[st_col].fillna("PENDING") == "PENDING"]
+            for _, r in pend.iterrows():
+                sym = str(r["symbol"])
+                px = prices.get(sym)
+                now_px = float(px["close"].iloc[-1]) if px is not None and len(px) else np.nan
+                # B/C PENDING 未存 entry；同一事件 A/B/C 入场价相同 → 取 account_a_entry
+                entry = (pd.to_numeric(r["account_a_entry"], errors="coerce")
+                         if pd.isna(pd.to_numeric(r[f"account_{acct.lower()}_entry"], errors="coerce"))
+                         else pd.to_numeric(r[f"account_{acct.lower()}_entry"], errors="coerce"))
+                if pd.isna(entry) and str(r["alert_id"]) in ev_by_aid:
+                    ev = ev_by_aid[str(r["alert_id"])]
+                    p2 = prices.get(sym)
+                    if p2 is not None and len(p2):
+                        entry = float(simulate(ev, p2, HOLD_H_A, None, None, HOLD_H_A, 1.0)["entry"])
+                ts = pd.to_numeric(r["timestamp_ms"], errors="coerce")
+                if pd.isna(entry) or pd.isna(ts):
+                    continue
+                hold_h = (now_ms - float(ts)) / HOUR_MS
+                pnl_pct = (now_px / float(entry) - 1.0) * 100 if np.isfinite(now_px) else np.nan
+                pend_rows.append((acct, sym, float(entry), now_px, pnl_pct, hold_h))
     if NL_CANDIDATES.exists():
         try:
             cand_d = pd.read_csv(NL_CANDIDATES)
             ts_d = pd.to_numeric(cand_d["timestamp_ms"], errors="coerce")
-            pend_d = cand_d[ts_d + 168 * HOUR_MS > int(pd.Timestamp.now(tz="UTC").timestamp() * 1000)]
-            if len(pend_d):
-                syms = ", ".join(pend_d["symbol"].astype(str).head(6))
-                if len(pend_d) > 6:
-                    syms += " ..."
-                open_lines.append(f"- D：{len(pend_d)} 笔持仓中（{syms}）")
+            pend_d = cand_d[ts_d + 168 * HOUR_MS > now_ms]
+            for _, r in pend_d.iterrows():
+                sym = str(r["symbol"])
+                entry = pd.to_numeric(r["entry_px"], errors="coerce")
+                now_px = _latest_close(sym)
+                if pd.isna(entry) or pd.isna(r["timestamp_ms"]):
+                    continue
+                hold_h = (now_ms - float(r["timestamp_ms"])) / HOUR_MS
+                pnl_pct = (now_px / float(entry) - 1.0) * 100 if np.isfinite(now_px) else np.nan
+                pend_rows.append(("D", sym, float(entry), now_px, pnl_pct, hold_h))
         except Exception:
             pass
-    if open_lines:
-        lines.append("## 当前持仓\n")
-        lines.extend(open_lines)
+    if pend_rows:
+        lines.append("## 当前持仓（未平仓，现价浮盈）\n")
+        lines.append("| 账户 | symbol | 入场价 | 现价 | 浮盈% | 持仓时长(h) |")
+        lines.append("|---|---|---|---|---|---|")
+        for acct, sym, entry, now_px, pnl_pct, hold_h in sorted(pend_rows, key=lambda x: x[0]):
+            pnl_s = f"{pnl_pct:+.1f}" if np.isfinite(pnl_pct) else "-"
+            px_s = f"{now_px:.6g}" if np.isfinite(now_px) else "-"
+            lines.append(f"| {acct} | {sym} | {entry:.6g} | {px_s} | {pnl_s} | {hold_h:.0f} |")
         lines.append("")
+
+    # D 账户单币盈亏聚合（262 笔结算）
+    if POSITIONS_D_CSV.exists():
+        df_d2 = pd.read_csv(POSITIONS_D_CSV)
+        if len(df_d2):
+            pnl_col = pd.to_numeric(df_d2["pnl_net"], errors="coerce").fillna(0.0)
+            g = df_d2.assign(pnl=pnl_col).groupby("symbol")["pnl"]
+            agg = pd.DataFrame({"n": g.size(), "sum": g.sum(),
+                                "win": g.apply(lambda s: (s > 0).sum())})
+            agg["winrate"] = agg["win"] / agg["n"]
+            top = agg.sort_values("sum", ascending=False).head(10)
+            worst = agg.sort_values("sum").head(5)
+            lines.append("## 账户 D 单币盈亏（按累计盈亏排序）\n")
+            lines.append("| symbol | 笔数 | 累计盈亏$ | 胜率 |")
+            lines.append("|---|---|---|---|")
+            for sym, r in top.iterrows():
+                lines.append(f"| {sym} | {int(r['n'])} | {r['sum']:+.2f} | {r['winrate']:.0%} |")
+            if len(top) < len(agg):
+                lines.append(f"| …其余 {len(agg) - len(top)} 币 | | | |")
+            if len(worst):
+                lines.append("\n亏损最多："
+                             + "；".join(f"{s} {r['sum']:+.0f}$({int(r['n'])}笔)"
+                                         for s, r in worst.iterrows()))
+            lines.append("")
     REPORT_MD.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"[143] wrote {REPORT_MD}")
     return 0

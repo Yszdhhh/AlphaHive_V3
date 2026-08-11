@@ -151,7 +151,7 @@ def _paper_payload() -> tuple[str, dict | None]:
     summary: list[str] = [f"{datetime.now(timezone.utc):%m-%d %H:%M UTC}"]
     details: list[str] = []
     for line in text.splitlines():
-        if line.startswith("## 账户") or line.startswith("## 当前持仓"):
+        if re.match(r"^## 账户 [ABCD]$", line) or line == "## 当前持仓":
             details.append(f"\n{line}")
         elif line.startswith("- 已结算") or line.startswith("- 胜率") \
                 or line.startswith("- 退出分布") or line.startswith("- 净盈亏") \
@@ -166,6 +166,39 @@ def _paper_payload() -> tuple[str, dict | None]:
             if m:
                 summary.append(f"D 账户：净盈亏 **${m.group(1)}** · 净值 **${m.group(2)}**")
                 break
+    # 当前持仓概览（按账户计数）
+    seg = text.split("## 当前持仓")[1].split("##")[0] if "## 当前持仓" in text else ""
+    by_acct: dict[str, int] = {}
+    pend_rows: list[tuple[float, list[str]]] = []
+    for line in seg.splitlines():
+        if line.startswith("|") and not line.startswith("| 账户") and not line.startswith("|---"):
+            parts = [p.strip() for p in line.strip("|").split("|")]
+            if len(parts) < 6:
+                continue
+            if parts[0] in "ABCD":
+                by_acct[parts[0]] = by_acct.get(parts[0], 0) + 1
+            if parts[0] in "ABCD" and parts[4] != "-":
+                try:
+                    fl = float(parts[4].rstrip("%"))
+                except ValueError:
+                    fl = float("inf")
+                pend_rows.append((fl, parts))
+    if by_acct:
+        summary.append("当前持仓 " + " · ".join(f"{k} {v}笔" for k, v in sorted(by_acct.items())))
+        if pend_rows:
+            details.append("\n## 当前持仓（最差浮盈 5 笔）")
+            for fl, parts in sorted(pend_rows)[:5]:
+                details.append(f"  · {parts[0]} {parts[1]}：浮盈 {parts[4]}（{parts[5]}h）")
+    # 单币盈亏 Top5（D 账户）
+    seg2 = text.split("## 账户 D 单币盈亏")[1].split("##")[0] if "## 账户 D 单币盈亏" in text else ""
+    top_rows = [ln for ln in seg2.splitlines()
+                if ln.startswith("|") and not ln.startswith("| symbol") and not ln.startswith("|---")
+                and "其余" not in ln][:5]
+    if top_rows:
+        details.append("\n## 单币盈亏 Top（D）")
+        for ln in top_rows:
+            parts = [p.strip() for p in ln.strip("|").split("|")]
+            details.append(f"  · {parts[0]}：{parts[2]}（{parts[1]}笔，胜率{parts[3]}）")
     return _digest(report, positions), _build_card("paper", summary, details, str(report))
 
 
