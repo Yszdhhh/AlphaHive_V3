@@ -156,6 +156,7 @@ def _paper_payload() -> tuple[str, dict | None]:
         elif line.startswith("- 已结算") or line.startswith("- 胜率") \
                 or line.startswith("- 退出分布") or line.startswith("- 净盈亏") \
                 or line.startswith("- 期末净值") or line.startswith("- 最大回撤") \
+                or line.startswith("- **数据性质") \
                 or (line.startswith("- ") and "持仓中" in line):
             details.append(line.replace("- ", "  · "))
     # D 账户收益摘要置顶（主收益池）
@@ -188,7 +189,8 @@ def _paper_payload() -> tuple[str, dict | None]:
         if pend_rows:
             details.append("\n## 当前持仓（最差浮盈 5 笔）")
             for fl, parts in sorted(pend_rows)[:5]:
-                details.append(f"  · {parts[0]} {parts[1]}：浮盈 {parts[4]}（{parts[5]}h）")
+                batch = parts[6] if len(parts) > 6 and parts[6] else ""
+                details.append(f"  · {parts[0]} {parts[1]}：浮盈 {parts[4]}（{parts[5]}h{batch}）")
     # 单币盈亏 Top5（D 账户）
     seg2 = text.split("## 账户 D 单币盈亏")[1].split("##")[0] if "## 账户 D 单币盈亏" in text else ""
     top_rows = [ln for ln in seg2.splitlines()

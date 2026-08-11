@@ -54,6 +54,8 @@ MDD_HALVE = -0.15           # 净值回撤 -15% → 仓位减半（chassis MDD_H
 MDD_CLEAR = -0.25           # 净值回撤 -25% → 停新仓（chassis MDD_CLEAR）
 INIT_EQUITY = 10000.0
 HOUR_MS = 3_600_000
+# 三级漏斗纪律：2026-08-09 前生成的事件 = development；>= 该时刻 = 前向区
+FWD_CUTOFF_MS = int(pd.Timestamp("2026-08-09", tz="UTC").timestamp() * 1000)
 
 
 def load_events() -> pd.DataFrame:
@@ -376,6 +378,10 @@ def run() -> int:
              "| B | wash_cvd/cvd_bear | 同 A | 止损 -20% / trailing 50% / 上限 168h / MDD 断路器 |",
              "| C | wash_cvd/cvd_bear | 4h 反弹确认后入场（V_confirm，148 口径） | 固定 163h |",
              "| D | 新币×确认（s009） | 候选确认后下一 bar open | 固定 163h |",
+             "",
+             "> **数据性质**：A/B/C 事件流 = 108 每日实时扫描（8-06 起，无历史回填）；"
+             "D 结算笔数 = 159 回填池内新币全历史 washout 事件（6-01~8-04，development 层），"
+             "**非前向影子**；D 前向影子自 8-09 起（候选 7 笔持仓中，最早 8-16 结算）。",
              ""]
     if pos.empty:
         lines.append("尚无结算仓位。")
@@ -396,7 +402,8 @@ def run() -> int:
             reason = sub[reason_col].value_counts().to_dict()
             lines.append(f"- 退出分布：{reason}")
             lines.append("")
-    # 账户 D（s009 新币×确认）：前向信号主收益池
+    # 账户 D（s009 新币×确认）：⚠️ 结算笔数 = 历史回填（159 首次运行回填池内新币全历史
+    # washout 事件，6-01~8-04），非前向影子；前向影子自 8-09 起，未到 168h 结算窗
     if POSITIONS_D_CSV.exists():
         df_d2 = pd.read_csv(POSITIONS_D_CSV)
         if len(df_d2):
@@ -404,14 +411,17 @@ def run() -> int:
             eq_d2 = pd.concat([pd.Series([INIT_EQUITY]), INIT_EQUITY + pnl_d2.cumsum()],
                               ignore_index=True)
             mdd_d = float((eq_d2 / eq_d2.cummax() - 1).min())
+            dev_n = int((pd.to_numeric(df_d2["timestamp_ms"], errors="coerce") < FWD_CUTOFF_MS).sum())
             lines.append("## 账户 D\n")
+            lines.append(f"- **数据性质：历史回填 {dev_n} 笔（development，6-01~8-04，"
+                         f"非前向影子）；前向影子自 8-09 起，未到 168h 结算窗**")
             lines.append(f"- 已结算：{len(df_d2)} 笔；净盈亏 ${pnl_d2.sum():+.2f}；期末净值 ${eq_d2.iloc[-1]:.2f}")
             lines.append(f"- 胜率 {100 * (pnl_d2 > 0).mean():.1f}%；最大回撤 {mdd_d:.1%}")
             lines.append(f"- 退出分布：{df_d2['reason'].value_counts().to_dict()}")
             lines.append("")
-    # 当前持仓明细：A/B/C PENDING + D 未到 168h 结算窗（含现价浮盈、持仓时长）
+    # 当前持仓明细：A/B/C PENDING + D 未到 168h 结算窗（含现价浮盈、持仓时长、批次）
     now_ms = int(pd.Timestamp.now(tz="UTC").timestamp() * 1000)
-    pend_rows: list[tuple[str, str, float | None, float, float, float]] = []
+    pend_rows: list[tuple[str, str, float | None, float, float, float, str]] = []
     if POSITIONS_CSV.exists():
         pos_all = pd.read_csv(POSITIONS_CSV)
         ev_by_aid = {str(e["alert_id"]): e for _, e in events.iterrows()}
@@ -436,7 +446,8 @@ def run() -> int:
                     continue
                 hold_h = (now_ms - float(ts)) / HOUR_MS
                 pnl_pct = (now_px / float(entry) - 1.0) * 100 if np.isfinite(now_px) else np.nan
-                pend_rows.append((acct, sym, float(entry), now_px, pnl_pct, hold_h))
+                batch = "前向" if float(ts) >= FWD_CUTOFF_MS else "dev"
+                pend_rows.append((acct, sym, float(entry), now_px, pnl_pct, hold_h, batch))
     if NL_CANDIDATES.exists():
         try:
             cand_d = pd.read_csv(NL_CANDIDATES)
@@ -450,17 +461,18 @@ def run() -> int:
                     continue
                 hold_h = (now_ms - float(r["timestamp_ms"])) / HOUR_MS
                 pnl_pct = (now_px / float(entry) - 1.0) * 100 if np.isfinite(now_px) else np.nan
-                pend_rows.append(("D", sym, float(entry), now_px, pnl_pct, hold_h))
+                batch = "前向" if float(r["timestamp_ms"]) >= FWD_CUTOFF_MS else "回填"
+                pend_rows.append(("D", sym, float(entry), now_px, pnl_pct, hold_h, batch))
         except Exception:
             pass
     if pend_rows:
-        lines.append("## 当前持仓（未平仓，现价浮盈）\n")
-        lines.append("| 账户 | symbol | 入场价 | 现价 | 浮盈% | 持仓时长(h) |")
-        lines.append("|---|---|---|---|---|---|")
-        for acct, sym, entry, now_px, pnl_pct, hold_h in sorted(pend_rows, key=lambda x: x[0]):
+        lines.append("## 当前持仓（未平仓，现价浮盈；批次=前向/回填）\n")
+        lines.append("| 账户 | symbol | 入场价 | 现价 | 浮盈% | 持仓时长(h) | 批次 |")
+        lines.append("|---|---|---|---|---|---|---|")
+        for acct, sym, entry, now_px, pnl_pct, hold_h, batch in sorted(pend_rows, key=lambda x: x[0]):
             pnl_s = f"{pnl_pct:+.1f}" if np.isfinite(pnl_pct) else "-"
             px_s = f"{now_px:.6g}" if np.isfinite(now_px) else "-"
-            lines.append(f"| {acct} | {sym} | {entry:.6g} | {px_s} | {pnl_s} | {hold_h:.0f} |")
+            lines.append(f"| {acct} | {sym} | {entry:.6g} | {px_s} | {pnl_s} | {hold_h:.0f} | {batch} |")
         lines.append("")
 
     # D 账户单币盈亏聚合（262 笔结算）
@@ -474,7 +486,7 @@ def run() -> int:
             agg["winrate"] = agg["win"] / agg["n"]
             top = agg.sort_values("sum", ascending=False).head(10)
             worst = agg.sort_values("sum").head(5)
-            lines.append("## 账户 D 单币盈亏（按累计盈亏排序）\n")
+            lines.append("## 账户 D 单币盈亏（历史回填口径，development）\n")
             lines.append("| symbol | 笔数 | 累计盈亏$ | 胜率 |")
             lines.append("|---|---|---|---|")
             for sym, r in top.iterrows():
