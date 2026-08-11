@@ -146,17 +146,26 @@ def _paper_payload() -> tuple[str, dict | None]:
     if not report.exists():
         return "", None
     text = report.read_text(encoding="utf-8", errors="replace")
-    if "尚无结算仓位" in text:
+    if "## 账户" not in text:
         return "", None
     summary: list[str] = [f"{datetime.now(timezone.utc):%m-%d %H:%M UTC}"]
     details: list[str] = []
     for line in text.splitlines():
-        if line.startswith("## 账户"):
+        if line.startswith("## 账户") or line.startswith("## 当前持仓"):
             details.append(f"\n{line}")
         elif line.startswith("- 已结算") or line.startswith("- 胜率") \
                 or line.startswith("- 退出分布") or line.startswith("- 净盈亏") \
-                or line.startswith("- 期末净值") or line.startswith("- 最大回撤"):
+                or line.startswith("- 期末净值") or line.startswith("- 最大回撤") \
+                or (line.startswith("- ") and "持仓中" in line):
             details.append(line.replace("- ", "  · "))
+    # D 账户收益摘要置顶（主收益池）
+    d_idx = next((i for i, ln in enumerate(details) if ln == "\n## 账户 D"), -1)
+    if d_idx >= 0:
+        for ln in details[d_idx:d_idx + 4]:
+            m = re.search(r"净盈亏 \$([+-]?[\d,.]+)；期末净值 \$([\d,.]+)", ln)
+            if m:
+                summary.append(f"D 账户：净盈亏 **${m.group(1)}** · 净值 **${m.group(2)}**")
+                break
     return _digest(report, positions), _build_card("paper", summary, details, str(report))
 
 

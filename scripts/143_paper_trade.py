@@ -373,6 +373,48 @@ def run() -> int:
             reason = sub[reason_col].value_counts().to_dict()
             lines.append(f"- 退出分布：{reason}")
             lines.append("")
+    # 账户 D（s009 新币×确认）：前向信号主收益池
+    if POSITIONS_D_CSV.exists():
+        df_d2 = pd.read_csv(POSITIONS_D_CSV)
+        if len(df_d2):
+            pnl_d2 = pd.to_numeric(df_d2["pnl_net"], errors="coerce").fillna(0.0)
+            eq_d2 = pd.concat([pd.Series([INIT_EQUITY]), INIT_EQUITY + pnl_d2.cumsum()],
+                              ignore_index=True)
+            mdd_d = float((eq_d2 / eq_d2.cummax() - 1).min())
+            lines.append("## 账户 D\n")
+            lines.append(f"- 已结算：{len(df_d2)} 笔；净盈亏 ${pnl_d2.sum():+.2f}；期末净值 ${eq_d2.iloc[-1]:.2f}")
+            lines.append(f"- 胜率 {100 * (pnl_d2 > 0).mean():.1f}%；最大回撤 {mdd_d:.1%}")
+            lines.append(f"- 退出分布：{df_d2['reason'].value_counts().to_dict()}")
+            lines.append("")
+    # 当前持仓（未结算）：A/B/C PENDING + D 未到 168h 结算窗
+    open_lines: list[str] = []
+    if POSITIONS_CSV.exists():
+        pos_all = pd.read_csv(POSITIONS_CSV)
+        for acct, st_col in [("A", "account_a_status"), ("B", "account_b_status"),
+                             ("C", "account_c_status")]:
+            if st_col in pos_all.columns:
+                pend = pos_all[pos_all[st_col].fillna("PENDING") == "PENDING"]
+                if len(pend):
+                    syms = ", ".join(pend["symbol"].astype(str).head(6))
+                    if len(pend) > 6:
+                        syms += " ..."
+                    open_lines.append(f"- {acct}：{len(pend)} 笔持仓中（{syms}）")
+    if NL_CANDIDATES.exists():
+        try:
+            cand_d = pd.read_csv(NL_CANDIDATES)
+            ts_d = pd.to_numeric(cand_d["timestamp_ms"], errors="coerce")
+            pend_d = cand_d[ts_d + 168 * HOUR_MS > int(pd.Timestamp.now(tz="UTC").timestamp() * 1000)]
+            if len(pend_d):
+                syms = ", ".join(pend_d["symbol"].astype(str).head(6))
+                if len(pend_d) > 6:
+                    syms += " ..."
+                open_lines.append(f"- D：{len(pend_d)} 笔持仓中（{syms}）")
+        except Exception:
+            pass
+    if open_lines:
+        lines.append("## 当前持仓\n")
+        lines.extend(open_lines)
+        lines.append("")
     REPORT_MD.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"[143] wrote {REPORT_MD}")
     return 0
