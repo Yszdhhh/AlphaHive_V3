@@ -21,7 +21,9 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+TZ_CN = timezone(timedelta(hours=8))  # 展示用北京时间
 from pathlib import Path
 
 import numpy as np
@@ -367,7 +369,7 @@ def run() -> int:
     # 汇总报告
     pos = pd.read_csv(POSITIONS_CSV) if POSITIONS_CSV.exists() else pd.DataFrame()
     lines = ["# 双账户虚拟交易报告\n",
-             f"- 生成：{datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}",
+             f"- 生成：{datetime.now(TZ_CN):%Y-%m-%d %H:%M 北京时间}",
              f"- 事件源：{EVENTS_CSV.name}；入场=事件后下一 bar open；成本={COST_BPS}bps 单边",
              f"- A=固定持有 {HOLD_H_A}h 时间退出；B=止损 {STOP_LOSS_B:.0%}/trailing {TRAIL_B:.0%}/上限 {MAX_HOLD_B}h",
              f"- MDD 断路器：-15% 减半 / -25% 停新仓；仓位 ${ENTRY_NOMINAL:.0f}/事件；初始 ${INIT_EQUITY:.0f}\n",

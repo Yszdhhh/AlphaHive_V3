@@ -12,7 +12,9 @@ r"""199_data_health.py — 数据源健康监控（U1/U7：跨源一致性监控
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+TZ_CN = timezone(timedelta(hours=8))  # 展示用北京时间
 from pathlib import Path
 
 import pandas as pd
@@ -76,9 +78,9 @@ def _clean_check(now: datetime) -> tuple[list[str], int]:
 
 def main() -> int:
     rep = health_report()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(TZ_CN)
     lines = ["# 数据源健康报告（199）\n",
-             f"- 生成：{now:%Y-%m-%d %H:%M} UTC",
+             f"- 生成：{now:%Y-%m-%d %H:%M 北京时间}",
              f"- 来源：config/data_paths.yaml + harness/lib/data_registry.py\n",
              "| 源 | 存在 | 最后 bar | 距今(h) | 状态 |",
              "|---|---|---|---|---|"]

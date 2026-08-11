@@ -132,15 +132,15 @@ def decay_monitor(cand_fwd: pd.DataFrame, base_ret: np.ndarray,
 
     out.append(f"- 判决单位: 每 {block} 事件一块（非重叠，按时间序）；n 总={n_all}")
     out.append(f"- CUSUM(向下, k={cusum_k}, h={cusum_h})：z_i = 事件超额/σ，S⁻ 超阈值触发预警\n")
-    out.append("| 块 | 时间范围 (UTC) | n | 24h均值% | 超额% | CI | 判定 |")
+    out.append("| 块 | 时间范围 (北京时间) | n | 24h均值% | 超额% | CI | 判定 |")
     out.append("|---|---|---|---|---|---|---|")
 
     s_minus = 0.0
     rows: list[dict] = []
     for i in range(0, len(df), block):
         sub = df.iloc[i:i + block]
-        t0 = pd.Timestamp(int(sub["timestamp"].iloc[0]), unit="ms", tz="UTC").strftime("%m-%d %H:%M")
-        t1 = pd.Timestamp(int(sub["timestamp"].iloc[-1]), unit="ms", tz="UTC").strftime("%m-%d %H:%M")
+        t0 = pd.Timestamp(int(sub["timestamp"].iloc[0]), unit="ms", tz="Asia/Shanghai").strftime("%m-%d %H:%M")
+        t1 = pd.Timestamp(int(sub["timestamp"].iloc[-1]), unit="ms", tz="Asia/Shanghai").strftime("%m-%d %H:%M")
         ev = pd.to_numeric(sub["ret_24h"], errors="coerce").dropna().to_numpy()
         if len(ev) == 0 or len(base) == 0:
             rows.append({"label": f"{i // block + 1}", "t": f"{t0}~{t1}", "n": len(ev),
@@ -380,7 +380,7 @@ def main() -> None:
     # 汇总 + bootstrap
     lines: list[str] = []
     lines.append("# AlphaHive V3 前向影子收益复核\n")
-    lines.append(f"- 生成: {pd.Timestamp.now(tz='UTC'):%Y-%m-%d %H:%M UTC}")
+    lines.append(f"- 生成: {pd.Timestamp.now(tz='Asia/Shanghai'):%Y-%m-%d %H:%M 北京时间}")
     lines.append(f"- 候选源: {source_label}，trigger={cand['trigger'].dropna().unique().tolist()}）")
     lines.append(f"- 基线: 候选时点 {len(unique_ts)} 个，每时点随机 {args.n_baseline} 个 universe symbol 横截面")
     lines.append(f"- 样本不足时 verdict=PENDING（CI 宽，待积累）\n")

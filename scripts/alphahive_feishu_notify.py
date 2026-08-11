@@ -14,7 +14,9 @@ import os
 import re
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+TZ_CN = timezone(timedelta(hours=8))  # 展示用北京时间
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -108,7 +110,7 @@ def _scan_payload() -> tuple[str, dict | None]:
         return "", None
     shown = rows[-6:]
     summary = [
-        f"**{len(rows)} 个新候选** · {datetime.now(timezone.utc):%m-%d %H:%M UTC}",
+        f"**{len(rows)} 个新候选** · {datetime.now(TZ_CN):%m-%d %H:%M 北京时间}",
         "以下为本次扫描输出（可能含历史行）",
     ]
     details = []
@@ -134,7 +136,7 @@ def _forward_payload() -> tuple[str, dict | None]:
                     if "verdict" in ln.lower()), "")
     warns = [ln.strip() for ln in text.splitlines() if "衰退预警" in ln or "CUSUM" in ln]
     summary = [
-        f"**{verdict or '判决更新'}** · {datetime.now(timezone.utc):%m-%d %H:%M UTC}",
+        f"**{verdict or '判决更新'}** · {datetime.now(TZ_CN):%m-%d %H:%M 北京时间}",
     ]
     details = warns[-4:] or ["无预警（仅状态变化）"]
     return _digest(report, returns), _build_card("forward", summary, details, str(report))
@@ -148,7 +150,7 @@ def _paper_payload() -> tuple[str, dict | None]:
     text = report.read_text(encoding="utf-8", errors="replace")
     if "## 账户" not in text:
         return "", None
-    summary: list[str] = [f"{datetime.now(timezone.utc):%m-%d %H:%M UTC}"]
+    summary: list[str] = [f"{datetime.now(TZ_CN):%m-%d %H:%M 北京时间}"]
     details: list[str] = []
     for line in text.splitlines():
         if re.match(r"^## 账户 [ABCD]$", line) or line == "## 当前持仓":
@@ -217,7 +219,7 @@ def _error_payload(kind: str, exit_code: int, stderr: str) -> tuple[str, dict]:
     loc = next((ln for ln in file_lines if "AlphaHive_V3" in ln or "scripts\\" in ln), file_lines[0] if file_lines else "")
     summary = [
         f"任务 **{kind}** 执行失败 · 退出码 **{exit_code}**",
-        f"{datetime.now(timezone.utc):%m-%d %H:%M UTC}",
+        f"{datetime.now(TZ_CN):%m-%d %H:%M 北京时间}",
     ]
     details: list[str] = []
     if cause:
