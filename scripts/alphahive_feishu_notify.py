@@ -209,6 +209,29 @@ def _recipient_open_id() -> str:
     return ""
 
 
+# 系统运行情况推送目标：quant 群聊（2026-08-11 Owner 指定）；环境变量 FEISHU_CHAT_ID 可覆盖
+DEFAULT_CHAT_ID = "oc_b09f882231082604d0796e5af1c7c266"
+
+
+def _send(card: dict, state: dict, kind: str) -> bool:
+    """优先发 quant 群，失败回退管理员 DM。返回是否成功。"""
+    sys.path.insert(0, str(HERMES_SCRIPTS))
+    try:
+        from feishu_dm_notify import send_card, send_card_to_chat
+    except Exception as exc:
+        print(f"[notify] Hermes helper unavailable: {exc}", file=sys.stderr)
+        return False
+    chat_id = os.environ.get("FEISHU_CHAT_ID") or DEFAULT_CHAT_ID
+    if chat_id and send_card_to_chat(card, chat_id):
+        return True
+    recipient = _recipient_open_id()
+    if recipient and send_card(card, recipient):
+        print("[notify] chat send failed, fell back to admin DM", file=sys.stderr)
+        return True
+    print("[notify] no Feishu recipient reachable", file=sys.stderr)
+    return False
+
+
 def notify(kind: str, *, exit_code: int = 0, stderr: str = "", dry_run: bool = False) -> bool:
     state = _load_state()
     if exit_code:
@@ -230,17 +253,7 @@ def notify(kind: str, *, exit_code: int = 0, stderr: str = "", dry_run: bool = F
     if dry_run:
         print(json.dumps(card, ensure_ascii=False, indent=1))
         return True
-    recipient = _recipient_open_id()
-    if not recipient:
-        print("[notify] no Feishu recipient configured", file=sys.stderr)
-        return False
-    sys.path.insert(0, str(HERMES_SCRIPTS))
-    try:
-        from feishu_dm_notify import send_card
-    except Exception as exc:
-        print(f"[notify] Hermes helper unavailable: {exc}", file=sys.stderr)
-        return False
-    ok = bool(send_card(card, recipient))
+    ok = _send(card, state, kind)
     if ok:
         state[kind] = key
         _save_state(state)
