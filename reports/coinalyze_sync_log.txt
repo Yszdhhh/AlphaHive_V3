@@ -26,3 +26,17 @@ Coinalyze 清算序列 2425 bars | 风暴事件（z>2.0）: 6
 [196] 24h: n=3 超额 +0.49% 样本不足
 [196] 168h: n=3 超额 +0.72% 样本不足
 wrote G:\Quant test\AlphaHive_V3\reports\e21_forward.md
+exchanges: [{'name': 'Poloniex', 'code': 'P'}, {'name': 'Bitforex', 'code': 'D'}, {'name': 'Kraken', 'code': 'K'}, {'name': 'Bithumb', 'code': 'U'}, {'name': 'Bitstamp', 'code': 'B'}, {'name': 'Hyperliquid', 'code': 'H'}, {'name': 'BitFlyer', 'code': 'L'}, {'name': 'BtcMarkets', 'code': 'M'}, {'name': 'Bit2c', 'code': 'I'}, {'name': 'MercadoBitcoin', 'code': 'E'}, {'name': 'Independent Reserve', 'code': 'N'}, {'name': 'Gemini', 'code': 'G'}, {'name': 'Gate.io', 'code': 'Y'}, {'name': 'Deribit', 'code': '2'}, {'name': 'OKX', 'code': '3'}, {'name': 'Coinbase', 'code': 'C'}, {'name': 'Bitfinex', 'code': 'F'}, {'name': 'Luno', 'code': 'J'}, {'name': 'BitMEX', 'code': '0'}, {'name': 'Phemex', 'code': '7'}, {'name': 'WOO X', 'code': 'W'}, {'name': 'Huobi', 'code': '4'}, {'name': 'dYdX', 'code': '8'}, {'name': 'Bybit', 'code': '6'}, {'name': 'Binance', 'code': 'A'}, {'name': 'Lighter', 'code': 'T'}, {'name': 'Aster', 'code': 'S'}]
+mapped 66/66 universe symbols
+非币安所（降级）: {'XAUUSDT': '3', 'XAGUSDT': '3', 'BZUSDT': '3', 'MUUSDT': '3', 'SNDKUSDT': '3', 'NVDAUSDT': '3', 'INTCUSDT': '3', 'CRCLUSDT': '3', 'TSLAUSDT': '3', 'SPCXUSDT': '3'}
+  [196] batch 1: 20 syms, 392 bars
+  [196] 429, backoff 54s
+  [196] batch 2: 20 syms, 429 bars
+  [196] batch 3: 20 syms, 959 bars
+  [196] 429, backoff 54s
+  [196] batch 4: 6 syms, 88 bars
+sync done
+Coinalyze 清算序列 2449 bars | 风暴事件（z>2.0）: 6
+[196] 24h: n=3 超额 +0.45% 样本不足
+[196] 168h: n=3 超额 +0.72% 样本不足
+wrote G:\Quant test\AlphaHive_V3\reports\e21_forward.md

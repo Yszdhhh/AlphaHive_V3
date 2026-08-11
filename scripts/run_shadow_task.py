@@ -12,7 +12,7 @@ NOTIFIER = ROOT / "scripts" / "alphahive_feishu_notify.py"
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--kind", choices=["scan", "forward"], required=True)
+    ap.add_argument("--kind", choices=["scan", "forward", "paper"], required=True)
     ap.add_argument("script")
     args = ap.parse_args()
     proc = subprocess.run([sys.executable, str(ROOT / "scripts" / args.script)],

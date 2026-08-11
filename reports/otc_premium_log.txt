@@ -1,0 +1,4 @@
+[197] 2026-08-11 01:00Z: P2P买 6.67 / 卖 6.67 vs CNH 6.7451 → 买侧溢价 -111.3bps / 卖侧 -111.3bps
+[197] wrote G:\Quant test\AlphaHive_V3\data\otc_premium.csv（累计 2 天）
+溢价序列 2 天（2026-08-08→2026-08-11）| BTC 1722 bar
+wrote G:\Quant test\AlphaHive_V3\reports\otc_premium_btc.md
