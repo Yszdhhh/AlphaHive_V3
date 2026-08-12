@@ -34,12 +34,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from harness.lib.contract_anomaly_features import FeatureWindow, build_feature_table
 from harness.lib.asset_identity_registry import AssetIdentityRegistry
+from harness.lib.data_registry import paths
 from harness.lib.market_cap_provider import MarketCapProvider
 from harness.lib.regime_engine import assign_regime, btc_state, load_regimes, sp500_below_50d
 
-# 无 emoji 路径 = binance_data_puller.py 实际写入处（binance_data_config.DB_ROOT）。
-# ⚠️ 历史教训：曾指向带 emoji 的 🔒 加密资产\binance_free_db，导致读到停更 5 天的旧库。
-BINANCE_ROOT = Path(r"C:\Users\10639\Desktop\加密\binance_free_db\raw_1h")
+# 路径单一真理源：data_registry / data_paths.yaml（禁止硬编码 emoji 漂移路径）
+BINANCE_ROOT = Path(str(paths.binance_free.raw_1h))
 RULES_PATH = PROJECT_ROOT / "config" / "contract_anomaly_rules.yaml"
 SUMMARY_PATH = PROJECT_ROOT / "reports" / "event_study_summary.csv"
 OUT_PATH = PROJECT_ROOT / "reports" / "contract_monitor_candidates.csv"
@@ -47,11 +47,11 @@ SNAPSHOT_DIR = PROJECT_ROOT / "data" / "raw" / "market_caps"
 BASE_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
 
 # regime 标注数据源。SP500 停更超过 REGIME_STALE_DAYS → risk_off 判定降级（诚实边界）
-SP500_PATH = Path(r"C:\Users\10639\Desktop\🔒 加密资产\coinglass_db\macro\SP500.parquet")
+SP500_PATH = Path(str(paths.coinglass.macro)) / "SP500.parquet"
 REGIME_STALE_DAYS = 7
 
 # VIX 门控数据源（118 每日拉取，FRED VIXCLS）。见 contract_anomaly_rules.yaml wash_cvd.vix_gate（v3，Owner 签批 2026-08-07）
-VIX_PATH = Path(r"C:\Users\10639\Desktop\🔒 加密资产\coinglass_db\macro\VIX.parquet")
+VIX_PATH = Path(str(paths.coinglass.macro)) / "VIX.parquet"
 
 # 前向可测的维度（binance_free_db 有）；其余 trigger 前向不可测 → 跳过
 FORWARD_DIMS = {"klines", "cvd", "funding_ohlc"}

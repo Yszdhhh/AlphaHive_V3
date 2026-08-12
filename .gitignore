@@ -19,3 +19,12 @@ harness/runs/**
 **/*.parquet
 harness/canonical_price_snapshots/.publish.lock
 tmp/
+
+# Large local caches / daily noise (keep md reports; ignore bulk)
+data/aggTrades_cache/
+data/delisted_raw/
+data/newlisting_raw/
+data/coinalyze_liquidation/
+reports/kline_views/*.csv
+# optional: uncomment if charts should stay local only
+# reports/kline_views/*.png

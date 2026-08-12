@@ -14,6 +14,9 @@
 ```bash
 cd "G:\Quant test\AlphaHive_V3"
 
+# ★ 推荐：一键周同步（回补+去重+GC+覆盖+健康）
+python scripts/224_weekly_data_sync.py
+
 # 1) klines 全历史回补并并入 raw_1h（可重复，增量）
 python scripts/218_backfill_binance_klines.py
 # 子集：python scripts/218_backfill_binance_klines.py --symbols BTCUSDT,ETHUSDT
