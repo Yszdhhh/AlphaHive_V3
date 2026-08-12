@@ -11,8 +11,8 @@ coinglass:
   macro: "macro"            # SP500 / VIX / TREASURY / cme_bitcoin / stablecoin_supply ...
 binance_free:
   root: "C:\\Users\\10639\\Desktop\\加密\\binance_free_db"
-  raw_1h: "raw_1h"          # klines / oi / funding / taker（前向区 2026-05-31 起）
-  history: "history"        # funding 回填历史
+  raw_1h: "raw_1h"          # klines / oi / funding / taker（前向；218 回补后 klines 可含全历史）
+  history: "history"        # funding/ + klines/（110 funding；218 klines 全历史）
 project:
   data: "G:\\Quant test\\AlphaHive_V3\\data"   # pyth_raw / newlisting_raw / delisted_raw / coinalyze_liquidation / market_caps / otc_premium ...
   reports: "G:\\Quant test\\AlphaHive_V3\\reports"

@@ -31,6 +31,8 @@ REPORT = PROJECT_ROOT / "reports" / "data_health.md"
 KNOWN_STALE = {
     "coinglass_klines": "coinglass 公共接口 klines 停于 2026-07-07（记忆：klines 实际到 07-07）",
     "coinglass_liquidation": "coinglass 清算停于 2026-06-23，E21 前向已切 Coinalyze（196）",
+    # history 库按日/增量维护即可；48h 阈值下不因「非实时」误报
+    "binance_klines_history": "全历史缓存，非实时链路；新鲜度以 binance_klines(raw) 为准",
 }
 
 # 周末无交易（美股/期货）：最后 bar 停在周五 + 今天非周五 → 豁免，不告警

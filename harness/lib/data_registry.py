@@ -112,10 +112,14 @@ def health_report() -> dict[str, dict]:
     import time
     from datetime import datetime, timezone
 
+    # history klines：相对 binance_free root（raw_1h 的 parent）
+    _bn_root = Path(str(paths.binance_free.raw_1h)).parent
     checks = {
         "coinglass_klines": (paths.coinglass.raw_1h / "klines" / "BTCUSDT.parquet", "open_time", 48),
         "coinglass_liquidation": (paths.coinglass.raw_1h / "liquidation" / "BTCUSDT.parquet", "time", 72),
         "binance_klines": (paths.binance_free.raw_1h / "klines" / "BTCUSDT.parquet", "open_time", 3),
+        "binance_klines_history": (_bn_root / "history" / "klines" / "BTCUSDT.parquet", "open_time", 48),
+        "binance_funding_history": (_bn_root / "history" / "funding" / "BTCUSDT.parquet", "fundingTime", 24),
         "coinalyze_liquidation": (paths.project.data / "coinalyze_liquidation" / "DOGEUSDT.parquet", "t", 96),
         "otc_premium": (paths.project.data / "otc_premium.csv", "date", 30),
         "macro_sp500": (paths.coinglass.macro / "SP500.parquet", None, 120),
