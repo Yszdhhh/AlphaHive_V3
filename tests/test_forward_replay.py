@@ -75,3 +75,31 @@ def test_summarize_winrate():
     assert abs(s["winrate"] - 0.75) < 1e-9
     assert abs(s["mean_pct"] - 0.625) < 1e-9
     assert s["horizon_h"] == 24
+
+
+def test_rows_needing_return_backfill_any_horizon():
+    """ret_4h 已填但 ret_24h 缺失 → 仍需回填（修复只看 ret_4h 的闭环漏洞）。"""
+    m = _load()
+    old = pd.DataFrame({
+        "symbol": ["A", "B", "C"],
+        "timestamp_ms": [T0, T0 + HOUR_MS, T0 + 2 * HOUR_MS],
+        "ret_4h": [1.0, np.nan, 2.0],
+        "ret_24h": [np.nan, np.nan, 3.0],
+        "ret_72h": [4.0, np.nan, 5.0],
+        "ret_168h": [6.0, np.nan, 7.0],
+    })
+    miss = m.rows_needing_return_backfill(old)
+    assert set(miss["symbol"]) == {"A", "B"}  # C 全齐；A 缺 24h；B 全缺
+
+
+def test_rows_needing_return_backfill_complete_skipped():
+    m = _load()
+    old = pd.DataFrame({
+        "symbol": ["X"],
+        "timestamp_ms": [T0],
+        "ret_4h": [1.0],
+        "ret_24h": [2.0],
+        "ret_72h": [3.0],
+        "ret_168h": [4.0],
+    })
+    assert m.rows_needing_return_backfill(old).empty

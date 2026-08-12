@@ -40,6 +40,8 @@
 | E25 | 新币微观结构增强（s015） | **candidate** | exploratory | primary | alpha_card 预注册；叠加 E19/E20 | 代理点差/冲击；池漂移约束 |
 | E28 | U 场外溢价 × BTC 抄底（P7） | **candidate**（前向积累中） | exploratory | primary | 197 日快照已建（Binance/OKX P2P + USDCNH；首值 -92.6bps）；198 事件框架；**Dune 历史版（202）**：Curve 3pool USDT/DAI 1830 天（2020-09→今，仅耗 4.4/2500 credits）——**3pool 脱锚与 BTC 大跌日几乎不重叠（56 大跌日中仅 1 深脱锚），大跌日 7d 超额 -3.99% CI[-6.83,-0.92] 显著负（大跌不反弹，与 164 一致）→ 链上 USDT 折价不是 BTC 抄底同日信号**；P2P 场外溢价（资金流 gauge）前向继续积累 | 信用风险 vs 资金流双 gauge 互补；n=1 深脱锚样本（2020-09-17 V 底 +13.3%/7d） |
 | E29 | 本地-全球冲击分解（211 因子 8） | **candidate**（环境门控） | exploratory | primary | local_shock = z(alt 横截面波动+广度压力) − z(VIX)；高 T3 24h +1.90% vs 低 +0.16%，**高−低 +1.74% CI[+0.55,+3.02]（独立日 369）**——加密内部清杠杆后的 wash_cvd 反弹更强（score 已正交 VIX）；与 E24b（VIX_SYNTH 高门控）互补 | 环境门控候选（与 E24b/E26/E27 同类，接 108 需 Owner 签批）；需复核与 VIX 门控/regime 重叠度 |
+| E30 | Token Unlock 卖压窗口（s017） | **watch**（观察·A 决策） | exploratory | primary | 扩历后 pct≥1% n=211 mean+2.44% CI+；SEI46%；MIXED。**Owner 2026-08-12：A 为主，停扩历** | 不升 historical_pass；重开=新源/Owner 明示 |
+| E31 | 截面中性 funding carry CS_MN（s018） | **candidate**（S0 红线） | exploratory | primary | S0+ n=3567 fund +1.9bps/期 price −8.1bps net27 −32bps；24h/72h 仍净负（`reports/s018_s0_local.md`） | **副槽**；**≠s014**；主规格倾向 NO_GO；勿进 S1 除非新卡 |
 
 ## 检验预算（多重检验纪律，P1_5_B_GAUNTLET §9 迁移）
 

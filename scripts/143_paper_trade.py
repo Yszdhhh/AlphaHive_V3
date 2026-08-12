@@ -60,6 +60,13 @@ HOUR_MS = 3_600_000
 FWD_CUTOFF_MS = int(pd.Timestamp("2026-08-09", tz="UTC").timestamp() * 1000)
 
 
+def equity_mdd(pnl: pd.Series, init: float = INIT_EQUITY) -> float:
+    """按时间序累计净盈亏的最大回撤（调用方须先按 timestamp 排序）。"""
+    s = pd.to_numeric(pnl, errors="coerce").fillna(0.0)
+    eq = pd.concat([pd.Series([init]), init + s.cumsum()], ignore_index=True)
+    return float((eq / eq.cummax() - 1).min())
+
+
 def load_events() -> pd.DataFrame:
     df = pd.read_csv(EVENTS_CSV)
     df["timestamp_ms"] = pd.to_numeric(df["timestamp_ms"], errors="coerce").astype("Int64")
@@ -266,33 +273,47 @@ def run() -> int:
             existing = {}
 
     rows = []
+    existing_dirty = False
     equity = INIT_EQUITY
     peak = equity
     size = 1.0
+    settle_a_ids = set(settle_a["alert_id"].astype(str))
+    settle_b_ids = set(settle_b["alert_id"].astype(str))
     for _, ev in settle.sort_values("timestamp_ms").iterrows():
         aid = str(ev["alert_id"])
         if aid in existing:
-            # 已有行：若 B 之前是 PENDING 而现在可结算，只更新 B 列
+            # 已有行：B/C 从 PENDING 解锁时必须写回 CSV（哪怕当天无新事件）
             old = existing[aid]
-            if old.get("account_b_status") == "PENDING" and aid in settle_b["alert_id"].tolist():
-                px = prices.get(ev["symbol"])
-                if px is not None and len(px):
-                    b = simulate(ev, px, MAX_HOLD_B, STOP_LOSS_B, TRAIL_B, MAX_HOLD_B, float(old.get("size", 1.0)))
+            px = prices.get(ev["symbol"])
+            sz = float(old.get("size", 1.0))
+            if px is not None and len(px) and aid in settle_b_ids:
+                if old.get("account_b_status") == "PENDING":
+                    b = simulate(ev, px, MAX_HOLD_B, STOP_LOSS_B, TRAIL_B, MAX_HOLD_B, sz)
                     old["account_b_status"] = "SETTLED"
                     old["account_b_entry"] = b["entry"]
                     old["account_b_exit"] = b["exit"]
                     old["account_b_reason"] = b["exit_reason"]
                     old["account_b_pnl"] = b["pnl_net"]
                     old["account_b_hold_h"] = b["hold_h"]
-                    existing[aid] = old
+                    existing_dirty = True
+                if old.get("account_c_status") == "PENDING":
+                    c = simulate_confirm(ev, px, sz)
+                    old["account_c_status"] = "SETTLED"
+                    old["account_c_entry"] = c["entry"]
+                    old["account_c_exit"] = c["exit"]
+                    old["account_c_reason"] = c["exit_reason"]
+                    old["account_c_pnl"] = c["pnl_net"]
+                    old["account_c_hold_h"] = c["hold_h"]
+                    existing_dirty = True
+                existing[aid] = old
             continue
         px = prices.get(ev["symbol"])
         if px is None or len(px) == 0:
             continue
         a = simulate(ev, px, HOLD_H_A, None, None, HOLD_H_A, size)
-        a_status = "SETTLED" if aid in settle_a["alert_id"].tolist() else "PENDING"
-        b_status = "SETTLED" if aid in settle_b["alert_id"].tolist() else "PENDING"
-        c_status = "SETTLED" if aid in settle_b["alert_id"].tolist() else "PENDING"  # C 与 B 同需 168h
+        a_status = "SETTLED" if aid in settle_a_ids else "PENDING"
+        b_status = "SETTLED" if aid in settle_b_ids else "PENDING"
+        c_status = "SETTLED" if aid in settle_b_ids else "PENDING"  # C 与 B 同需 168h
         b = (simulate(ev, px, MAX_HOLD_B, STOP_LOSS_B, TRAIL_B, MAX_HOLD_B, size)
              if b_status == "SETTLED" else
              {"entry": np.nan, "exit": np.nan, "exit_reason": "PENDING",
@@ -324,9 +345,14 @@ def run() -> int:
         elif equity / peak - 1 <= MDD_HALVE:
             size = 0.5
 
-    if rows:
-        new = pd.DataFrame(rows)
-        merged = pd.concat([pd.DataFrame(list(existing.values())), new], ignore_index=True)
+    if rows or existing_dirty:
+        parts = [pd.DataFrame(list(existing.values()))]
+        if rows:
+            parts.append(pd.DataFrame(rows))
+        merged = pd.concat(parts, ignore_index=True)
+        # 升级路径可能与新建路径重复同一 alert_id → 保留最后（新建/已升级）
+        if "alert_id" in merged.columns:
+            merged = merged.drop_duplicates(subset=["alert_id"], keep="last")
         merged.to_csv(POSITIONS_CSV, index=False, encoding="utf-8")
         print(f"[143] positions {len(merged)} 行 → {POSITIONS_CSV}")
 
@@ -391,15 +417,15 @@ def run() -> int:
         for acct, pnl_col, st_col, reason_col in [("A", "account_a_pnl", "account_a_status", "account_a_reason"),
                                                   ("B", "account_b_pnl", "account_b_status", "account_b_reason"),
                                                   ("C", "account_c_pnl", "account_c_status", "account_c_reason")]:
-            sub = pos[pos[st_col].fillna("SETTLED") == "SETTLED"]
+            sub = pos[pos[st_col].fillna("SETTLED") == "SETTLED"].sort_values("timestamp_ms")
             pnl = pd.to_numeric(sub[pnl_col], errors="coerce")
             n = int(pnl.notna().sum())
             if n == 0:
                 continue
-            eq = pd.concat([pd.Series([INIT_EQUITY]), INIT_EQUITY + pnl.fillna(0).cumsum()], ignore_index=True)
-            mdd = float((eq / eq.cummax() - 1).min())
+            mdd = equity_mdd(pnl.fillna(0.0))
+            eq_end = INIT_EQUITY + float(pnl.fillna(0.0).sum())
             lines.append(f"## 账户 {acct}\n")
-            lines.append(f"- 已结算：{n} 笔；净盈亏 ${pnl.sum():+.2f}；期末净值 ${eq.iloc[-1]:.2f}")
+            lines.append(f"- 已结算：{n} 笔；净盈亏 ${pnl.sum():+.2f}；期末净值 ${eq_end:.2f}")
             lines.append(f"- 胜率 {100 * (pnl > 0).mean():.1f}%；最大回撤 {mdd:.1%}")
             reason = sub[reason_col].value_counts().to_dict()
             lines.append(f"- 退出分布：{reason}")
@@ -409,15 +435,15 @@ def run() -> int:
     if POSITIONS_D_CSV.exists():
         df_d2 = pd.read_csv(POSITIONS_D_CSV)
         if len(df_d2):
+            df_d2 = df_d2.sort_values("timestamp_ms")
             pnl_d2 = pd.to_numeric(df_d2["pnl_net"], errors="coerce").fillna(0.0)
-            eq_d2 = pd.concat([pd.Series([INIT_EQUITY]), INIT_EQUITY + pnl_d2.cumsum()],
-                              ignore_index=True)
-            mdd_d = float((eq_d2 / eq_d2.cummax() - 1).min())
+            mdd_d = equity_mdd(pnl_d2)
+            eq_end_d = INIT_EQUITY + float(pnl_d2.sum())
             dev_n = int((pd.to_numeric(df_d2["timestamp_ms"], errors="coerce") < FWD_CUTOFF_MS).sum())
             lines.append("## 账户 D\n")
             lines.append(f"- **数据性质：历史回填 {dev_n} 笔（development，6-01~8-04，"
                          f"非前向影子）；前向影子自 8-09 起，未到 168h 结算窗**")
-            lines.append(f"- 已结算：{len(df_d2)} 笔；净盈亏 ${pnl_d2.sum():+.2f}；期末净值 ${eq_d2.iloc[-1]:.2f}")
+            lines.append(f"- 已结算：{len(df_d2)} 笔；净盈亏 ${pnl_d2.sum():+.2f}；期末净值 ${eq_end_d:.2f}")
             lines.append(f"- 胜率 {100 * (pnl_d2 > 0).mean():.1f}%；最大回撤 {mdd_d:.1%}")
             lines.append(f"- 退出分布：{df_d2['reason'].value_counts().to_dict()}")
             lines.append("")

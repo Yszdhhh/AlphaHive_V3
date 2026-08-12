@@ -44,6 +44,22 @@ HORIZONS = [4, 24, 72, 168]
 BASE_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
 
 
+def rows_needing_return_backfill(old: pd.DataFrame) -> pd.DataFrame:
+    """积累行：任一 horizon 收益缺失则需回填（不能只看 ret_4h）。"""
+    if old is None or old.empty:
+        return pd.DataFrame()
+    ms = pd.to_numeric(old["timestamp_ms"], errors="coerce")
+    base = old[ms.notna()].copy()
+    if base.empty:
+        return base
+    ret_cols = [f"ret_{h}h" for h in HORIZONS]
+    present = [c for c in ret_cols if c in base.columns]
+    if not present or len(present) < len(ret_cols):
+        return base  # 缺列 = schema 漂移，整表回填
+    need = base[present].isna().any(axis=1)
+    return base[need].copy()
+
+
 def load_universe_symbols() -> list[str]:
     with (PROJECT_ROOT / "config" / "universe.json").open("r", encoding="utf-8") as f:
         universe = json.load(f)["symbols"]
@@ -284,15 +300,13 @@ def main() -> None:
     backfill_events = pd.DataFrame()
     if not args.all and OUT_CSV.exists():
         old = pd.read_csv(OUT_CSV)
-        miss = old[old["ret_4h"].isna()].copy()
-        ms = pd.to_numeric(miss["timestamp_ms"], errors="coerce")
-        miss = miss[ms.notna()]
+        miss = rows_needing_return_backfill(old)
         if not miss.empty:
             backfill_events = _event_frame(
                 miss["symbol"].tolist(),
                 pd.to_numeric(miss["timestamp_ms"], errors="coerce").to_numpy(dtype=np.int64),
             )
-            print(f"[109] 回填旧候选 {len(backfill_events)} 行（收益缺失）")
+            print(f"[109] 回填旧候选 {len(backfill_events)} 行（任一 horizon 收益缺失）")
 
     # 事件集 = 候选 + 回填
     ev_ts = pd.to_numeric(cand["timestamp_ms"], errors="coerce").to_numpy(dtype=np.int64)
@@ -311,13 +325,35 @@ def main() -> None:
 
     # 收益回填：把本次算出的收益写进旧积累行（数据闭环关键）
     if not backfill_events.empty:
-        fill = old.merge(fwd_all, left_on=["symbol", "timestamp_ms"], right_on=["symbol", "timestamp"],
-                         how="left", suffixes=("", "_new"))
+        # 清历史 merge 残留 *_new，并只并入收益列，避免二次回填后缀冲突
+        old = old.drop(columns=[c for c in old.columns if str(c).endswith("_new")], errors="ignore")
+        ret_cols = [f"ret_{h}h" for h in HORIZONS]
+        extras = [c for c in ("mfe_pct", "mae_pct") if c in fwd_all.columns]
+        right = fwd_all[["symbol", "timestamp"] + [c for c in ret_cols + extras if c in fwd_all.columns]]
+        fill = old.merge(
+            right,
+            left_on=["symbol", "timestamp_ms"],
+            right_on=["symbol", "timestamp"],
+            how="left",
+            suffixes=("", "_new"),
+        )
         for h in HORIZONS:
             c, cn = f"ret_{h}h", f"ret_{h}h_new"
             if cn in fill.columns:
                 fill[c] = fill[c].fillna(fill[cn])
                 fill = fill.drop(columns=[cn])
+        for c in extras:
+            cn = f"{c}_new"
+            if cn in fill.columns:
+                if c in fill.columns:
+                    fill[c] = fill[c].fillna(fill[cn])
+                else:
+                    fill[c] = fill[cn]
+                fill = fill.drop(columns=[cn])
+        if "timestamp_new" in fill.columns:
+            fill = fill.drop(columns=["timestamp_new"])
+        elif "timestamp" in fill.columns and "timestamp_ms" in fill.columns:
+            fill = fill.drop(columns=["timestamp"])
         old = fill
 
     # verdict 事件：默认=今日候选；--all=积累全量（验证模式）
@@ -348,12 +384,17 @@ def main() -> None:
         merged = None
     else:
         # 追加/覆盖 returns 积累 csv（重跑会覆盖同日行，天然幂等）
+        # 只并入收益列，避免 cand 与 cand_fwd 共有列（score_vol 等）产生 _x/_y
+        fwd_keep = ["symbol", "timestamp"] + [f"ret_{h}h" for h in HORIZONS]
+        fwd_keep += [c for c in ("mfe_pct", "mae_pct") if c in cand_fwd.columns]
         accum = cand.merge(
-            cand_fwd,
+            cand_fwd[fwd_keep],
             left_on=["symbol", "timestamp_ms"],
             right_on=["symbol", "timestamp"],
             how="left",
         )
+        if "timestamp" in accum.columns:
+            accum = accum.drop(columns=["timestamp"])
         if old is not None:
             merged = pd.concat([old, accum], ignore_index=True)
         elif OUT_CSV.exists():
@@ -361,6 +402,11 @@ def main() -> None:
         else:
             merged = accum
         merged = merged.drop_duplicates(subset=["symbol", "timestamp_ms"], keep="last")
+        # 清历史污染列
+        junk = [c for c in merged.columns
+                if str(c).endswith("_new") or c in ("score_vol_x", "score_vol_y")]
+        if junk:
+            merged = merged.drop(columns=junk, errors="ignore")
         # 冻结门控（2026-08-09）：未冻结或 < forward_start 的分数清 NA（109 绝不回算历史分）
         if "score_vol" in merged.columns:
             merged = apply_score_gate(merged)
