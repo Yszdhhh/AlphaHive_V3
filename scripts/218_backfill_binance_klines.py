@@ -190,18 +190,37 @@ def main() -> int:
                 rows.append({"symbol": sym, "ok": False, "error": "no data", "n": 0})
                 print(f"[{i}/{len(symbols)}] {sym}: no data")
                 continue
-            hist.to_parquet(HIST_KL / f"{sym}.parquet", index=False)
+            hist_path = HIST_KL / f"{sym}.parquet"
+            hist.to_parquet(hist_path, index=False)
             n_raw = 0
             if not args.no_merge_raw:
-                old_r = load_existing(RAW_KL / f"{sym}.parquet")
-                merged = merge_frames(old_r, hist)
-                # 保持 raw 列顺序
-                for c in COLS:
-                    if c not in merged.columns:
-                        merged[c] = pd.NA
-                merged = merged[COLS]
-                merged.to_parquet(RAW_KL / f"{sym}.parquet", index=False)
-                n_raw = len(merged)
+                # 单份存储：history 为 canonical；raw 用硬链接（省双份盘）
+                import os
+
+                raw_path = RAW_KL / f"{sym}.parquet"
+                try:
+                    if raw_path.exists():
+                        try:
+                            if os.path.samefile(hist_path, raw_path):
+                                n_raw = len(hist)
+                            else:
+                                raw_path.unlink()
+                                os.link(hist_path, raw_path)
+                                n_raw = len(hist)
+                        except OSError:
+                            raw_path.unlink(missing_ok=True)
+                            os.link(hist_path, raw_path)
+                            n_raw = len(hist)
+                    else:
+                        os.link(hist_path, raw_path)
+                        n_raw = len(hist)
+                except OSError:
+                    # 硬链接失败则退回拷贝一份
+                    for c in COLS:
+                        if c not in hist.columns:
+                            hist[c] = pd.NA
+                    hist[COLS].to_parquet(raw_path, index=False)
+                    n_raw = len(hist)
             rows.append(
                 {
                     "symbol": sym,

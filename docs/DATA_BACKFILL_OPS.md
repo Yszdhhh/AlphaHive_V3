@@ -56,3 +56,43 @@ python scripts/199_data_health.py
 | 218 增量（从 last-48h） | 周 1 次或 raw 落后时 |
 | 110 funding | 周 1 次 |
 | 199 + 220 | 日/周 |
+| 221 klines 硬链接去重 | 218 大批量后跑一次 |
+| 222 aggTrades 缓存 GC | 月 1 次或缓存 >800MB |
+
+## P1 去重与缓存
+
+```bash
+# history 与 raw_1h/klines 共用同一文件（硬链接，省 ~146MB 逻辑双份）
+python scripts/221_dedupe_klines_hardlink.py
+
+# aggTrades 缓存控制（默认保留 7 天且总上限 500MB）
+python scripts/222_aggtrades_cache_gc.py --keep-days 7 --max-mb 500 --dry-run
+python scripts/222_aggtrades_cache_gc.py --keep-days 7 --max-mb 500
+```
+
+218 新回补会优先写 history 再硬链到 raw（失败才拷贝）。
+
+## K 线还原 / 可视化（跑策略对照）
+
+统一读库：`harness/lib/klines_store.py`（auto：history → raw → coinglass）
+
+```bash
+# 最近 60 天 BTC 蜡烛图 + CSV
+python scripts/223_kline_view.py --symbol BTCUSDT --days 60
+
+# 指定区间
+python scripts/223_kline_view.py --symbol ARBUSDT --start 2025-01-01 --end 2025-06-01
+
+# 只要 CSV
+python scripts/223_kline_view.py --symbol ETHUSDT --days 30 --no-plot
+```
+
+产出目录：`reports/kline_views/{SYMBOL}_{start}_{end}.csv|.png`
+
+策略脚本示例：
+
+```python
+from harness.lib.klines_store import load_klines, to_datetime_index
+df = load_klines("BTCUSDT", start="2024-01-01", end="2026-08-01")
+px = to_datetime_index(df)  # index=UTC datetime，列 open/high/low/close/volume
+```
